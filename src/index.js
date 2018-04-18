@@ -4,6 +4,6 @@ import StackedBarTrack from './StackedBarTrack';
 
 register({
   name: 'StackedBarTrack',
-  type: StackedBarTrack,
+  track: StackedBarTrack,
   config: StackedBarTrack.config,
 });
