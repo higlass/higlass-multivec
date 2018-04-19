@@ -5,7 +5,7 @@
   <title>HiGlass</title>
   <style type="text/css">
     .canvasjs-chart-credit {
-      display:none;
+      display: none;
     }
   </style>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
@@ -16,7 +16,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.2/pixi.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.31.0/react-bootstrap.min.js"></script>
 </head>
-<body >
+<body>
 Here's some text
 <div style=""></div>
 <div style="margin: auto">
@@ -25,12 +25,12 @@ Here's some text
   </div>
 </div>
 And some other text
-<div style="height: 1500px"> </div>
+<div style="height: 1500px"></div>
 </body>
 <script src="../node_modules/higlass/dist/scripts/hglib.js"></script>
 <script>
 
-  var testViewConfig =
+  var viewConfig =
     {
       "editable": true,
       "trackSourceServers": [
@@ -238,17 +238,24 @@ And some other text
 
   window.hglib.createHgComponent(
     document.getElementById('development-demo'),
-    testViewConfig,
-    { tracks: ['StackedBarTrack', 'BasicMultipleLineChart', 'BasicMultipleBarChart'], bounded: true }
+    viewConfig,
+    {tracks: ['StackedBarTrack', 'BasicMultipleLineChart', 'BasicMultipleBarChart'], bounded: true}
   );
 
 
 </script>
 <script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
 
   ga('create', 'UA-77756807-1', 'auto');
   ga('send', 'pageview');

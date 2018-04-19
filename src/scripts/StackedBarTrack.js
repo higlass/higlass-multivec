@@ -358,7 +358,7 @@ const StackedBarTrack = (HGC, ...args) => {
             const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
             const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
 
-            return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2" 
+            return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
             style="fill:${color};stroke:black;stroke-width:2;"></svg>`
               + ` ${type}` + `<br>` + `${value}`;
 
