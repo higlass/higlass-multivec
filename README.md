@@ -9,7 +9,8 @@ see these repositories:
  - HiGlass server: https://github.com/hms-dbmi/higlass-server
  - HiGlass docker: https://github.com/hms-dbmi/higlass-docker
 
-##Installation
+## Installation
+
 ```
 npm install higlass-multivec
 ```
