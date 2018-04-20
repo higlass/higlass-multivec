@@ -1,0 +1,19 @@
+language: node_js
+node_js:
+- '8'
+branches:
+  only:
+  - master
+  - develop
+  - "/^v.*$/"
+before_script:
+- npm install
+before_deploy:
+- npm run compile
+deploy:
+  provider: releases
+  api_key:
+    secure: FWiFJvViaWIZkqYAfQjGNE4nh3DmTpz9snxzYAqit/p1RsgTP0qebuBo1VKpE/6DB59SRAbeLb2YYxWZS1xytx9Ccz5DjrbVwF1cMpdc2PlILVauOwVo1Cq9HEE8Qhp8Xfp3n9nlWNPVpXAbG7gMWORVhxgq9OE7mh+pW3We/p9b4ENBWIw+pSi2sH4f++FP4LyOFksYiHR4z0e5p8uMGY/KiJMdifZ9UVdJSh6PVjQTHLxBZTCqg3PRq8NeuUKQhDgnaS8s8t+sxCsSZI3UEJnQleBoHmS8/pQmERlIbGcd2YB+OrGXM3wURrXkJpT2N0mT/L8kMwy+rQXpohom+deAl/hJsq5VDRcbantNVrIw8JqKs1ghfDBQnPobcLXLvPRibaAKKpqtOiia9hK7FgmYXUDvUapbJRB+3fJhaMAyg0l97xlbe+TPwJ3bL1gbjVB90lbLTZpCdfKEf4zH2rz8agbzNmvCGuVr/DgiprkSeEDbLEt/HURwZ2P+yVnPk4zw9hKQ7Uu9YSKyXgUkBWBzw+tPjmsuqJlFsKqOsYFVx9qALOkSMJdPyW++L+b3U9Y4uhNHJfXQ1Hgn3GoaXDLErt+ik41+m8ajjpNWrST0EiNRPGSjMny8juCCIm83uMIO3PVM8O+RhPR0KpDdbfB5xU2lmWpD7fL7BjJ488Q=
+  file: dist.zip
+  on:
+    repo: daniellenguyen/higlass-multivec
