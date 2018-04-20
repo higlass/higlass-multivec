@@ -167,41 +167,23 @@ const BasicMultipleLineChart = (HGC, ...args) => {
   return new BasicMultipleLineChart(...args);
 };
 
+// default
 BasicMultipleLineChart.config = {
-  "name": "all.KL.bed.multires.mv5",
-  "server": "http://test1.resgen.io/api/v1",
-  "tilesetUid": "GIoMpzT4RlOQZ2_7m394Uw",
-  "type": "basic-multiple-line-chart",
-  "height": 200,
-  "width": 470,
-  "position": "top",
-  "options": {
-    "labelPosition": "topLeft",
-    "labelColor": "black",
-    "labelTextOpacity": 0.4,
-    "valueScaling": "linear",
-    "trackBorderWidth": 0,
-    "trackBorderColor": "black",
-    "colorScale": [
-      '#FF0000',
-      '#FF4500',
-      '#32CD32',
-      '#008000',
-      '#006400',
-      '#C2E105',
-      '#FFFF00',
-      '#66CDAA',
-      '#8A91D0',
-      '#CD5C5C',
-      '#E9967A',
-      '#BDB76B',
-      '#808080',
-      '#C0C0C0',
-      '#000000'
-//    '#FFFFFF' proper color is white but need
-    ]
+  type: 'basic-multiple-line-chart',
+  datatype: ['multivec'],
+  local: false,
+  orientation: '1d-horizontal',
+  thumbnail: null,
+  availableOptions: ['labelPosition', 'labelColor', 'valueScaling', 'labelTextOpacity', 'labelBackgroundOpacity',
+    'trackBorderWidth', 'trackBorderColor', 'trackType'],
+  defaultOptions: {
+    labelPosition: 'topLeft',
+    labelColor: 'black',
+    labelTextOpacity: 0.4,
+    valueScaling: 'linear',
+    trackBorderWidth: 0,
+    trackBorderColor: 'black',
   },
-
 };
 
 export default BasicMultipleLineChart;

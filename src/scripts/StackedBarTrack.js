@@ -9,7 +9,7 @@ const StackedBarTrack = (HGC, ...args) => {
   }
 
   // Services
-  const { tileProxy } = HGC.services;
+  const {tileProxy} = HGC.services;
 
   class StackedBarTrackClass extends mix(HGC.tracks.BarTrack).with(HGC.tracks.OneDimensionalMixin) {
     constructor(scene, trackConfig, dataConfig, handleTilesetInfoReceived, animate, onValueScaleChanged) {
@@ -371,25 +371,29 @@ const StackedBarTrack = (HGC, ...args) => {
   return new StackedBarTrackClass(...args);
 };
 
+// default
 StackedBarTrack.config = {
-  "type": "horizontal-stacked-bar",
-  "tilesetUid": "GIoMpzT4RlOQZ2_7m394Uw",
-  "server": "http://test1.resgen.io/api/v1",
-  "height": 200,
-  "width": 470,
-  "options": {
-    "labelPosition": "topLeft",
-    "labelColor": "black",
-    "labelTextOpacity": 0.4,
-    "valueScaling": "exponential",
-    "trackBorderWidth": 0,
-    "trackBorderColor": "black",
-    "heatmapValueScaling": "log",
-    "name": "all.KL.bed.multires.mv5",
-    "scaledHeight": true,
-    "backgroundColor": "white",
-    "sortLargestOnTop": true,
-    "colorScale": [
+  type: 'horizontal-stacked-bar',
+  datatype: ['multivec'],
+  local: false,
+  orientation: '1d-horizontal',
+  thumbnail: null,
+  availableOptions: ['labelPosition', 'labelColor', 'valueScaling',
+    'labelTextOpacity', 'labelBackgroundOpacity', 'trackBorderWidth',
+    'trackBorderColor', 'trackType', 'scaledHeight', 'backgroundColor',
+    'colorScale', 'barBorder', 'sortLargestOnTop'],
+  defaultOptions: {
+    labelPosition: 'topLeft',
+    labelColor: 'black',
+    labelTextOpacity: 0.4,
+    valueScaling: 'linear',
+    trackBorderWidth: 0,
+    trackBorderColor: 'black',
+    backgroundColor: 'white',
+    barBorder: true,
+    scaledHeight: true,
+    sortLargestOnTop: true,
+    colorScale: [
       "#FF0000",
       "#FF4500",
       "#32CD32",
@@ -406,8 +410,8 @@ StackedBarTrack.config = {
       "#C0C0C0",
       "#FFFFFF"
     ],
-    "barBorder": true
-  },
+  }
 };
+
 
 export default StackedBarTrack;
