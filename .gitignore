@@ -1,3 +1,5 @@
+*.un~
+*.swp
 node_modules
 dist
 *.zip
