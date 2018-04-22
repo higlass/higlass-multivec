@@ -338,6 +338,10 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const tileId = this.tileToLocalId([zoomLevel, Math.floor(tilePos)]);
       const fetchedTile = this.fetchedTiles[tileId];
+
+      if (!fetchedTile)
+        return '';
+
       const matrixRow = fetchedTile.matrix[posInTileX];
       const row = fetchedTile.mouseOverData[posInTileX];
 
