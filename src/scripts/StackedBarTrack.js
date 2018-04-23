@@ -39,11 +39,11 @@ const StackedBarTrack = (HGC, ...args) => {
       const matrix = this.unFlatten(tile);
 
       if (this.options.scaledHeight === true) {
-        this.drawVerticalBars(graphics, this.mapOriginalColors(matrix),
-          tileX, tileWidth, this.maxAndMin.max, this.maxAndMin.min, tile);
+        this.drawNormalizedBars(graphics, this.scaleMatrix(this.mapOriginalColors(matrix)), tileX, tileWidth, tile);
       }
       else {
-        this.drawNormalizedBars(graphics, this.scaleMatrix(this.mapOriginalColors(matrix)), tileX, tileWidth, tile);
+        this.drawVerticalBars(graphics, this.mapOriginalColors(matrix),
+          tileX, tileWidth, this.maxAndMin.max, this.maxAndMin.min, tile);
       }
 
       this.makeMouseOverData(tile);
@@ -395,7 +395,7 @@ StackedBarTrack.config = {
     trackBorderColor: 'black',
     backgroundColor: 'white',
     barBorder: true,
-    scaledHeight: true,
+    scaledHeight: false,
     sortLargestOnTop: true,
     colorScale: [
       "#FF0000",
