@@ -5,5 +5,4 @@ dist
 *.zip
 *.log
 *.DS_cache
-package-lock.json
 .idea/
