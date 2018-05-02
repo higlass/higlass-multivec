@@ -29,7 +29,11 @@ const StackedBarTrack = (HGC, ...args) => {
      */
     renderTile(tile) {
       const graphics = tile.graphics;
-      graphics.clear();
+
+      // remove all of this graphic's children
+      for (var i = graphics.children.length - 1; i >= 0; i--) {  graphics.removeChild(graphics.children[i]);};
+
+      // graphics.clear();
       tile.drawnAtScale = this._xScale.copy();
 
       // we're setting the start of the tile to the current zoom level
@@ -42,11 +46,12 @@ const StackedBarTrack = (HGC, ...args) => {
         this.drawNormalizedBars(graphics, this.scaleMatrix(this.mapOriginalColors(matrix)), tileX, tileWidth, tile);
       }
       else {
-        this.drawVerticalBars(graphics, this.mapOriginalColors(matrix),
+        const sprite = this.drawVerticalBars(this.mapOriginalColors(matrix),
           tileX, tileWidth, this.maxAndMin.max, this.maxAndMin.min, tile);
+        graphics.addChild(sprite);
       }
 
-      this.makeMouseOverData(tile);
+      //this.makeMouseOverData(tile);
     }
 
     /**
@@ -133,7 +138,8 @@ const StackedBarTrack = (HGC, ...args) => {
      * @param negativeMax the height of the tallest bar in the negative part of the graph
      * @param tile
      */
-    drawVerticalBars(graphics, matrix, tileX, tileWidth, positiveMax, negativeMax, tile) {
+    drawVerticalBars(matrix, tileX, tileWidth, positiveMax, negativeMax, tile) {
+      let graphics = new PIXI.Graphics();
       const trackHeight = this.dimensions[1];
 
       // get amount of trackHeight reserved for positive and for negative
@@ -141,14 +147,30 @@ const StackedBarTrack = (HGC, ...args) => {
       const positiveTrackHeight = (positiveMax * trackHeight) / unscaledHeight;
       const negativeTrackHeight = (negativeMax * trackHeight) / unscaledHeight;
 
-      if (this.options.barBorder) {
-        graphics.lineStyle(0.1, 'black', 1);
-        tile.barBorders = true;
-      }
+      // if (this.options.barBorder) {
+      //   graphics.lineStyle(0.1, 'black', 1);
+      //   tile.barBorders = true;
+      // }
 
+      let start = null;
+      let lowestY = this.dimensions[1];
+      //
+      // const widthScale = scaleLinear()
+      //   .domain([this._xScale(tileX), this._xScale(tileX + tileWidth)])
+      //   .range([0, 16]);// todo if we put width through this, it increases instead of decreasing like we want
+
+      const widthScale = scaleLinear()
+        .domain([this._xScale(tileX),  this._xScale(tileX + tileWidth)])
+        .range([0, 8190]);
+
+      const width = this._xScale(tileX + (tileWidth / this.tilesetInfo.tile_size)) - this._xScale(tileX);
+
+      console.log(tile.tileId, 'width', this._xScale(tileX + (tileWidth / this.tilesetInfo.tile_size)) - this._xScale(tileX));
+      console.log(tile.tileId, 'widthScale', width);
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = this._xScale(tileX + (j * tileWidth / this.tilesetInfo.tile_size));
-        const width = this._xScale(tileX + (tileWidth / this.tilesetInfo.tile_size)) - this._xScale(tileX);
+        if (j == 0)
+          start = x;
 
         // draw positive values
         const positive = matrix[j][0];
@@ -159,50 +181,73 @@ const StackedBarTrack = (HGC, ...args) => {
         for (let i = 0; i < positive.length; i++) {
           const height = valueToPixelsPositive(positive[i].value);
           const y = positiveTrackHeight - (positiveStackedHeight + height);
-          //console.log('height:', height); //todo a good clue!
           this.addSVGInfo(tile, x, y, width, height, positive[i].color);
-          graphics.beginFill(this.colorHexMap[positive[i].color]);
-
-          graphics.drawRect(x, y, width, height);
+          //if(j === 100 || j === 103 ){//|| j === 105) {
+            graphics.beginFill(this.colorHexMap[positive[i].color]);
+           // graphics.lineStyle(1, this.colorHexMap[positive[i].color], 1);
+           //console.log('x:', x, 'y:', y, 'width:', width, 'height:', height);
+            graphics.drawRect(x, y, width, height);
+          //}
           positiveStackedHeight = positiveStackedHeight + height;
-        }
 
+          if (lowestY > y)
+            lowestY = y;
+        }
+        positiveStackedHeight = 0;
         // draw negative values
-        const negative = matrix[j][1];
-        const valueToPixelsNegative = scaleLinear()
-          .domain([-Math.abs(negativeMax), 0])
-          .range([negativeTrackHeight, 0]);
-        let negativeStackedHeight = 0;
-        for (let i = 0; i < negative.length; i++) {
-          const height = valueToPixelsNegative(negative[i].value);
-          const y = positiveTrackHeight + negativeStackedHeight;
-          this.addSVGInfo(tile, x, y, width, height, negative[i].color);
-          graphics.beginFill(this.colorHexMap[negative[i].color]);
+        // const negative = matrix[j][1];
+        // const valueToPixelsNegative = scaleLinear()
+        //   .domain([-Math.abs(negativeMax), 0])
+        //   .range([negativeTrackHeight, 0]);
+        // let negativeStackedHeight = 0;
+        // for (let i = 0; i < negative.length; i++) {
+        //   const height = valueToPixelsNegative(negative[i].value);
+        //   const y = positiveTrackHeight + negativeStackedHeight;
+        //   this.addSVGInfo(tile, x, y, width, height, negative[i].color);
+        //   graphics.beginFill(this.colorHexMap[negative[i].color]);
+        //   //graphics.lineStyle(1, this.colorHexMap[negative[i].color], 1);
+        //
+        //    //console.log('x:', x, 'y:', y, 'width:', width, 'height:', height);
+        //
+        //   graphics.drawRect(x, y, width, height);
+        //   negativeStackedHeight = negativeStackedHeight + height;
+        //
+        // }
 
-          graphics.drawRect(x, y, width, height);
-          negativeStackedHeight = negativeStackedHeight + height;
-
-        }
-
-        // sets background to black if black option enabled
-        const backgroundColor = this.options.backgroundColor;
-        if (backgroundColor === 'black') {
-          this.options.labelColor = 'white';
-          graphics.beginFill(backgroundColor);
-          graphics.drawRect(x, 0, width, trackHeight - positiveStackedHeight); // positive background
-          graphics.drawRect(x, negativeStackedHeight + positiveTrackHeight,    // negative background
-            width, negativeTrackHeight - negativeStackedHeight);
-
-          this.addSVGInfo(tile, x, 0, width, trackHeight - positiveStackedHeight, 'black'); // positive
-          this.addSVGInfo(tile, x, negativeStackedHeight + positiveTrackHeight, width,
-            negativeTrackHeight - negativeStackedHeight, 'black'); // negative
-
-          positiveStackedHeight = 0;
-          negativeStackedHeight = 0;
-        }
+        // // sets background to black if black option enabled
+        // const backgroundColor = this.options.backgroundColor;
+        // if (backgroundColor === 'black') {
+        //   this.options.labelColor = 'white';
+        //   graphics.beginFill(backgroundColor);
+        //   graphics.drawRect(x, 0, width, trackHeight - positiveStackedHeight); // positive background
+        //   graphics.drawRect(x, negativeStackedHeight + positiveTrackHeight,    // negative background
+        //     width, negativeTrackHeight - negativeStackedHeight);
+        //
+        //   this.addSVGInfo(tile, x, 0, width, trackHeight - positiveStackedHeight, 'black'); // positive
+        //   this.addSVGInfo(tile, x, negativeStackedHeight + positiveTrackHeight, width,
+        //     negativeTrackHeight - negativeStackedHeight, 'black'); // negative
+        //
+        //   positiveStackedHeight = 0;
+        //   negativeStackedHeight = 0;
+        // }
 
       }
+      // graphics.beginFill(0xff0000);
+      // graphics.drawRect(100, 100, 100, 100);
+      // graphics.beginFill(0x479b12);
+      // graphics.drawRect(200, 100, 100, 100);
+      const tex = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
+      //tex.scaleMode = ;
+      //console.log('scaleMode:', tex.scaleMode);
 
+      const sprite = new PIXI.Sprite(tex);
+      sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
+      sprite.x = this._xScale(tileX);
+      sprite.y = lowestY;
+      // sprite.x = 100;
+      // sprite.y = 100;
+
+      return sprite;
     }
 
     /**
@@ -322,53 +367,54 @@ const StackedBarTrack = (HGC, ...args) => {
     }
 
     getMouseOverHtml(trackX, trackY) {
+      return '';
 
-      if (!this.tilesetInfo)
-        return '';
-
-      const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
-
-      const zoomLevel = this.calculateZoomLevel();
-      const tileWidth = tileProxy.calculateTileWidth(this.tilesetInfo, zoomLevel, this.tilesetInfo.tile_size);
-
-      // the position of the tile containing the query position
-      const tilePos = this._xScale.invert(trackX) / tileWidth;
-
-      const posInTileX = Math.floor(this.tilesetInfo.tile_size * (tilePos - Math.floor(tilePos)));
-
-      const tileId = this.tileToLocalId([zoomLevel, Math.floor(tilePos)]);
-      const fetchedTile = this.fetchedTiles[tileId];
-
-      if (!fetchedTile)
-        return '';
-
-      const matrixRow = fetchedTile.matrix[posInTileX];
-      const row = fetchedTile.mouseOverData[posInTileX];
-
-      // use color to map back to the array index for correct data
-      const colorScaleMap = {};
-      for (let i = 0; i < colorScale.length; i++) {
-        colorScaleMap[colorScale[i]] = i;
-      }
-
-      // if mousing over a blank area
-      if (trackY < row[0].y || trackY >= (row[row.length - 1].y + row[row.length - 1].height)) {
-        return '';
-      }
-      else {
-        for (let i = 0; i < row.length; i++) {
-          if (trackY > row[i].y && trackY <= (row[i].y + row[i].height)) {
-            const color = row[i].color;
-            const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
-            const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
-
-            return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
-            style="fill:${color};stroke:black;stroke-width:2;"></svg>`
-              + ` ${type}` + `<br>` + `${value}`;
-
-          }
-        }
-      }
+      // if (!this.tilesetInfo)
+      //   return '';
+      //
+      // const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
+      //
+      // const zoomLevel = this.calculateZoomLevel();
+      // const tileWidth = tileProxy.calculateTileWidth(this.tilesetInfo, zoomLevel, this.tilesetInfo.tile_size);
+      //
+      // // the position of the tile containing the query position
+      // const tilePos = this._xScale.invert(trackX) / tileWidth;
+      //
+      // const posInTileX = Math.floor(this.tilesetInfo.tile_size * (tilePos - Math.floor(tilePos)));
+      //
+      // const tileId = this.tileToLocalId([zoomLevel, Math.floor(tilePos)]);
+      // const fetchedTile = this.fetchedTiles[tileId];
+      //
+      // if (!fetchedTile)
+      //   return '';
+      //
+      // const matrixRow = fetchedTile.matrix[posInTileX];
+      // const row = fetchedTile.mouseOverData[posInTileX];
+      //
+      // // use color to map back to the array index for correct data
+      // const colorScaleMap = {};
+      // for (let i = 0; i < colorScale.length; i++) {
+      //   colorScaleMap[colorScale[i]] = i;
+      // }
+      //
+      // // if mousing over a blank area
+      // if (trackY < row[0].y || trackY >= (row[row.length - 1].y + row[row.length - 1].height)) {
+      //   return '';
+      // }
+      // else {
+      //   for (let i = 0; i < row.length; i++) {
+      //     if (trackY > row[i].y && trackY <= (row[i].y + row[i].height)) {
+      //       const color = row[i].color;
+      //       const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
+      //       const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
+      //
+      //       return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
+      //       style="fill:${color};stroke:black;stroke-width:2;"></svg>`
+      //         + ` ${type}` + `<br>` + `${value}`;
+      //
+      //     }
+      //   }
+      // }
 
     }
   }
