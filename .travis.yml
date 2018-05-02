@@ -12,10 +12,18 @@ before_deploy:
 - npm run prerelease
 deploy:
   provider: releases
+  skip_cleanup: true
   api_key:
     secure: FWiFJvViaWIZkqYAfQjGNE4nh3DmTpz9snxzYAqit/p1RsgTP0qebuBo1VKpE/6DB59SRAbeLb2YYxWZS1xytx9Ccz5DjrbVwF1cMpdc2PlILVauOwVo1Cq9HEE8Qhp8Xfp3n9nlWNPVpXAbG7gMWORVhxgq9OE7mh+pW3We/p9b4ENBWIw+pSi2sH4f++FP4LyOFksYiHR4z0e5p8uMGY/KiJMdifZ9UVdJSh6PVjQTHLxBZTCqg3PRq8NeuUKQhDgnaS8s8t+sxCsSZI3UEJnQleBoHmS8/pQmERlIbGcd2YB+OrGXM3wURrXkJpT2N0mT/L8kMwy+rQXpohom+deAl/hJsq5VDRcbantNVrIw8JqKs1ghfDBQnPobcLXLvPRibaAKKpqtOiia9hK7FgmYXUDvUapbJRB+3fJhaMAyg0l97xlbe+TPwJ3bL1gbjVB90lbLTZpCdfKEf4zH2rz8agbzNmvCGuVr/DgiprkSeEDbLEt/HURwZ2P+yVnPk4zw9hKQ7Uu9YSKyXgUkBWBzw+tPjmsuqJlFsKqOsYFVx9qALOkSMJdPyW++L+b3U9Y4uhNHJfXQ1Hgn3GoaXDLErt+ik41+m8ajjpNWrST0EiNRPGSjMny8juCCIm83uMIO3PVM8O+RhPR0KpDdbfB5xU2lmWpD7fL7BjJ488Q=
   file: dist.zip
   on:
     tags: true
     branch: master
+    repo: daniellenguyen/higlass-multivec
+  provider: npm
+  email: daniellenguyen77@gmail.com
+  api_key:
+    secure: VpnlHM/SQMjp3SiaYREeqFtmygUxeKt20Bh0MGKdBUFTlLdBNX+6YW3Q2ucgKnTFmdQMkWkzMdSA2Ly3Z7+pqPQYQeCiPXlNZfdQWtwp4IbR6XWYUt+049Lx/tLsWhrDNhNw8oRbt5VWQHm/Km8dswCb19fgO8xTFEUphjl+l45NIDWm/Ui1DE8c5TRvg9kG4+sjD71DN959k0zBgzVM/Y//Rlu+jBwIIIa76oMszxdDsauy8ti8X3Hm2jbImzZ00v55iEMsVGoTa6nZ3/C61ghCAV7IEA1B5r1BtQE7D0rjRIlbn+MhId2rrjYg60wfZ77StB2vE/JAJa9zd56/bO/un787mbVWRTV0YjzLoal0kwG6GK5cO5PdvmarTM2ZBTtJ1y+TlUedB+2mN2nnE0aAYPMAGRUPbwCBv8aXCM38RZnHNOvH4abjQXDercRQtT7R8Bs6kzbrxBKaOt0oZFZhAU+4erZn1H58d6XscEbv/OF6mwfxx6sufLcxsh4a8EkFOlel7J/heNsg+SAhcc4B5SATaBvkWJbNDuuayw62VZLtkkCarhyk7+ouCHtOBdFWBhtEapt7gsN1T7t1zP5LtdI6nrJQwgBQlNZMKZFj/TfEMueDHacHzeqZJ6cse4/XQUPT4WhCeE9GggvMlEkgbWd3MPI+MyM8toxoW88=
+  on:
+    tags: true
     repo: daniellenguyen/higlass-multivec
