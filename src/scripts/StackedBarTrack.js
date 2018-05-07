@@ -51,7 +51,7 @@ const StackedBarTrack = (HGC, ...args) => {
         graphics.addChild(sprite);
       }
 
-      //this.makeMouseOverData(tile);
+      this.makeMouseOverData(tile);
     }
 
     /**
@@ -342,54 +342,52 @@ const StackedBarTrack = (HGC, ...args) => {
     }
 
     getMouseOverHtml(trackX, trackY) {
-      return '';
+      if (!this.tilesetInfo)
+        return '';
 
-      // if (!this.tilesetInfo)
-      //   return '';
-      //
-      // const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
-      //
-      // const zoomLevel = this.calculateZoomLevel();
-      // const tileWidth = tileProxy.calculateTileWidth(this.tilesetInfo, zoomLevel, this.tilesetInfo.tile_size);
-      //
-      // // the position of the tile containing the query position
-      // const tilePos = this._xScale.invert(trackX) / tileWidth;
-      //
-      // const posInTileX = Math.floor(this.tilesetInfo.tile_size * (tilePos - Math.floor(tilePos)));
-      //
-      // const tileId = this.tileToLocalId([zoomLevel, Math.floor(tilePos)]);
-      // const fetchedTile = this.fetchedTiles[tileId];
-      //
-      // if (!fetchedTile)
-      //   return '';
-      //
-      // const matrixRow = fetchedTile.matrix[posInTileX];
-      // const row = fetchedTile.mouseOverData[posInTileX];
-      //
-      // // use color to map back to the array index for correct data
-      // const colorScaleMap = {};
-      // for (let i = 0; i < colorScale.length; i++) {
-      //   colorScaleMap[colorScale[i]] = i;
-      // }
-      //
+      const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
+
+      const zoomLevel = this.calculateZoomLevel();
+      const tileWidth = tileProxy.calculateTileWidth(this.tilesetInfo, zoomLevel, this.tilesetInfo.tile_size);
+
+      // the position of the tile containing the query position
+      const tilePos = this._xScale.invert(trackX) / tileWidth;
+
+      const posInTileX = Math.floor(this.tilesetInfo.tile_size * (tilePos - Math.floor(tilePos)));
+
+      const tileId = this.tileToLocalId([zoomLevel, Math.floor(tilePos)]);
+      const fetchedTile = this.fetchedTiles[tileId];
+
+      if (!fetchedTile)
+        return '';
+
+      const matrixRow = fetchedTile.matrix[posInTileX];
+      const row = fetchedTile.mouseOverData[posInTileX];
+
+      // use color to map back to the array index for correct data
+      const colorScaleMap = {};
+      for (let i = 0; i < colorScale.length; i++) {
+        colorScaleMap[colorScale[i]] = i;
+      }
+
       // // if mousing over a blank area
-      // if (trackY < row[0].y || trackY >= (row[row.length - 1].y + row[row.length - 1].height)) {
-      //   return '';
-      // }
-      // else {
-      //   for (let i = 0; i < row.length; i++) {
-      //     if (trackY > row[i].y && trackY <= (row[i].y + row[i].height)) {
-      //       const color = row[i].color;
-      //       const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
-      //       const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
-      //
-      //       return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
-      //       style="fill:${color};stroke:black;stroke-width:2;"></svg>`
-      //         + ` ${type}` + `<br>` + `${value}`;
-      //
-      //     }
-      //   }
-      // }
+      if (trackY < row[0].y || trackY >= (row[row.length - 1].y + row[row.length - 1].height)) {
+        return '';
+      }
+      else {
+        for (let i = 0; i < row.length; i++) {
+          if (trackY > row[i].y && trackY <= (row[i].y + row[i].height)) {
+            const color = row[i].color;
+            const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
+            const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
+
+            return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
+            style="fill:${color};stroke:black;stroke-width:2;"></svg>`
+              + ` ${type}` + `<br>` + `${value}`;
+
+          }
+        }
+      }
 
     }
   }
