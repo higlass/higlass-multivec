@@ -154,21 +154,10 @@ const StackedBarTrack = (HGC, ...args) => {
 
       let start = null;
       let lowestY = this.dimensions[1];
-      //
-      // const widthScale = scaleLinear()
-      //   .domain([this._xScale(tileX), this._xScale(tileX + tileWidth)])
-      //   .range([0, 16]);// todo if we put width through this, it increases instead of decreasing like we want
 
-      const widthScale = scaleLinear()
-        .domain([this._xScale(tileX),  this._xScale(tileX + tileWidth)])
-        .range([0, 8190]);
-
-      const width = this._xScale(tileX + (tileWidth / this.tilesetInfo.tile_size)) - this._xScale(tileX);
-
-      console.log(tile.tileId, 'width', this._xScale(tileX + (tileWidth / this.tilesetInfo.tile_size)) - this._xScale(tileX));
-      console.log(tile.tileId, 'widthScale', width);
+      const width = 1;
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
-        const x = this._xScale(tileX + (j * tileWidth / this.tilesetInfo.tile_size));
+        const x = j;//this._xScale(tileX + (j * tileWidth / this.tilesetInfo.tile_size));
         if (j == 0)
           start = x;
 
@@ -182,70 +171,56 @@ const StackedBarTrack = (HGC, ...args) => {
           const height = valueToPixelsPositive(positive[i].value);
           const y = positiveTrackHeight - (positiveStackedHeight + height);
           this.addSVGInfo(tile, x, y, width, height, positive[i].color);
-          //if(j === 100 || j === 103 ){//|| j === 105) {
-            graphics.beginFill(this.colorHexMap[positive[i].color]);
-           // graphics.lineStyle(1, this.colorHexMap[positive[i].color], 1);
-           //console.log('x:', x, 'y:', y, 'width:', width, 'height:', height);
-            graphics.drawRect(x, y, width, height);
-          //}
+          graphics.beginFill(this.colorHexMap[positive[i].color]);
+
+          graphics.drawRect(x, y, width, height);
           positiveStackedHeight = positiveStackedHeight + height;
 
           if (lowestY > y)
             lowestY = y;
         }
-        positiveStackedHeight = 0;
-        // draw negative values
-        // const negative = matrix[j][1];
-        // const valueToPixelsNegative = scaleLinear()
-        //   .domain([-Math.abs(negativeMax), 0])
-        //   .range([negativeTrackHeight, 0]);
-        // let negativeStackedHeight = 0;
-        // for (let i = 0; i < negative.length; i++) {
-        //   const height = valueToPixelsNegative(negative[i].value);
-        //   const y = positiveTrackHeight + negativeStackedHeight;
-        //   this.addSVGInfo(tile, x, y, width, height, negative[i].color);
-        //   graphics.beginFill(this.colorHexMap[negative[i].color]);
-        //   //graphics.lineStyle(1, this.colorHexMap[negative[i].color], 1);
-        //
-        //    //console.log('x:', x, 'y:', y, 'width:', width, 'height:', height);
-        //
-        //   graphics.drawRect(x, y, width, height);
-        //   negativeStackedHeight = negativeStackedHeight + height;
-        //
-        // }
+        //draw negative values
+        const negative = matrix[j][1];
+        const valueToPixelsNegative = scaleLinear()
+          .domain([-Math.abs(negativeMax), 0])
+          .range([negativeTrackHeight, 0]);
+        let negativeStackedHeight = 0;
+        for (let i = 0; i < negative.length; i++) {
+          const height = valueToPixelsNegative(negative[i].value);
+          const y = positiveTrackHeight + negativeStackedHeight;
+          this.addSVGInfo(tile, x, y, width, height, negative[i].color);
+          graphics.beginFill(this.colorHexMap[negative[i].color]);
 
-        // // sets background to black if black option enabled
-        // const backgroundColor = this.options.backgroundColor;
-        // if (backgroundColor === 'black') {
-        //   this.options.labelColor = 'white';
-        //   graphics.beginFill(backgroundColor);
-        //   graphics.drawRect(x, 0, width, trackHeight - positiveStackedHeight); // positive background
-        //   graphics.drawRect(x, negativeStackedHeight + positiveTrackHeight,    // negative background
-        //     width, negativeTrackHeight - negativeStackedHeight);
-        //
-        //   this.addSVGInfo(tile, x, 0, width, trackHeight - positiveStackedHeight, 'black'); // positive
-        //   this.addSVGInfo(tile, x, negativeStackedHeight + positiveTrackHeight, width,
-        //     negativeTrackHeight - negativeStackedHeight, 'black'); // negative
-        //
-        //   positiveStackedHeight = 0;
-        //   negativeStackedHeight = 0;
-        // }
+          graphics.drawRect(x, y, width, height);
+          negativeStackedHeight = negativeStackedHeight + height;
+
+        }
+
+        // sets background to black if black option enabled
+        const backgroundColor = this.options.backgroundColor;
+        if (backgroundColor === 'black') {
+          this.options.labelColor = 'white';
+          graphics.beginFill(backgroundColor);
+          graphics.drawRect(x, 0, width, trackHeight - positiveStackedHeight); // positive background
+          graphics.drawRect(x, negativeStackedHeight + positiveTrackHeight,    // negative background
+            width, negativeTrackHeight - negativeStackedHeight);
+
+          this.addSVGInfo(tile, x, 0, width, trackHeight - positiveStackedHeight, 'black'); // positive
+          this.addSVGInfo(tile, x, negativeStackedHeight + positiveTrackHeight, width,
+            negativeTrackHeight - negativeStackedHeight, 'black'); // negative
+
+          positiveStackedHeight = 0;
+          negativeStackedHeight = 0;
+        }
 
       }
-      // graphics.beginFill(0xff0000);
-      // graphics.drawRect(100, 100, 100, 100);
-      // graphics.beginFill(0x479b12);
-      // graphics.drawRect(200, 100, 100, 100);
-      const tex = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
-      //tex.scaleMode = ;
-      //console.log('scaleMode:', tex.scaleMode);
 
-      const sprite = new PIXI.Sprite(tex);
+      const texture = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
+
+      const sprite = new PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
       sprite.y = lowestY;
-      // sprite.x = 100;
-      // sprite.y = 100;
 
       return sprite;
     }
