@@ -46,9 +46,13 @@ const StackedBarTrack = (HGC, ...args) => {
       const matrix = this.unFlatten(tile);
 
       if (this.options.scaledHeight === true) {
-        this.drawNormalizedBars(graphics, this.scaleMatrix(this.mapOriginalColors(matrix)), tileX, tileWidth, tile);
+        console.log('normalized');
+        const sprite = this.drawNormalizedBars(this.scaleMatrix(this.mapOriginalColors(matrix)),
+          tileX, tileWidth, tile);
+        graphics.addChild(sprite);
       }
       else {
+        console.log('vertical');
         const sprite = this.drawVerticalBars(this.mapOriginalColors(matrix),
           tileX, tileWidth, this.maxAndMin.max, this.maxAndMin.min, tile);
         graphics.addChild(sprite);
@@ -162,8 +166,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
-        if (j == 0)
-          start = x;
+        (j === 0) ? start = x : start;
 
         // draw positive values
         const positive = matrix[j][0];
@@ -182,6 +185,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
           if (lowestY > y)
             lowestY = y;
+          // todo is lowesty really the right thing to use? why not my precalculated heights?
         }
         //draw negative values
         const negative = matrix[j][1];
@@ -198,6 +202,7 @@ const StackedBarTrack = (HGC, ...args) => {
           graphics.drawRect(x, y, width, height);
           negativeStackedHeight = negativeStackedHeight + height;
 
+          // todo negatives is going offscreen at the bottom. fix
         }
 
         // sets background to black if black option enabled
@@ -238,17 +243,21 @@ const StackedBarTrack = (HGC, ...args) => {
      * @param tileWidth pre-scaled width of tile
      * @param tile
      */
-    drawNormalizedBars(graphics, matrix, tileX, tileWidth, tile) {
+    drawNormalizedBars(matrix, tileX, tileWidth, tile) {
       const trackHeight = this.dimensions[1];
+      let graphics = new PIXI.Graphics();
+      let start = null;
+      let lowestY = this.dimensions[1];
 
-      if (this.options.barBorder) {
-        graphics.lineStyle(0.1, 'black', 1);
-        tile.barBorders = true;
-      }
+      // if (this.options.barBorder) {
+      //   graphics.lineStyle(0.1, 'black', 1);
+      //   tile.barBorders = true;
+      // }
 
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
-        const x = this._xScale(tileX + (j * tileWidth / this.tilesetInfo.tile_size));
-        const width = this._xScale(tileX + (tileWidth / this.tilesetInfo.tile_size)) - this._xScale(tileX);
+        const x = j;//this._xScale(tileX + (j * tileWidth / this.tilesetInfo.tile_size));
+        const width = 1;//this._xScale(tileX + (tileWidth / this.tilesetInfo.tile_size)) - this._xScale(tileX);
+        (j === 0) ? start = x : start;
         // positives
         const valueToPixelsPositive = scaleLinear()
           .domain([0, 1])
@@ -262,6 +271,8 @@ const StackedBarTrack = (HGC, ...args) => {
           graphics.beginFill(this.colorHexMap[color], 1);
           graphics.drawRect(x, y, width, height);
           positiveStackedHeight = positiveStackedHeight + height;
+          if (lowestY > y)
+            lowestY = y;
         }
         positiveStackedHeight = 0;
 
@@ -281,6 +292,15 @@ const StackedBarTrack = (HGC, ...args) => {
         }
         negativeStackedHeight = 0;
       }
+
+      const texture = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
+
+      const sprite = new PIXI.Sprite(texture);
+      sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
+      sprite.x = this._xScale(tileX);
+      sprite.y = lowestY;
+
+      return sprite;
     }
 
     /**
