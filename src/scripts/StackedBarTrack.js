@@ -155,10 +155,10 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const width = 10;
 
-      if (this.options.barBorder) {
-        graphics.lineStyle(width / 10, 0x000000, 1, 1);
-        //tile.barBorders = true;
-      }
+      // if (this.options.barBorder && tile.tileData.zoomLevel === (this.tilesetInfo.resolutions.length - 1)) {
+      //   graphics.lineStyle(width / 10, 0x000000, 1, 1);
+      //   //tile.barBorders = true;
+      // }
 
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
@@ -225,9 +225,6 @@ const StackedBarTrack = (HGC, ...args) => {
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
       sprite.y = lowestY;
-      // sprite.y = 80;
-      // sprite.x = 100;
-
 
       return sprite;
     }
@@ -245,7 +242,7 @@ const StackedBarTrack = (HGC, ...args) => {
       const trackHeight = this.dimensions[1];
 
       if (this.options.barBorder) {
-        graphics.lineStyle(0.2, 'black', 1);
+        graphics.lineStyle(0.1, 'black', 1);
         tile.barBorders = true;
       }
 
