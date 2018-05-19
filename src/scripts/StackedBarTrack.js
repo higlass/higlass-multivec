@@ -378,7 +378,7 @@ const StackedBarTrack = (HGC, ...args) => {
 // default
 StackedBarTrack.config = {
   type: 'horizontal-stacked-bar',
-  datatype: ['multivec'],
+  datatype: ['multivec', 'epilogos'],
   local: false,
   orientation: '1d-horizontal',
   thumbnail: null,
@@ -414,6 +414,11 @@ StackedBarTrack.config = {
       "#C0C0C0",
       "#FFFFFF"
     ],
+  },
+  otherOptions: {
+    'epilogos': {
+      scaledHeight: false,
+    }
   }
 };
 
