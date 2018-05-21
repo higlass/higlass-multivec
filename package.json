@@ -1,8 +1,8 @@
 {
   "name": "higlass-multivec",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "Multivec Tracks for HiGlass",
-  "private": true,
+  "private": false,
   "author": "Danielle Nguyen",
   "license": "MIT",
   "contributors": [
