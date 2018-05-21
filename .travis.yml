@@ -13,13 +13,14 @@ before_deploy:
 deploy:
   - provider: releases
     skip_cleanup: true
+    email: pkerpedjiev@gmail.com
     api_key:
-      secure: ekGNVJaYP3u6Rf885V95YNuKMIW0X0jWanqfynwOz8UOcjOhi1VF/pUti6ErFb51Z59s1HH14RnHEh4/7iw1+4MTsiu7emTIDhFlsyq9CpDBWynk8RcKxgG81KBSXn1y2XKV1wBw5MozZg7shgiMh12AJC8Y1XcR9pk2kgc+Vqe/5WMk5Bou5wwB2PuntqW3uv66OLLSyQin5joHhTZWwtmRdNmjoC4JrRqNfvP1yw1ZcJ6E9QzljaUpXktpjBecx86i1p4qu5Jw0BymlasZD5YZGhpA06eyMG2iTALX4S+APvU6QvGdG/4r+gd9QwrpaAVyjRvdeeDoRRMmTg9Qjk60aNx8CSGmd+vBXV6JIa7tLY/mRFSJ9g2ifPzLjjKUfQoE8UX+55jZGPhob5yRuuuUTMOHf+ykPbJJmNkBN4QcGpStdV8D6bljP/JHlJVzD/gjYHQ/aNYMbeoPeeW2xhmf+TH43Kb59MgyMzXbRpkMjlUQN0Pau8T+UYSRuIrgfnxyO2fmcqEhMR9kJ7HbNXlC9mW+omqbzKz27OcMdto2UsPwZqxiE6BLc/Ru+KUr2RQB2RginfSbQklvE4aSsTEIpxrgaRkzJoiUn8etqr1VjKOKnGdaXJ5vTGk0i9p3dAq6bUv57kEy1MYsuG02jyvqKtM4mFkyr9/JU6wF2z8=
+      secure: qVTt8MMZAOtabn3nQJak/biBdtqjdE8VnCrh9qrTIZRbDWUncLMLP0gVuWoTEo6YBsA9joVTvd+qb0RjOA0SSwKDgcAO3aTLFjfmUUqtY7PtyQ/LvyYGDbcbneN2hEFFumaTbrCyue4R1XUQsK+U8/GJ1RUGI9AQpio6vWcy/g+Dvy8luFvbR2cJtMj+2Jt4fEdx/a4tVO66Tz5uhtAB+P8UJOhGN8+NRqnQ+IJRhudOzJi/nXnTvLjt+CwozJIM8ARQjEtf+RwEY+VD82Uz38J++PkHzfSwlJ9ZOYNGpj6y0bAo4FEdsjSDH0VCrOwgY+VBtyDocGnDgCyXrQV1qS8rdX5qiiuhKnchOODCd3HDE+2NUpCNreV0fMoZ7cfRAUIoTv2KnCijg0u1PPpMxGYmtrvRN17XfOjM0BV8kvybeBsWr1LprRNUEN29sYsHieWudo6F3K5xuT2q8ewdDtcWNgRfq1qUweHDZEwD3cXYWjUoS5sxOOfhfrJ/HDmj19ss4olxMODG5vdY5meId9IoszLsrtbRbTcLSgU9gz7tbaHKjpQwqlwb4YxOjapNctefgG5kyeMSwcdMRK6Jh5kZip5+drsT4+OFx6Z28RJ9B73bGqnRvrLqoa933Lcj65bMjXLx/mAx6G+6yV5ipKPP0awhMUIiTCLzB/RXkk8=
     file: dist.zip
     on:
       tags: true
-      repo: hms-dbmi/higlass-multivec
       branch: master
+      repo: hms-dbmi/higlass-multivec
   - provider: npm
     skip_cleanup: true
     email: pkerpedjiev@gmail.com
@@ -29,4 +30,3 @@ deploy:
       tags: true
       branch: master
       repo: hms-dbmi/higlass-multivec
-
