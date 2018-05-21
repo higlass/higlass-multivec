@@ -34,8 +34,6 @@ const StackedBarTrack = (HGC, ...args) => {
       for (var i = graphics.children.length - 1; i >= 0; i--) {
         graphics.removeChild(graphics.children[i]);
       }
-      ;
-
       // graphics.clear();
       tile.drawnAtScale = this._xScale.copy();
 
@@ -46,15 +44,15 @@ const StackedBarTrack = (HGC, ...args) => {
       const matrix = this.unFlatten(tile);
 
       if (this.options.scaledHeight === true) {
-        console.log('normalized');
         const sprite = this.drawNormalizedBars(this.scaleMatrix(this.mapOriginalColors(matrix)),
           tileX, tileWidth, tile);
+        tile.tileData.sprite = sprite;
         graphics.addChild(sprite);
       }
       else {
-        console.log('vertical');
         const sprite = this.drawVerticalBars(this.mapOriginalColors(matrix),
           tileX, tileWidth, this.maxAndMin.max, this.maxAndMin.min, tile);
+        tile.tileData.sprite = sprite;
         graphics.addChild(sprite);
       }
 
@@ -154,14 +152,18 @@ const StackedBarTrack = (HGC, ...args) => {
       const positiveTrackHeight = (positiveMax * trackHeight) / unscaledHeight;
       const negativeTrackHeight = (negativeMax * trackHeight) / unscaledHeight;
 
+      // console.log('positiveMax', positiveMax);
+      // console.log('negativeMax', negativeMax);
+      // console.log('-------------------');
+
       let start = null;
       let lowestY = this.dimensions[1];
 
       const width = 10;
 
       // if (this.options.barBorder && tile.tileData.zoomLevel === (this.tilesetInfo.resolutions.length - 1)) {
-      //   graphics.lineStyle(width / 10, 0x000000, 1, 1);
       //   //tile.barBorders = true;
+      //graphics.lineStyle(1, 0x000000, 1);
       // }
 
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
