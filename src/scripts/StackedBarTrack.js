@@ -56,7 +56,7 @@ const StackedBarTrack = (HGC, ...args) => {
         graphics.addChild(sprite);
       }
 
-      //this.makeMouseOverData(tile);
+      this.makeMouseOverData(tile);
     }
 
     /**
@@ -183,6 +183,8 @@ const StackedBarTrack = (HGC, ...args) => {
           graphics.beginFill(this.colorHexMap[positive[i].color]);
 
           graphics.drawRect(x, y, width, height);
+
+
           positiveStackedHeight = positiveStackedHeight + height;
 
           if (lowestY > y)
@@ -207,22 +209,22 @@ const StackedBarTrack = (HGC, ...args) => {
           // todo negatives is going offscreen at the bottom. fix
         }
 
-        // sets background to black if black option enabled
-        const backgroundColor = this.options.backgroundColor;
-        if (backgroundColor === 'black') {
-          this.options.labelColor = 'white';
-          graphics.beginFill(backgroundColor);
-          graphics.drawRect(x, 0, width, trackHeight - positiveStackedHeight); // positive background
-          graphics.drawRect(x, negativeStackedHeight + positiveTrackHeight,    // negative background
-            width, negativeTrackHeight - negativeStackedHeight);
-
-          this.addSVGInfo(tile, x, 0, width, trackHeight - positiveStackedHeight, 'black'); // positive
-          this.addSVGInfo(tile, x, negativeStackedHeight + positiveTrackHeight, width,
-            negativeTrackHeight - negativeStackedHeight, 'black'); // negative
-
-          positiveStackedHeight = 0;
-          negativeStackedHeight = 0;
-        }
+        // // sets background to black if black option enabled
+        // const backgroundColor = this.options.backgroundColor;
+        // if (backgroundColor === 'black') {
+        //   this.options.labelColor = 'white';
+        //   graphics.beginFill(backgroundColor);
+        //   graphics.drawRect(x, 0, width, trackHeight - positiveStackedHeight); // positive background
+        //   graphics.drawRect(x, negativeStackedHeight + positiveTrackHeight,    // negative background
+        //     width, negativeTrackHeight - negativeStackedHeight);
+        //
+        //   this.addSVGInfo(tile, x, 0, width, trackHeight - positiveStackedHeight, 'black'); // positive
+        //   this.addSVGInfo(tile, x, negativeStackedHeight + positiveTrackHeight, width,
+        //     negativeTrackHeight - negativeStackedHeight, 'black'); // negative
+        //
+        //   positiveStackedHeight = 0;
+        //   negativeStackedHeight = 0;
+        // }
 
       }
 
@@ -339,6 +341,11 @@ const StackedBarTrack = (HGC, ...args) => {
       super.draw();
     }
 
+    /**
+     * Sorts relevant data for mouseover for easy iteration later
+     *
+     * @param tile
+     */
     makeMouseOverData(tile) {
       const shapeX = tile.tileData.shape[0]; // 15 number of different nucleotides in each bar
       const shapeY = tile.tileData.shape[1]; // 3840 number of bars
@@ -368,6 +375,13 @@ const StackedBarTrack = (HGC, ...args) => {
 
     }
 
+    /**
+     * Shows value and type for each bar
+     *
+     * @param trackX x coordinate of mouse
+     * @param trackY y coordinate of mouse
+     * @returns string with embedded values and svg square for color
+     */
     getMouseOverHtml(trackX, trackY) {
       return '';
       if (!this.tilesetInfo)
