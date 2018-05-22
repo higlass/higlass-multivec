@@ -231,7 +231,8 @@ const StackedBarTrack = (HGC, ...args) => {
       const sprite = new PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
-      sprite.y = lowestY;
+      (tile.tileData.spriteY) ? sprite.y = tile.tileData.spriteY : sprite.y = lowestY;
+      (tile.tileData.spriteHeight) ? sprite.height = tile.tileData.spriteHeight : sprite.height;
 
       return sprite;
     }
