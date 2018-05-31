@@ -1,7 +1,7 @@
 import {mix} from 'mixwith';
 import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
 
-const StackedBarTrack = (HGC, ...args) => {
+const ScaledStackedBarTrack = (HGC, ...args) => {
   if (!new.target) {
     throw new Error(
       'Uncaught TypeError: Class constructor cannot be invoked without "new"',
@@ -11,7 +11,7 @@ const StackedBarTrack = (HGC, ...args) => {
   // Services
   const {tileProxy} = HGC.services;
 
-  class StackedBarTrackClass extends mix(HGC.tracks.BarTrack).with(HGC.tracks.OneDimensionalMixin) {
+  class ScaledStackedBarTrackClass extends mix(HGC.tracks.BarTrack).with(HGC.tracks.OneDimensionalMixin) {
     constructor(scene, trackConfig, dataConfig, handleTilesetInfoReceived, animate, onValueScaleChanged) {
       super(scene, dataConfig, handleTilesetInfoReceived, trackConfig.options, animate, onValueScaleChanged);
 
@@ -43,34 +43,18 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const matrix = this.unFlatten(tile);
 
-        const sprite = this.drawVerticalBars(this.mapOriginalColors(matrix),
-          tileX, tileWidth, this.maxAndMin.max, this.maxAndMin.min, tile);
-        tile.sprite = sprite;
-        graphics.addChild(sprite);
+      const sprite = this.drawNormalizedBars(this.scaleMatrix(this.mapOriginalColors(matrix)), tileX, tileWidth, tile);
+      graphics.addChild(sprite);
 
       this.makeMouseOverData(tile);
     }
 
     rescaleTiles() {
       const visibleAndFetched = this.visibleAndFetchedTiles();
-
       visibleAndFetched.map(a => {
-        //console.log('b:', a.spriteHeight, a.sprite && a.sprite.height);
-
-        const valueToPixels = scaleLinear()
-          .domain([0, this.maxAndMin.max + this.maxAndMin.min])
-          .range([0, this.dimensions[1]]);
-        const newZero = this.dimensions[1] - valueToPixels(this.maxAndMin.min);
-        const height = valueToPixels(a.minValue + a.maxValue);
-        const sprite = a.sprite;
-        const y = newZero - valueToPixels(a.maxValue);
-        if (sprite) {
-          sprite.height = height;
-          sprite.y = y;
-        }
-        else {
-          a.spriteHeight = height;
-          a.spriteY = y;
+        if(a.sprite) {
+          a.sprite.height = this.dimensions[1];
+          a.sprite.y = 0;
         }
       });
     }
@@ -149,113 +133,6 @@ const StackedBarTrack = (HGC, ...args) => {
     }
 
     /**
-     * Draws graph without normalizing values.
-     *
-     * @param graphics PIXI.Graphics instance
-     * @param matrix 2d array of numbers representing nucleotides
-     * @param tileX starting position of tile
-     * @param tileWidth pre-scaled width of tile
-     * @param positiveMax the height of the tallest bar in the positive part of the graph
-     * @param negativeMax the height of the tallest bar in the negative part of the graph
-     * @param tile
-     */
-    drawVerticalBars(matrix, tileX, tileWidth, positiveMax, negativeMax, tile) {
-      let graphics = new PIXI.Graphics();
-      const trackHeight = this.dimensions[1];
-
-      // get amount of trackHeight reserved for positive and for negative
-      const unscaledHeight = positiveMax + negativeMax;
-      const positiveTrackHeight = (positiveMax * trackHeight) / unscaledHeight;
-      const negativeTrackHeight = (negativeMax * trackHeight) / unscaledHeight;
-
-      // console.log('positiveMax', positiveMax);
-      // console.log('negativeMax', negativeMax);
-      // console.log('-------------------');
-
-      let start = null;
-      let lowestY = this.dimensions[1];
-
-      const width = 10;
-
-      // if (this.options.barBorder && tile.tileData.zoomLevel === (this.tilesetInfo.resolutions.length - 1)) {
-      //   //tile.barBorders = true;
-      //graphics.lineStyle(1, 0x000000, 1);
-      // }
-
-      for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
-        const x = (j * width);
-        (j === 0) ? start = x : start;
-
-        // draw positive values
-        const positive = matrix[j][0];
-        const valueToPixelsPositive = scaleLinear()
-          .domain([0, positiveMax])
-          .range([0, positiveTrackHeight]);
-        let positiveStackedHeight = 0;
-        for (let i = 0; i < positive.length; i++) {
-          const height = valueToPixelsPositive(positive[i].value);
-          const y = positiveTrackHeight - (positiveStackedHeight + height);
-          this.addSVGInfo(tile, x, y, width, height, positive[i].color);
-          graphics.beginFill(this.colorHexMap[positive[i].color]);
-
-          graphics.drawRect(x, y, width, height);
-
-
-          positiveStackedHeight = positiveStackedHeight + height;
-
-          if (lowestY > y)
-            lowestY = y;
-          // todo is lowesty really the right thing to use? why not my precalculated heights?
-        }
-        //draw negative values
-        const negative = matrix[j][1];
-        const valueToPixelsNegative = scaleLinear()
-          .domain([-Math.abs(negativeMax), 0])
-          .range([negativeTrackHeight, 0]);
-        let negativeStackedHeight = 0;
-        for (let i = 0; i < negative.length; i++) {
-          const height = valueToPixelsNegative(negative[i].value);
-          const y = positiveTrackHeight + negativeStackedHeight;
-          this.addSVGInfo(tile, x, y, width, height, negative[i].color);
-          graphics.beginFill(this.colorHexMap[negative[i].color]);
-
-          graphics.drawRect(x, y, width, height);
-          negativeStackedHeight = negativeStackedHeight + height;
-
-          // todo negatives is going offscreen at the bottom. fix
-        }
-
-        // // sets background to black if black option enabled
-        // const backgroundColor = this.options.backgroundColor;
-        // if (backgroundColor === 'black') {
-        //   this.options.labelColor = 'white';
-        //   graphics.beginFill(backgroundColor);
-        //   graphics.drawRect(x, 0, width, trackHeight - positiveStackedHeight); // positive background
-        //   graphics.drawRect(x, negativeStackedHeight + positiveTrackHeight,    // negative background
-        //     width, negativeTrackHeight - negativeStackedHeight);
-        //
-        //   this.addSVGInfo(tile, x, 0, width, trackHeight - positiveStackedHeight, 'black'); // positive
-        //   this.addSVGInfo(tile, x, negativeStackedHeight + positiveTrackHeight, width,
-        //     negativeTrackHeight - negativeStackedHeight, 'black'); // negative
-        //
-        //   positiveStackedHeight = 0;
-        //   negativeStackedHeight = 0;
-        // }
-
-      }
-
-      const texture = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
-
-      const sprite = new PIXI.Sprite(texture);
-      sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
-      sprite.x = this._xScale(tileX);
-      // sprite.height = tile.spriteHeight;
-      // sprite.y = tile.spriteY;
-
-      return sprite;
-    }
-
-    /**
      * Draws graph using normalized values.
      *
      * @param graphics PIXI.Graphics instance
@@ -319,8 +196,8 @@ const StackedBarTrack = (HGC, ...args) => {
       const sprite = new PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
-      sprite.y = 0;//lowestY;
-      sprite.height = this.dimensions[1];
+      //sprite.y = lowestY;
+      tile.sprite = sprite;
 
       return sprite;
     }
@@ -450,14 +327,14 @@ const StackedBarTrack = (HGC, ...args) => {
 
     }
   }
-  return new StackedBarTrackClass(...args);
+  return new ScaledStackedBarTrackClass(...args);
 };
 
 const icon = '<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="564px" height="542px" viewBox="0 0 5640 5420" preserveAspectRatio="xMidYMid meet"> <g id="layer101" fill="#000000" stroke="none"> <path d="M0 2710 l0 -2710 2820 0 2820 0 0 2710 0 2710 -2820 0 -2820 0 0 -2710z"/> </g> <g id="layer102" fill="#750075" stroke="none"> <path d="M200 4480 l0 -740 630 0 630 0 0 740 0 740 -630 0 -630 0 0 -740z"/> <path d="M1660 4420 l0 -800 570 0 570 0 0 800 0 800 -570 0 -570 0 0 -800z"/> <path d="M3000 3450 l0 -1770 570 0 570 0 0 1770 0 1770 -570 0 -570 0 0 -1770z"/> <path d="M4340 2710 l0 -2510 560 0 560 0 0 2510 0 2510 -560 0 -560 0 0 -2510z"/> <path d="M200 1870 l0 -1670 630 0 630 0 0 1670 0 1670 -630 0 -630 0 0 -1670z"/> <path d="M1660 1810 l0 -1610 570 0 570 0 0 1610 0 1610 -570 0 -570 0 0 -1610z"/> <path d="M3000 840 l0 -640 570 0 570 0 0 640 0 640 -570 0 -570 0 0 -640z"/> </g> <g id="layer103" fill="#ffff04" stroke="none"> <path d="M200 4480 l0 -740 630 0 630 0 0 740 0 740 -630 0 -630 0 0 -740z"/> <path d="M1660 4420 l0 -800 570 0 570 0 0 800 0 800 -570 0 -570 0 0 -800z"/> <path d="M3000 3450 l0 -1770 570 0 570 0 0 1770 0 1770 -570 0 -570 0 0 -1770z"/> </g> </svg>';
 
 // default
-StackedBarTrack.config = {
-  type: 'horizontal-stacked-bar',
+ScaledStackedBarTrack.config = {
+  type: 'scaled-horizontal-stacked-bar',
   datatype: ['multivec'],
   local: false,
   orientation: '1d-horizontal',
@@ -497,4 +374,4 @@ StackedBarTrack.config = {
 };
 
 
-export default StackedBarTrack;
+export default ScaledStackedBarTrack;
