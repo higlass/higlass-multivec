@@ -43,20 +43,20 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const matrix = this.unFlatten(tile);
 
-        const sprite = this.drawVerticalBars(this.mapOriginalColors(matrix),
-          tileX, tileWidth, this.maxAndMin.max, this.maxAndMin.min, tile);
-        tile.sprite = sprite;
-        graphics.addChild(sprite);
+      this.drawVerticalBars(this.mapOriginalColors(matrix), tileX, tileWidth,
+        this.maxAndMin.max, this.maxAndMin.min, tile);
+      graphics.addChild(tile.sprite);
 
       this.makeMouseOverData(tile);
     }
 
+    /**
+     * Rescales the sprites of all visible tiles when zooming and panning.
+     */
     rescaleTiles() {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       visibleAndFetched.map(a => {
-        //console.log('b:', a.spriteHeight, a.sprite && a.sprite.height);
-
         const valueToPixels = scaleLinear()
           .domain([0, this.maxAndMin.max + this.maxAndMin.min])
           .range([0, this.dimensions[1]]);
@@ -67,10 +67,6 @@ const StackedBarTrack = (HGC, ...args) => {
         if (sprite) {
           sprite.height = height;
           sprite.y = y;
-        }
-        else {
-          a.spriteHeight = height;
-          a.spriteY = y;
         }
       });
     }
@@ -243,16 +239,11 @@ const StackedBarTrack = (HGC, ...args) => {
         // }
 
       }
-
       const texture = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
-
       const sprite = new PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
-      // sprite.height = tile.spriteHeight;
-      // sprite.y = tile.spriteY;
-
-      return sprite;
+      tile.sprite = sprite;
     }
 
     /**
