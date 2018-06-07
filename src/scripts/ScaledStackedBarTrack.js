@@ -276,7 +276,6 @@ const ScaledStackedBarTrack = (HGC, ...args) => {
      * @returns string with embedded values and svg square for color
      */
     getMouseOverHtml(trackX, trackY) {
-      return '';
       if (!this.tilesetInfo)
         return '';
 

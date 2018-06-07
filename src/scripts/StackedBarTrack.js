@@ -72,32 +72,6 @@ const StackedBarTrack = (HGC, ...args) => {
     }
 
     /**
-     * Scales positive and negative values in the given matrix so that they each sum to 1.
-     *
-     * @param matrix call mapOriginalColors on this matrix before calling this function on it.
-     */
-    scaleMatrix(matrix) {
-      for (let i = 0; i < matrix.length; i++) {
-        let positives = matrix[i][0];
-        let negatives = matrix[i][1];
-
-        const positiveArray = positives.map((a) => {
-          return a.value;
-        });
-        const negativeArray = negatives.map((a) => {
-          return a.value;
-        });
-
-        let positiveSum = (positiveArray.length > 0) ? positiveArray.reduce((sum, a) => sum + a) : 0;
-        let negativeSum = (negativeArray.length > 0) ? negativeArray.reduce((sum, a) => sum + a) : 0;
-
-        positives.map((a) => a.value = a.value / positiveSum);
-        negatives.map((a) => a.value = a.value / negativeSum); // these will be positive numbers
-      }
-      return matrix;
-    }
-
-    /**
      * Map each value in every array in the matrix to a color depending on position in the array
      * Divides each array into positive and negative sections and sorts them
      *
@@ -164,10 +138,6 @@ const StackedBarTrack = (HGC, ...args) => {
       const positiveTrackHeight = (positiveMax * trackHeight) / unscaledHeight;
       const negativeTrackHeight = (negativeMax * trackHeight) / unscaledHeight;
 
-      // console.log('positiveMax', positiveMax);
-      // console.log('negativeMax', negativeMax);
-      // console.log('-------------------');
-
       let start = null;
       let lowestY = this.dimensions[1];
 
@@ -193,15 +163,11 @@ const StackedBarTrack = (HGC, ...args) => {
           const y = positiveTrackHeight - (positiveStackedHeight + height);
           this.addSVGInfo(tile, x, y, width, height, positive[i].color);
           graphics.beginFill(this.colorHexMap[positive[i].color]);
-
           graphics.drawRect(x, y, width, height);
-
-
           positiveStackedHeight = positiveStackedHeight + height;
 
           if (lowestY > y)
             lowestY = y;
-          // todo is lowesty really the right thing to use? why not my precalculated heights?
         }
         //draw negative values
         const negative = matrix[j][1];
@@ -214,13 +180,11 @@ const StackedBarTrack = (HGC, ...args) => {
           const y = positiveTrackHeight + negativeStackedHeight;
           this.addSVGInfo(tile, x, y, width, height, negative[i].color);
           graphics.beginFill(this.colorHexMap[negative[i].color]);
-
           graphics.drawRect(x, y, width, height);
           negativeStackedHeight = negativeStackedHeight + height;
-
-          // todo negatives is going offscreen at the bottom. fix
         }
 
+        // todo this background is hacky. try doing it with sprites?
         // // sets background to black if black option enabled
         // const backgroundColor = this.options.backgroundColor;
         // if (backgroundColor === 'black') {
@@ -244,76 +208,6 @@ const StackedBarTrack = (HGC, ...args) => {
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
       tile.sprite = sprite;
-    }
-
-    /**
-     * Draws graph using normalized values.
-     *
-     * @param graphics PIXI.Graphics instance
-     * @param matrix 2d array of numbers representing nucleotides
-     * @param tileX starting position of tile
-     * @param tileWidth pre-scaled width of tile
-     * @param tile
-     */
-    drawNormalizedBars(matrix, tileX, tileWidth, tile) {
-      const trackHeight = this.dimensions[1];
-      let graphics = new PIXI.Graphics();
-      let start = null;
-      let lowestY = this.dimensions[1];
-
-      // if (this.options.barBorder) {
-      //   graphics.lineStyle(0.1, 'black', 1);
-      //   tile.barBorders = true;
-      // }
-
-      for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
-        const x = j;//this._xScale(tileX + (j * tileWidth / this.tilesetInfo.tile_size));
-        const width = 1;//this._xScale(tileX + (tileWidth / this.tilesetInfo.tile_size)) - this._xScale(tileX);
-        (j === 0) ? start = x : start;
-        // positives
-        const valueToPixelsPositive = scaleLinear()
-          .domain([0, 1])
-          .range([0, trackHeight / 2]);
-        let positiveStackedHeight = 0;
-        for (let i = 0; i < matrix[j][0].length; i++) {
-          const height = valueToPixelsPositive(matrix[j][0][i].value);
-          const y = trackHeight / 2 - (positiveStackedHeight + height);
-          const color = matrix[j][0][i].color;
-          this.addSVGInfo(tile, x, y, width, height, color);
-          graphics.beginFill(this.colorHexMap[color], 1);
-          graphics.drawRect(x, y, width, height);
-          positiveStackedHeight = positiveStackedHeight + height;
-          if (lowestY > y)
-            lowestY = y;
-        }
-        positiveStackedHeight = 0;
-
-        // negatives
-        const valueToPixelsNegative = scaleLinear()
-          .domain([0, 1])
-          .range([0, (trackHeight / 2)]);
-        let negativeStackedHeight = 0;
-        for (let i = 0; i < matrix[j][1].length; i++) {
-          const height = valueToPixelsNegative(matrix[j][1][i].value);
-          const y = (trackHeight / 2) + negativeStackedHeight;
-          const color = matrix[j][1][i].color;
-          this.addSVGInfo(tile, x, y, width, height, color);
-          graphics.beginFill(this.colorHexMap[color], 1);
-          graphics.drawRect(x, y, width, height);
-          negativeStackedHeight = negativeStackedHeight + height;
-        }
-        negativeStackedHeight = 0;
-      }
-
-      const texture = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
-
-      const sprite = new PIXI.Sprite(texture);
-      sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
-      sprite.x = this._xScale(tileX);
-      sprite.y = 0;//lowestY;
-      sprite.height = this.dimensions[1];
-
-      return sprite;
     }
 
     /**
@@ -343,6 +237,11 @@ const StackedBarTrack = (HGC, ...args) => {
           barColors: [color]
         };
       }
+    }
+
+    setDimensions(newDimensions) {
+      this.oldDimensions = this.dimensions;
+      super.setDimensions(newDimensions);
     }
 
     draw() {
@@ -391,7 +290,6 @@ const StackedBarTrack = (HGC, ...args) => {
      * @returns string with embedded values and svg square for color
      */
     getMouseOverHtml(trackX, trackY) {
-      return '';
       if (!this.tilesetInfo)
         return '';
 
@@ -412,9 +310,42 @@ const StackedBarTrack = (HGC, ...args) => {
         return '';
 
       const matrixRow = fetchedTile.matrix[posInTileX];
-      const row = fetchedTile.mouseOverData[posInTileX];
-
-      // use color to map back to the array index for correct data
+      let row = fetchedTile.mouseOverData[posInTileX];
+      const scaledRow = row;
+      const yScale = scaleLinear()
+        .domain([0, this.oldDimensions[1]])
+        .range([0, this.dimensions[1]]);
+      for(let i = 0; i < row.length; i++) {
+        let prevUnscaledHeight = null;
+        let prevScaledHeight = null;
+        const currentHeight = yScale(row[i].height);
+        if(i === 0) {
+          scaledRow[i].height = currentHeight;
+          prevUnscaledHeight = row[i].height;
+          prevScaledHeight = currentHeight;
+        }
+        else {
+          if(prevScaledHeight < prevUnscaledHeight) {
+            scaledRow[i].y = scaledRow[i].y - (prevUnscaledHeight - prevScaledHeight);
+            scaledRow[i].height = currentHeight;
+            prevUnscaledHeight = row[i - 1].height;
+            prevScaledHeight = scaledRow[i - 1].height;
+          }
+          else if (prevScaledHeight > prevUnscaledHeight) {
+            scaledRow[i].y = scaledRow[i].y +  (prevScaledHeight - prevUnscaledHeight);
+            scaledRow[i].height = currentHeight;
+            prevUnscaledHeight = row[i - 1].height;
+            prevScaledHeight = scaledRow[i - 1].height;
+          }
+          else {
+            prevUnscaledHeight = row[i - 1].height;
+            prevScaledHeight = scaledRow[i - 1].height;
+          }
+        }
+      }
+      // console.log('row', row);
+      // console.log('scaledRow', scaledRow);
+      //use color to map back to the array index for correct data
       const colorScaleMap = {};
       for (let i = 0; i < colorScale.length; i++) {
         colorScaleMap[colorScale[i]] = i;
@@ -426,7 +357,9 @@ const StackedBarTrack = (HGC, ...args) => {
       }
       else {
         for (let i = 0; i < row.length; i++) {
-          if (trackY > row[i].y && trackY <= (row[i].y + row[i].height)) {
+          const y = row[i].y;
+          const height = row[i].height;
+          if (trackY > y && trackY <= (y + height)) {
             const color = row[i].color;
             const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
             const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
