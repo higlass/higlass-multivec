@@ -43,6 +43,8 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const matrix = this.unFlatten(tile);
 
+      this.oldDimensions = this.dimensions; // for mouseover
+
       this.drawVerticalBars(this.mapOriginalColors(matrix), tileX, tileWidth,
         this.maxAndMin.max, this.maxAndMin.min, tile);
       graphics.addChild(tile.sprite);
@@ -241,6 +243,8 @@ const StackedBarTrack = (HGC, ...args) => {
 
     setDimensions(newDimensions) {
       this.oldDimensions = this.dimensions;
+      const visibleAndFetched = this.visibleAndFetchedTiles();
+      visibleAndFetched.map(a => this.initTile(a));
       super.setDimensions(newDimensions);
     }
 
@@ -311,40 +315,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const matrixRow = fetchedTile.matrix[posInTileX];
       let row = fetchedTile.mouseOverData[posInTileX];
-      const scaledRow = row;
-      const yScale = scaleLinear()
-        .domain([0, this.oldDimensions[1]])
-        .range([0, this.dimensions[1]]);
-      for(let i = 0; i < row.length; i++) {
-        let prevUnscaledHeight = null;
-        let prevScaledHeight = null;
-        const currentHeight = yScale(row[i].height);
-        if(i === 0) {
-          scaledRow[i].height = currentHeight;
-          prevUnscaledHeight = row[i].height;
-          prevScaledHeight = currentHeight;
-        }
-        else {
-          if(prevScaledHeight < prevUnscaledHeight) {
-            scaledRow[i].y = scaledRow[i].y - (prevUnscaledHeight - prevScaledHeight);
-            scaledRow[i].height = currentHeight;
-            prevUnscaledHeight = row[i - 1].height;
-            prevScaledHeight = scaledRow[i - 1].height;
-          }
-          else if (prevScaledHeight > prevUnscaledHeight) {
-            scaledRow[i].y = scaledRow[i].y +  (prevScaledHeight - prevUnscaledHeight);
-            scaledRow[i].height = currentHeight;
-            prevUnscaledHeight = row[i - 1].height;
-            prevScaledHeight = scaledRow[i - 1].height;
-          }
-          else {
-            prevUnscaledHeight = row[i - 1].height;
-            prevScaledHeight = scaledRow[i - 1].height;
-          }
-        }
-      }
-      // console.log('row', row);
-      // console.log('scaledRow', scaledRow);
+
       //use color to map back to the array index for correct data
       const colorScaleMap = {};
       for (let i = 0; i < colorScale.length; i++) {
