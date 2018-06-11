@@ -241,11 +241,15 @@ const StackedBarTrack = (HGC, ...args) => {
       }
     }
 
+    /**
+     * Here, rerender all tiles every time track size is changed
+     *
+     * @param newDimensions
+     */
     setDimensions(newDimensions) {
-      this.oldDimensions = this.dimensions;
+      super.setDimensions(newDimensions);
       const visibleAndFetched = this.visibleAndFetchedTiles();
       visibleAndFetched.map(a => this.initTile(a));
-      super.setDimensions(newDimensions);
     }
 
     draw() {
