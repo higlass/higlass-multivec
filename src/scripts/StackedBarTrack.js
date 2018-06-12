@@ -247,13 +247,10 @@ const StackedBarTrack = (HGC, ...args) => {
      * @param newDimensions
      */
     setDimensions(newDimensions) {
+      this.oldDimensions = this.dimensions;
       super.setDimensions(newDimensions);
       const visibleAndFetched = this.visibleAndFetchedTiles();
       visibleAndFetched.map(a => this.initTile(a));
-    }
-
-    draw() {
-      super.draw();
     }
 
     /**
@@ -291,6 +288,46 @@ const StackedBarTrack = (HGC, ...args) => {
     }
 
     /**
+     * Scales y values and heights for one row of mouseover matrix at a time to match tile scaling
+     */
+    scaleRow(row) {
+      const scaledRow = row;
+      const yScale = scaleLinear()
+        .domain([0, this.oldDimensions[1]])
+        .range([0, this.dimensions[1]]);
+      for(let i = 0; i < row.length; i++) {
+        let prevUnscaledHeight = null;
+        let prevScaledHeight = null;
+        const currentHeight = yScale(row[i].height);
+        if(i === 0) {
+          scaledRow[i].height = currentHeight;
+          prevUnscaledHeight = row[i].height;
+          prevScaledHeight = currentHeight;
+        }
+        else {
+          if(prevScaledHeight < prevUnscaledHeight) {
+            scaledRow[i].y = scaledRow[i].y - (prevUnscaledHeight - prevScaledHeight);
+            scaledRow[i].height = currentHeight;
+            prevUnscaledHeight = row[i - 1].height;
+            prevScaledHeight = scaledRow[i - 1].height;
+          }
+          else if (prevScaledHeight > prevUnscaledHeight) {
+            scaledRow[i].y = scaledRow[i].y +  (prevScaledHeight - prevUnscaledHeight);
+            scaledRow[i].height = currentHeight;
+            prevUnscaledHeight = row[i - 1].height;
+            prevScaledHeight = scaledRow[i - 1].height;
+          }
+          else {
+            prevUnscaledHeight = row[i - 1].height;
+            prevScaledHeight = scaledRow[i - 1].height;
+          }
+        }
+      }
+
+      return scaledRow;
+    }
+
+    /**
      * Shows value and type for each bar
      *
      * @param trackX x coordinate of mouse
@@ -319,6 +356,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const matrixRow = fetchedTile.matrix[posInTileX];
       let row = fetchedTile.mouseOverData[posInTileX];
+      row = this.scaleRow(row); // TODO FIX to accommodate
 
       //use color to map back to the array index for correct data
       const colorScaleMap = {};
@@ -348,6 +386,11 @@ const StackedBarTrack = (HGC, ...args) => {
       }
 
     }
+
+    draw() {
+      super.draw();
+    }
+
   }
   return new StackedBarTrackClass(...args);
 };
