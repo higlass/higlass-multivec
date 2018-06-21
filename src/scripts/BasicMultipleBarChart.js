@@ -65,6 +65,17 @@ const BasicMultipleBarChart = (HGC, ...args) => {
     }
 
     /**
+     * Here, rerender all tiles every time track size is changed
+     *
+     * @param newDimensions
+     */
+    setDimensions(newDimensions) {
+      super.setDimensions(newDimensions);
+      const visibleAndFetched = this.visibleAndFetchedTiles();
+      visibleAndFetched.map(a => this.initTile(a));
+    }
+
+    /**
      * Stores x and y coordinates in 2d arrays in each tile to indicate new lines and line color.
      *
      * @param tile
