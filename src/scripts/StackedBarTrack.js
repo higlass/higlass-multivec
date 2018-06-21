@@ -400,7 +400,7 @@ const icon = '<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="564px
 // default
 StackedBarTrack.config = {
   type: 'horizontal-stacked-bar',
-  datatype: ['multivec'],
+  datatype: ['multivec', 'epilogos'],
   local: false,
   orientation: '1d-horizontal',
   thumbnail: new DOMParser().parseFromString(icon, 'text/xml').documentElement,
@@ -435,6 +435,11 @@ StackedBarTrack.config = {
       "#C0C0C0",
       "#FFFFFF"
     ],
+  },
+  otherOptions: {
+    'epilogos': {
+      scaledHeight: false,
+    }
   }
 };
 
