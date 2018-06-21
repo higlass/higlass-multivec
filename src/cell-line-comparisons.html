@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HiGlass</title>
+  <style type="text/css">
+    .canvasjs-chart-credit {
+      display: none;
+    }
+  </style>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="hglib.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react-dom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.2/pixi.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.31.0/react-bootstrap.min.js"></script>
+</head>
+<body>
+Here's some text
+<div style=""></div>
+<div style="margin: auto">
+  <div style="height: 1500px; width: 600px; border: 1px solid black;"
+       id="development-demo">
+  </div>
+</div>
+And some other text
+<div style="height: 1500px"></div>
+</body>
+<script src="hglib.js"></script>
+<script>
+  var viewConfig =
+    {
+      "editable": true,
+      "trackSourceServers": [
+        "http://higlass.io/api/v1"
+      ],
+      "exportViewUrl": "http://localhost:8000/api/v1/viewconfs",
+      "views": [
+        {
+          "uid": "a",
+          "initialXDomain": [
+            2261709412.4362335,
+            2394802730.7976937
+          ],
+          "tracks": {
+            "top": [
+              {
+                "type": "basic-multiple-line-chart",
+                "uid": "YafcbvKDQvWoWRT1WrygPA",
+                "tilesetUid": "UvVPeLHuRDiYA3qwFlm7xQ",
+                "server": "http://resgen.io/api/v1",
+                "options": {
+                  "labelPosition": "hidden",
+                  "labelColor": "black",
+                  "labelTextOpacity": 0.4,
+                  "valueScaling": "linear",
+                  "trackBorderWidth": 0,
+                  "trackBorderColor": "black",
+                  "heatmapValueScaling": "log",
+                  "name": "my_file_genome_wide.multires.mv5",
+                  "colorScale": [
+                    "#FF0000",
+                    "#FF4500",
+                    "#32CD32",
+                    "#008000",
+                    "#006400",
+                    "#C2E105",
+                    "#FFFF00",
+                    "#66CDAA",
+                    "#8A91D0",
+                    "#CD5C5C",
+                    "#E9967A",
+                    "#BDB76B",
+                    "#808080",
+                    "#C0C0C0",
+                    "#075eea"
+                  ]
+                },
+                "width": 568,
+                "height": 736,
+                "position": "top",
+                "name": "my_file_genome_wide.multires.mv5",
+                "resolutions": [
+                  16384000,
+                  8192000,
+                  4096000,
+                  2048000,
+                  1024000,
+                  512000,
+                  256000,
+                  128000,
+                  64000,
+                  32000,
+                  16000,
+                  8000,
+                  4000,
+                  2000,
+                  1000
+                ]
+              }
+            ],
+            "left": [],
+            "center": [],
+            "bottom": [],
+            "right": [],
+            "whole": [],
+            "gallery": []
+          },
+          "layout": {
+            "w": 6,
+            "h": 6,
+            "x": 0,
+            "y": 0,
+            "i": "a",
+            "moved": false,
+            "static": false
+          },
+          "initialYDomain": [
+            -3244779048.356376,
+            -2901845169.658599
+          ],
+          "genomePositionSearchBoxVisible": true,
+          "genomePositionSearchBox": {
+            "autocompleteServer": "http://higlass.io/api/v1",
+            "chromInfoServer": "http://higlass.io/api/v1",
+            "visible": true,
+            "chromInfoId": "hg19",
+            "autocompleteId": "OHJakQICQD6gTD7skx4EWA"
+          }
+        },
+        {
+          "uid": "U9PT3ImUTsqo7gS9WNCa1A",
+          "initialXDomain": [
+            2261709412.436229,
+            2394802730.797698
+          ],
+          "tracks": {
+            "top": [
+              {
+                "type": "horizontal-multivec",
+                "uid": "Tpeux8QbQeCZ3_QjPqR6cw",
+                "tilesetUid": "UvVPeLHuRDiYA3qwFlm7xQ",
+                "server": "http://resgen.io/api/v1",
+                "options": {
+                  "labelPosition": "hidden",
+                  "labelColor": "black",
+                  "labelTextOpacity": 0.4,
+                  "valueScaling": "linear",
+                  "trackBorderWidth": 0,
+                  "trackBorderColor": "black",
+                  "heatmapValueScaling": "linear",
+                  "name": "my_file_genome_wide.multires.mv5",
+                  "colorScale": [
+                    "#FF0000",
+                    "#FF4500",
+                    "#32CD32",
+                    "#008000",
+                    "#006400",
+                    "#C2E105",
+                    "#FFFF00",
+                    "#66CDAA",
+                    "#8A91D0",
+                    "#CD5C5C",
+                    "#E9967A",
+                    "#BDB76B",
+                    "#808080",
+                    "#C0C0C0",
+                    "#075eea"
+                  ]
+                },
+                "width": 568,
+                "height": 736,
+                "position": "top",
+                "name": "my_file_genome_wide.multires.mv5",
+                "resolutions": [
+                  16384000,
+                  8192000,
+                  4096000,
+                  2048000,
+                  1024000,
+                  512000,
+                  256000,
+                  128000,
+                  64000,
+                  32000,
+                  16000,
+                  8000,
+                  4000,
+                  2000,
+                  1000
+                ]
+              }
+            ],
+            "left": [],
+            "center": [],
+            "bottom": [],
+            "right": [],
+            "whole": [],
+            "gallery": []
+          },
+          "layout": {
+            "w": 6,
+            "h": 6,
+            "x": 6,
+            "y": 0,
+            "i": "U9PT3ImUTsqo7gS9WNCa1A",
+            "moved": false,
+            "static": false
+          },
+          "initialYDomain": [
+            -3244779048.3563867,
+            -2901845169.6585875
+          ],
+          "genomePositionSearchBoxVisible": true,
+          "genomePositionSearchBox": {
+            "autocompleteServer": "http://higlass.io/api/v1",
+            "chromInfoServer": "http://higlass.io/api/v1",
+            "visible": true,
+            "chromInfoId": "hg19",
+            "autocompleteId": "OHJakQICQD6gTD7skx4EWA"
+          }
+        }
+      ],
+      "zoomLocks": {
+        "locksByViewUid": {
+          "U9PT3ImUTsqo7gS9WNCa1A": "eWfNPqgdSOeEvQDvGHY66Q",
+          "a": "eWfNPqgdSOeEvQDvGHY66Q"
+        },
+        "locksDict": {
+          "eWfNPqgdSOeEvQDvGHY66Q": {
+            "U9PT3ImUTsqo7gS9WNCa1A": [
+              2636957209.8903756,
+              -3441258375.1272736,
+              2281.60102891922
+            ],
+            "a": [
+              2636957209.8903756,
+              -3441258375.1272736,
+              2281.60102891922
+            ],
+            "uid": "eWfNPqgdSOeEvQDvGHY66Q"
+          }
+        }
+      },
+      "locationLocks": {
+        "locksByViewUid": {
+          "U9PT3ImUTsqo7gS9WNCa1A": "ZQ5n_9sZT3upv2WeSFKI-Q",
+          "a": "ZQ5n_9sZT3upv2WeSFKI-Q"
+        },
+        "locksDict": {
+          "ZQ5n_9sZT3upv2WeSFKI-Q": {
+            "U9PT3ImUTsqo7gS9WNCa1A": [
+              2636957209.8903756,
+              -3441258375.1272736,
+              2281.60102891922
+            ],
+            "a": [
+              2636957209.8903756,
+              -3441258375.1272736,
+              2281.60102891922
+            ],
+            "uid": "ZQ5n_9sZT3upv2WeSFKI-Q"
+          }
+        }
+      },
+      "valueScaleLocks": {
+        "locksByViewUid": {},
+        "locksDict": {}
+      }
+    }  //window.higlassApi;
+  window.hglib.createHgComponent(
+    document.getElementById('development-demo'),
+    viewConfig,
+    { bounded: true}
+  );
+</script>
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  ga('create', 'UA-77756807-1', 'auto');
+  ga('send', 'pageview');
+</script>
+</html>

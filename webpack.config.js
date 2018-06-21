@@ -110,6 +110,10 @@ module.exports = {
       template: './src/index.html',
       filename: './index.html',
     }),
+    new HtmlWebPackPlugin({
+      template: './src/cell-line-comparisons.html',
+      filename: './cell-line-comparisons.html',
+    }),
     new UnminifiedWebpackPlugin(),
   ],
 };
