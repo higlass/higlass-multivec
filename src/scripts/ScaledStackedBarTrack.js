@@ -202,6 +202,17 @@ const ScaledStackedBarTrack = (HGC, ...args) => {
     }
 
     /**
+     * Here, rerender all tiles every time track size is changed
+     *
+     * @param newDimensions
+     */
+    setDimensions(newDimensions) {
+      super.setDimensions(newDimensions);
+      const visibleAndFetched = this.visibleAndFetchedTiles();
+      visibleAndFetched.map(a => this.initTile(a));
+    }
+
+    /**
      * Adds information to recreate the track in SVG to the tile
      *
      * @param tile
