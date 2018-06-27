@@ -28,15 +28,23 @@ const BasicMultipleBarChart = (HGC, ...args) => {
      */
     renderTile(tile) {
       const graphics = tile.graphics;
+
+      // remove all of this graphic's children
+      for (let i = graphics.children.length - 1; i >= 0; i--) {
+        graphics.removeChild(graphics.children[i]);
+      }
+
       graphics.clear();
       tile.drawnAtScale = this._xScale.copy();
+
+      let localGraphics = new PIXI.Graphics();
 
       // we're setting the start of the tile to the current zoom level
       const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
         tile.tileData.tilePos, this.tilesetInfo.tile_size);
 
       if (this.options.barBorder) {
-        graphics.lineStyle(0.1, 'black', 1);
+        localGraphics.lineStyle(0.1, 'black', 1);
         tile.barBorders = true;
       }
 
@@ -50,18 +58,35 @@ const BasicMultipleBarChart = (HGC, ...args) => {
         .range([0, trackHeight / matrixDimensions[0]]);
 
       for (let i = 0; i < matrix[0].length; i++) { // 15
-        graphics.beginFill(this.colorHexMap[colorScale[i]]);
+        localGraphics.beginFill(this.colorHexMap[colorScale[i]]);
 
         for (let j = 0; j < matrix.length; j++) { // 3000
           const x = this._xScale(tileX + (j * tileWidth / this.tilesetInfo.tile_size));
           const height = valueToPixels(matrix[j][i]);
           const y = ((trackHeight / matrixDimensions[0]) * (i + 1) - height);
           this.addSVGInfo(tile, x, y, width, height, colorScale[i]);
-          graphics.drawRect(x, y, width, height);
+          localGraphics.drawRect(x, y, width, height);
         }
 
       }
 
+      const texture = localGraphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
+      const sprite = new PIXI.Sprite(texture);
+      sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
+      sprite.x = this._xScale(tileX);
+      graphics.addChild(sprite);
+
+    }
+
+    /**
+     * Here, rerender all tiles every time track size is changed
+     *
+     * @param newDimensions
+     */
+    setDimensions(newDimensions) {
+      super.setDimensions(newDimensions);
+      const visibleAndFetched = this.visibleAndFetchedTiles();
+      visibleAndFetched.map(a => this.initTile(a));
     }
 
     /**
