@@ -114,6 +114,14 @@ module.exports = {
       template: './src/cell-line-comparisons.html',
       filename: './cell-line-comparisons.html',
     }),
+    new HtmlWebPackPlugin({
+      template: './src/epilogos-with-heatmap.html',
+      filename: './epilogos-with-heatmap.html',
+    }),
+    new HtmlWebPackPlugin({
+      template: './src/linetracks-to-heatmaps.html',
+      filename: './linetracks-to-heatmaps.html',
+    }),
     new UnminifiedWebpackPlugin(),
   ],
 };

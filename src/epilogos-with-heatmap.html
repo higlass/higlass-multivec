@@ -1,10 +1,245 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HiGlass</title>
+  <style type="text/css">
+    .canvasjs-chart-credit {
+      display: none;
+    }
+  </style>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="hglib.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react-dom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.2/pixi.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.31.0/react-bootstrap.min.js"></script>
 </head>
 <body>
-$END$
+Here's some text
+<div style=""></div>
+<div style="margin: auto">
+  <div style="height: 1500px; width: 600px; border: 1px solid black;"
+       id="development-demo">
+  </div>
+</div>
+And some other text
+<div style="height: 1500px"></div>
 </body>
+<script src="hglib.js"></script>
+<script>
+
+  var viewConfig =
+    {
+      "editable": true,
+      "trackSourceServers": [
+        "/api/v1",
+        "http://higlass.io/api/v1"
+      ],
+      "exportViewUrl": "/api/v1/viewconfs",
+      "views": [
+        {
+          "initialXDomain": [
+            225510045.58336857,
+            225923714.64798775
+          ],
+          "initialYDomain": [
+            226484997.40928224,
+            226976750.98033533
+          ],
+          "tracks": {
+            "top": [
+              {
+                "type": "horizontal-stacked-bar",
+                "uid": "V_wpYUs-T8SmQDDSIuT51w",
+                "tilesetUid": "HMSJyvLCSgGmrDJctdIz3w",
+                "server": "http://resgen.io/api/v1",
+                "options": {
+                  "labelPosition": "topLeft",
+                  "labelColor": "black",
+                  "labelTextOpacity": 0.4,
+                  "valueScaling": "exponential",
+                  "trackBorderWidth": 0,
+                  "trackBorderColor": "black",
+                  "backgroundColor": "white",
+                  "barBorder": true,
+                  "scaledHeight": false,
+                  "sortLargestOnTop": true,
+                  "colorScale": [
+                    "#FF0000",
+                    "#FF4500",
+                    "#32CD32",
+                    "#008000",
+                    "#006400",
+                    "#C2E105",
+                    "#FFFF00",
+                    "#66CDAA",
+                    "#8A91D0",
+                    "#CD5C5C",
+                    "#E9967A",
+                    "#BDB76B",
+                    "#808080",
+                    "#C0C0C0",
+                    "#FFFFFF"
+                  ],
+                  "name": "Epilogos (hg38)"
+                },
+                "width": 694,
+                "height": 87,
+                "position": "top",
+                "name": "Epilogos (hg38)",
+                "resolutions": [
+                  13107200,
+                  6553600,
+                  3276800,
+                  1638400,
+                  819200,
+                  409600,
+                  204800,
+                  102400,
+                  51200,
+                  25600,
+                  12800,
+                  6400,
+                  3200,
+                  1600,
+                  800,
+                  400,
+                  200
+                ]
+              },
+              {
+                "type": "horizontal-multivec",
+                "uid": "RCD7u4cuSquygmriRHjgjQ",
+                "tilesetUid": "abohuD-sTbiyAPqh2y5OpA",
+                "server": "http://resgen.io/api/v1",
+                "options": {
+                  "labelPosition": "topLeft",
+                  "labelColor": "black",
+                  "labelTextOpacity": 0.4,
+                  "valueScaling": "linear",
+                  "trackBorderWidth": 0,
+                  "trackBorderColor": "black",
+                  "heatmapValueScaling": "log",
+                  "name": "my_file_genome_wide_20180228.multires.mv5"
+                },
+                "width": 694,
+                "height": 193,
+                "position": "top",
+                "name": "my_file_genome_wide_20180228.multires.mv5",
+                "resolutions": [
+                  16384000,
+                  8192000,
+                  4096000,
+                  2048000,
+                  1024000,
+                  512000,
+                  256000,
+                  128000,
+                  64000,
+                  32000,
+                  16000,
+                  8000,
+                  4000,
+                  2000,
+                  1000
+                ]
+              },
+              {
+                "type": "horizontal-gene-annotations",
+                "uid": "R6ZZ5LnEQ4ODCWZoE38maw",
+                "tilesetUid": "M9A9klpwTci5Vf4bHZ864g",
+                "server": "http://resgen.io/api/v1",
+                "options": {
+                  "labelColor": "black",
+                  "labelPosition": "hidden",
+                  "plusStrandColor": "blue",
+                  "minusStrandColor": "red",
+                  "trackBorderWidth": 0,
+                  "trackBorderColor": "black",
+                  "showMousePosition": false,
+                  "name": "gene-annotations-hg38_3d2Hebg.db",
+                  "mousePositionColor": "#999999"
+                },
+                "name": "Gene Annotations (hg38)",
+                "width": 694,
+                "height": 55,
+                "position": "top"
+              },
+              {
+                "type": "horizontal-chromosome-labels",
+                "uid": "GzHGPlijS2eASBqslzVcxA",
+                "tilesetUid": "ZpZ8c5JJRUS1J7ZkofcUrg",
+                "server": "http://resgen.io/api/v1",
+                "options": {
+                  "showMousePosition": false,
+                  "mousePositionColor": "#999999"
+                },
+                "name": "Chromosome Axis",
+                "width": 694,
+                "height": 30,
+                "position": "top"
+              }
+            ],
+            "left": [],
+            "center": [],
+            "bottom": [],
+            "right": [],
+            "whole": [],
+            "gallery": []
+          },
+          "layout": {
+            "w": 12,
+            "h": 6,
+            "x": 0,
+            "y": 0,
+            "i": "UiHlCoxRQ-aITBDi5j8b_w",
+            "moved": false,
+            "static": false
+          },
+          "uid": "UiHlCoxRQ-aITBDi5j8b_w"
+        }
+      ],
+      "zoomLocks": {
+        "locksByViewUid": {},
+        "locksDict": {}
+      },
+      "locationLocks": {
+        "locksByViewUid": {},
+        "locksDict": {}
+      },
+      "valueScaleLocks": {
+        "locksByViewUid": {},
+        "locksDict": {}
+      }
+    }
+
+  //window.higlassApi;
+
+  window.hglib.createHgComponent(
+    document.getElementById('development-demo'),
+    viewConfig,
+    { bounded: true}
+  );
+
+
+</script>
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+  ga('create', 'UA-77756807-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
 </html>
