@@ -28,13 +28,8 @@ const BasicMultipleBarChart = (HGC, ...args) => {
      */
     renderTile(tile) {
       const graphics = tile.graphics;
-
-      // remove all of this graphic's children
-      for (let i = graphics.children.length - 1; i >= 0; i--) {
-        graphics.removeChild(graphics.children[i]);
-      }
-
       graphics.clear();
+      graphics.children.map(child => {graphics.removeChild(child)});
       tile.drawnAtScale = this._xScale.copy();
 
       let localGraphics = new PIXI.Graphics();

@@ -29,12 +29,8 @@ const StackedBarTrack = (HGC, ...args) => {
      */
     renderTile(tile) {
       const graphics = tile.graphics;
-
-      // remove all of this graphic's children
-      for (let i = graphics.children.length - 1; i >= 0; i--) {
-        graphics.removeChild(graphics.children[i]);
-      }
       graphics.clear();
+      graphics.children.map(child => {graphics.removeChild(child)});
       tile.drawnAtScale = this._xScale.copy();
 
       // we're setting the start of the tile to the current zoom level
