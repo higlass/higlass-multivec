@@ -122,6 +122,10 @@ module.exports = {
       template: './src/linetracks-to-heatmaps.html',
       filename: './linetracks-to-heatmaps.html',
     }),
+    new HtmlWebPackPlugin({
+      template: './src/blog-post.html',
+      filename: './blog-post.html',
+    }),
     new UnminifiedWebpackPlugin(),
   ],
 };
