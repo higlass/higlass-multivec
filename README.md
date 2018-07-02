@@ -60,9 +60,14 @@ For an example, see [`src/index.html`](src/index.html).
 
 ```bash
 $ git clone https://github.com/daniellenguyen/higlass-multivec.git
+$ cd higlass-multivec
 $ npm install
 ```
+If you have a local copy of higlass, you can then run this command in the higlass-multivec directory:
 
+```bash
+npm link higlass
+```
 
 ### Commands
 
