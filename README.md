@@ -59,7 +59,7 @@ For an example, see [`src/index.html`](src/index.html).
 ### Installation
 
 ```bash
-$ git clone https://github.com/daniellenguyen/higlass-multivec.git
+$ git clone https://github.com/hms-dbmi/higlass-multivec.git
 $ cd higlass-multivec
 $ npm install
 ```
