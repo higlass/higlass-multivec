@@ -132,9 +132,9 @@ const StackedBarTrack = (HGC, ...args) => {
       const trackHeight = this.dimensions[1];
 
       // get amount of trackHeight reserved for positive and for negative
-      const unscaledHeight = positiveMax + negativeMax;
+      const unscaledHeight = positiveMax + (Math.abs(negativeMax));
       const positiveTrackHeight = (positiveMax * trackHeight) / unscaledHeight;
-      const negativeTrackHeight = (negativeMax * trackHeight) / unscaledHeight;
+      const negativeTrackHeight = (Math.abs(negativeMax) * trackHeight) / unscaledHeight;
 
       let start = null;
       let lowestY = this.dimensions[1];
