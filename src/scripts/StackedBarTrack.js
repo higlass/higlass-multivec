@@ -56,9 +56,9 @@ const StackedBarTrack = (HGC, ...args) => {
 
       visibleAndFetched.map(a => {
         const valueToPixels = scaleLinear()
-          .domain([0, this.maxAndMin.max + this.maxAndMin.min])
+          .domain([0, this.maxAndMin.max + Math.abs(this.maxAndMin.min)])
           .range([0, this.dimensions[1]]);
-        const newZero = this.dimensions[1] - valueToPixels(this.maxAndMin.min);
+        const newZero = this.dimensions[1] - valueToPixels(Math.abs(this.maxAndMin.min));
         const height = valueToPixels(a.minValue + a.maxValue);
         const sprite = a.sprite;
         const y = newZero - valueToPixels(a.maxValue);
