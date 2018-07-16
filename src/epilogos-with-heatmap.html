@@ -40,12 +40,12 @@
     "views": [
       {
         "initialXDomain": [
-          650344567.3649733,
-          2120363777.297194
+          1558357287.5087173,
+          1558644930.9157963
         ],
         "initialYDomain": [
-          1376314469.0681586,
-          1376314469.0681586
+          1064452744.7205536,
+          1064457483.4916753
         ],
         "tracks": {
           "top": [
@@ -138,7 +138,8 @@
                   ]
                 }
               ],
-              "position": "top"
+              "position": "top",
+              "options": {}
             },
             {
               "type": "combined",
@@ -242,7 +243,8 @@
                   "height": 358
                 }
               ],
-              "position": "whole"
+              "position": "whole",
+              "options": {}
             }
           ],
           "gallery": []
@@ -268,15 +270,107 @@
       },
       {
         "initialXDomain": [
-          1163104095.0556312,
-          1385148767.0734708
+          1558452172.5959747,
+          1558461182.5724826
         ],
         "initialYDomain": [
-          510887741.2895349,
-          524168501.26161593
+          517918244.05138385,
+          517918570.6073693
         ],
         "tracks": {
           "top": [
+            {
+              "name": "Gene Annotations (hg38)",
+              "created": "2017-07-14T15:27:46.989053Z",
+              "server": "//higlass.io/api/v1",
+              "tilesetUid": "P0PLbQMwTYGy-5uPIQid7A",
+              "uid": "BAWigxNdRfSoBvYK6U-jUg",
+              "type": "horizontal-gene-annotations",
+              "options": {
+                "labelColor": "black",
+                "labelPosition": "hidden",
+                "plusStrandColor": "blue",
+                "minusStrandColor": "red",
+                "trackBorderWidth": 0,
+                "trackBorderColor": "black",
+                "showMousePosition": false,
+                "mousePositionColor": "#999999",
+                "name": "Gene Annotations (hg38)"
+              },
+              "width": 20,
+              "height": 55,
+              "header": "1\t2\t3\t4\t5\t6\t7\t8\t9\t10\t11\t12\t13\t14",
+              "position": "top"
+            },
+            {
+              "type": "combined",
+              "uid": "b71bTMazTTuCkZOglECHtw",
+              "height": 88,
+              "width": 1018,
+              "contents": [
+                {
+                  "type": "horizontal-stacked-bar",
+                  "uid": "DDU7qIW3TQOvdw80DFgR-Q",
+                  "tilesetUid": "HMSJyvLCSgGmrDJctdIz3w",
+                  "server": "http://resgen.io/api/v1",
+                  "options": {
+                    "labelPosition": "topLeft",
+                    "labelColor": "black",
+                    "labelTextOpacity": 0.4,
+                    "valueScaling": "exponential",
+                    "trackBorderWidth": 0,
+                    "trackBorderColor": "black",
+                    "backgroundColor": "white",
+                    "barBorder": true,
+                    "scaledHeight": false,
+                    "sortLargestOnTop": true,
+                    "colorScale": [
+                      "#FF0000",
+                      "#FF4500",
+                      "#32CD32",
+                      "#008000",
+                      "#006400",
+                      "#C2E105",
+                      "#FFFF00",
+                      "#66CDAA",
+                      "#8A91D0",
+                      "#CD5C5C",
+                      "#E9967A",
+                      "#BDB76B",
+                      "#808080",
+                      "#C0C0C0",
+                      "#FFFFFF"
+                    ],
+                    "name": "Epilogos (hg38)"
+                  },
+                  "width": 1018,
+                  "height": 88,
+                  "position": "top",
+                  "name": "Epilogos (hg38)",
+                  "resolutions": [
+                    13107200,
+                    6553600,
+                    3276800,
+                    1638400,
+                    819200,
+                    409600,
+                    204800,
+                    102400,
+                    51200,
+                    25600,
+                    12800,
+                    6400,
+                    3200,
+                    1600,
+                    800,
+                    400,
+                    200
+                  ]
+                }
+              ],
+              "position": "top",
+              "options": {}
+            },
             {
               "type": "horizontal-multivec",
               "uid": "H38NVqtlSM6_6tVq63heqg",
@@ -292,7 +386,7 @@
                 "heatmapValueScaling": "log",
                 "name": "my_file_genome_wide_20180228.multires.mv5"
               },
-              "width": 413,
+              "width": 1214,
               "height": 205,
               "position": "top",
               "name": "my_file_genome_wide_20180228.multires.mv5",
@@ -331,7 +425,15 @@
           "moved": false,
           "static": false
         },
-        "uid": "G42YNx-uQGaLB5F-H7r3og"
+        "uid": "G42YNx-uQGaLB5F-H7r3og",
+        "genomePositionSearchBoxVisible": true,
+        "genomePositionSearchBox": {
+          "autocompleteServer": "//higlass.io/api/v1",
+          "chromInfoServer": "http://higlass.io/api/v1",
+          "visible": true,
+          "chromInfoId": "hg38",
+          "autocompleteId": "P0PLbQMwTYGy-5uPIQid7A"
+        }
       }
     ],
     "zoomLocks": {
