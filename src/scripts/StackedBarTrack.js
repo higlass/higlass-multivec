@@ -163,7 +163,6 @@ const StackedBarTrack = (HGC, ...args) => {
           graphics.beginFill(this.colorHexMap[positive[i].color]);
           graphics.drawRect(x, y, width, height);
           positiveStackedHeight = positiveStackedHeight + height;
-
           if (lowestY > y)
             lowestY = y;
         }
@@ -258,8 +257,8 @@ const StackedBarTrack = (HGC, ...args) => {
       const shapeX = tile.tileData.shape[0]; // 15 number of different nucleotides in each bar
       const shapeY = tile.tileData.shape[1]; // 3840 number of bars
       const barYValues = tile.svgData.barYValues;
-      const barColors = tile.svgData.barColors;
       const barHeights = tile.svgData.barHeights;
+      const barColors = tile.svgData.barColors;
       let mouseOverData = [];
 
       for (let i = 0; i < shapeX; i++) {
@@ -267,8 +266,8 @@ const StackedBarTrack = (HGC, ...args) => {
           const index = (j * shapeX) + i;
           let dataPoint = {
             y: barYValues[index],
-            color: barColors[index],
-            height: barHeights[index]
+            height: barHeights[index],
+            color: barColors[index]
           };
           (mouseOverData[j] === undefined) ? mouseOverData[j] = [dataPoint] : mouseOverData[j].push(dataPoint);
         }
@@ -287,15 +286,19 @@ const StackedBarTrack = (HGC, ...args) => {
      * Scales y values and heights for one row of mouseover matrix at a time to match tile scaling
      */
     scaleRow(row) {
+      const visibleAndFetched = this.visibleAndFetchedTiles();
       const scaledRow = row;
       const yScale = scaleLinear()
         .domain([0, this.oldDimensions[1]])
         .range([0, this.dimensions[1]]);
+      const xScale = scaleLinear()
+        .domain([0, this.oldDimensions[0]])
+        .range([0, this.dimensions[0]]);
       for(let i = 0; i < row.length; i++) {
         let prevUnscaledHeight = null;
         let prevScaledHeight = null;
         const currentHeight = yScale(row[i].height);
-        if(i === 0) {
+        if(i === 0) { //
           scaledRow[i].height = currentHeight;
           prevUnscaledHeight = row[i].height;
           prevScaledHeight = currentHeight;
@@ -323,6 +326,12 @@ const StackedBarTrack = (HGC, ...args) => {
       return scaledRow;
     }
 
+    // exportSVG() {
+    //   const visibleAndFetched = this.visibleAndFetchedTiles();
+    //   visibleAndFetched.map((tile) => { this.initTile(tile) } );
+    //   super.exportSVG();
+    // }
+
     /**
      * Shows value and type for each bar
      *
@@ -331,6 +340,8 @@ const StackedBarTrack = (HGC, ...args) => {
      * @returns string with embedded values and svg square for color
      */
     getMouseOverHtml(trackX, trackY) {
+      console.log("trackX", trackX);
+      console.log("trackY", trackY);
       if (!this.tilesetInfo)
         return '';
 
@@ -352,7 +363,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const matrixRow = fetchedTile.matrix[posInTileX];
       let row = fetchedTile.mouseOverData[posInTileX];
-      row = this.scaleRow(row); // TODO FIX to accommodate
+      row = this.scaleRow(row);
 
       //use color to map back to the array index for correct data
       const colorScaleMap = {};
