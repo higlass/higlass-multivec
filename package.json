@@ -24,6 +24,7 @@
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
     "higlass": "^0.10.22",
+    "higlass-register": "^0.1.0",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.1.0",
     "node-sass": "^4.8.3",
@@ -45,7 +46,6 @@
   },
   "dependencies": {
     "d3-scale": "^1.0.7",
-    "higlass-register": "^0.1.0",
     "mixin": "^0.2.0",
     "mixwith": "^0.1.1"
   }
