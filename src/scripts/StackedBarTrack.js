@@ -328,19 +328,22 @@ const StackedBarTrack = (HGC, ...args) => {
       return scaledRow;
     }
 
-      /*
-    exportSVG() {
-      for (const tile of this.visibleAndFetchedTiles()) {
-        // rescale all the bars to match the sprite's position
-        for (let i = 0; i < tile.svgData.barXValues.length; i++) {
-          tile.svgData.barXValues[i] = sprite.barXValues;
-        }
+    /**
+     * Realigns tiles when exporting to SVG
+     */
+    realignSVG() {
+      const visibleAndFetched = this.visibleAndFetchedTiles();
 
-        visibleAndFetched.map((tile) => { this.initTile(tile) } );
-      }
-      super.exportSVG();
+      visibleAndFetched.map(tile => {
+        const valueToPixels = scaleLinear()
+          .domain([0, this.maxAndMin.max + Math.abs(this.maxAndMin.min)])
+          .range([0, this.dimensions[1]]);
+        const newZero = this.dimensions[1] - valueToPixels(Math.abs(this.maxAndMin.min));
+        const realignment = newZero - valueToPixels(tile.maxValue);
+        tile.svgData.barYValues = tile.svgData.barYValues.map(yVal => { return yVal - realignment});
+      });
     }
-    */
+
     exportSVG() {
       let track = null;
       let base = null;
@@ -355,6 +358,8 @@ const StackedBarTrack = (HGC, ...args) => {
         'transform',
         `translate(${this.pMain.position.x},${this.pMain.position.y}) scale(${this.pMain.scale.x},${this.pMain.scale.y})`,
       );
+
+      this.realignSVG();
 
       for (const tile of this.visibleAndFetchedTiles()) {
         const rotation = 0;
@@ -400,8 +405,6 @@ const StackedBarTrack = (HGC, ...args) => {
      * @returns string with embedded values and svg square for color
      */
     getMouseOverHtml(trackX, trackY) {
-      console.log("trackX", trackX);
-      console.log("trackY", trackY);
       if (!this.tilesetInfo)
         return '';
 
