@@ -23,7 +23,6 @@
     "babel-preset-env": "^1.6.1",
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
-    "higlass": "^0.10.22",
     "html-loader": "^0.5.5",
     "html-webpack-plugin": "^3.1.0",
     "node-sass": "^4.8.3",
@@ -41,12 +40,24 @@
   "scripts": {
     "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development --open",
+    "test-watch": "NODE_ENV=development; npm run build && ./node_modules/karma/bin/karma start karma.conf.js",
     "prerelease": "rm -rf dist/*; npm run build; zip -r dist.zip dist"
   },
   "dependencies": {
+    "babel-polyfill": "^6.26.0",
     "d3-scale": "^1.0.7",
     "higlass-register": "^0.1.0",
+    "jasmine": "^3.2.0",
+    "karma": "^3.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^1.1.2",
+    "karma-phantomjs2-launcher": "^0.5.0",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^3.0.2",
     "mixin": "^0.2.0",
-    "mixwith": "^0.1.1"
+    "mixwith": "^0.1.1",
+    "react": "^16.4.2",
+    "react-dom": "^16.4.2",
+    "sourcemap": "^0.1.0"
   }
 }
