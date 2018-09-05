@@ -5,6 +5,43 @@ import {
   ReactWrapper,
 } from 'enzyme';
 
+import {
+  HiGlassComponent,
+  waitForTilesLoaded
+} from 'higlass';
+
+import register from 'higlass-register';
+
+import StackedBarTrack from '../src/scripts/StackedBarTrack';
+import ScaledStackedBarTrack from '../src/scripts/ScaledStackedBarTrack';
+import BasicMultipleLineChart from '../src/scripts/BasicMultipleLineChart';
+import BasicMultipleBarChart from '../src/scripts/BasicMultipleBarChart';
+
+register({
+  name: 'StackedBarTrack',
+  track: StackedBarTrack,
+  config: StackedBarTrack.config,
+});
+
+register({
+  name: 'ScaledStackedBarTrack',
+  track: ScaledStackedBarTrack,
+  config: ScaledStackedBarTrack.config,
+});
+
+register({
+  name: 'BasicMultipleLineChart',
+  track: BasicMultipleLineChart,
+  config: BasicMultipleLineChart.config,
+});
+
+register({
+  name: 'BasicMultipleBarChart',
+  track: BasicMultipleBarChart,
+  config: BasicMultipleBarChart.config,
+});
+
+
 const viewconf = {
   "editable": true,
   "zoomFixed": false,
@@ -126,6 +163,9 @@ const viewconf = {
   }
 };
 
+import Adapter from 'enzyme-adapter-react-16';
+configure({ adapter: new Adapter() });
+
 describe('Test HiGlass Component', () => {
   let hgc = null;
   let div = null;
@@ -155,10 +195,16 @@ describe('Test HiGlass Component', () => {
       />, { attachTo: div });
 
       hgc.update();
+      console.log('waitForTilesLoaded:', waitForTilesLoaded);
+
       waitForTilesLoaded(hgc.instance(), done);
+      // done();
     });
 
     it('Check that the component is rendered correctly', (done) => {
+      const a = null;
+      a.blah + 2;
+      hgc.instance().handleExportSVG();
       done();
     });
   });

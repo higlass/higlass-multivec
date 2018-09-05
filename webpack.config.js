@@ -7,21 +7,30 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
 module.exports = {
+  mode: "development",
+  entry: {
+    'higlass-multivec': './src/index.js',
+    'higlass-multivec.min': './src/index.js'
+  },
   output: {
-    filename: 'higlass-multivec.min.js',
-    library: 'higlass-multivec',
+    filename: '[name].js',
+    library: '[name]',
     libraryTarget: 'umd',
     path: path.resolve(__dirname, 'dist'),
+    publicPath: '/'
   },
-   devServer: {
+  devtool: 'cheap-source-map',
+  devServer: {
     contentBase: [
       path.join(__dirname, 'node_modules/higlass/build'),
     ],
+    publicPath: '/',
     watchContentBase: true,
   },
   optimization: {
     minimizer: [
       new UglifyJsPlugin({
+        include: /\.min\.js$/,
         cache: true,
         parallel: true,
         sourceMap: false,
@@ -104,6 +113,32 @@ module.exports = {
         ],
       },
     ],
+  },
+  externals: {
+    'pixi.js': {
+      commonjs: 'pixi.js',
+      commonjs2: 'pixi.js',
+      amd: 'pixi.js',
+      root: 'PIXI',
+    },
+    react: {
+      commonjs: 'react',
+      commonjs2: 'react',
+      amd: 'react',
+      root: 'React',
+    },
+    'react-dom': {
+      commonjs: 'react-dom',
+      commonjs2: 'react-dom',
+      amd: 'react-dom',
+      root: 'ReactDOM',
+    },
+    'react-bootstrap': {
+      commonjs: 'react-bootstrap',
+      commonjs2: 'react-bootstrap',
+      amd: 'react-bootstrap',
+      root: 'ReactBootstrap',
+    },
   },
   plugins: [
     new HtmlWebPackPlugin({
