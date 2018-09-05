@@ -56,6 +56,15 @@ Configure the track in your view config; you should be all set from here!
 For an example, see [`src/index.html`](src/index.html).
 ## Development
 
+### Testing
+
+To run the test suite:
+
+```
+npm run test-watch
+```
+
+
 ### Installation
 
 ```bash
