@@ -10,6 +10,7 @@ import {
   waitForTilesLoaded
 } from 'higlass';
 
+import { expect } from 'chai';
 import register from 'higlass-register';
 
 import StackedBarTrack from '../src/scripts/StackedBarTrack';
@@ -52,12 +53,12 @@ const viewconf = {
   "views": [
     {
       "initialXDomain": [
-        2708428274.52181,
-        2708679235.8772078
+        2708582463.087155,
+        2708584448.338146
       ],
       "initialYDomain": [
-        1767819729.5564494,
-        1768368486.6046958
+        1768071816.405876,
+        1768071785.4668996
       ],
       "tracks": {
         "top": [
@@ -138,7 +139,7 @@ const viewconf = {
         "moved": false,
         "static": false
       },
-      "uid": "MiApsjfbQTeRT02rLYDFYQ",
+      "uid": "aa",
       "genomePositionSearchBoxVisible": true,
       "genomePositionSearchBox": {
         "autocompleteServer": "//higlass.io/api/v1",
@@ -172,7 +173,7 @@ describe('Test HiGlass Component', () => {
 
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000;
 
-  describe('Gene Annotations Overlaps', () => {
+  describe('', () => {
     it('Cleans up previously created instances and mounts a new component', (done) => {
       if (hgc) {
         hgc.unmount();
@@ -201,12 +202,36 @@ describe('Test HiGlass Component', () => {
       // done();
     });
 
-    it('Check that the component is rendered correctly', (done) => {
-      const a = null;
-      a.blah + 2;
+    it('Exports a zoomed in SVG and then zooms out', (done) => {
       hgc.instance().handleExportSVG();
-      done();
+      hgc.instance().api.on('location', (data) => {
+        console.log('location:', data);
+      });
+      const svgText = hgc.instance().api.exportAsSvg();
+      const rectHeightIndex = svgText.indexOf('87.1567759');
+      expect(rectHeightIndex).to.be.above(0);
+
+      hgc.instance().api.zoomTo('aa', 
+        2708563090.788466, 
+        2708609338.8635907, 
+        1768077217.7076137, 
+        1768076496.9583907);
+
+      console.log('test1');
+      waitForTilesLoaded(hgc.instance(), done);
     });
+
+    it ('Exports to SVG again', (done) => {
+      console.log('test2');
+      hgc.instance().handleExportSVG();
+      const svgText = hgc.instance().api.exportAsSvg();
+      const rectHeightIndex = svgText.indexOf('87.1567759');
+
+      console.log('rectHeightIndex:', rectHeightIndex);
+      expect(rectHeightIndex).to.be.below(0);
+
+      done();
+    })
+
   });
 });
-
