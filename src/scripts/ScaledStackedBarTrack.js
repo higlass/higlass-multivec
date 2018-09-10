@@ -279,6 +279,61 @@ const ScaledStackedBarTrack = (HGC, ...args) => {
 
     }
 
+    exportSVG() {
+      const visibleAndFetched = this.visibleAndFetchedTiles();
+      visibleAndFetched.map((tile) => { this.initTile(tile) } );
+
+      let track = null;
+      let base = null;
+
+      base = document.createElement('g');
+      track = base;
+
+      const output = document.createElement('g');
+      track.appendChild(output);
+
+      output.setAttribute(
+        'transform',
+        `translate(${this.pMain.position.x},${this.pMain.position.y}) scale(${this.pMain.scale.x},${this.pMain.scale.y})`,
+      );
+
+      for (const tile of this.visibleAndFetchedTiles()) {
+        const rotation = 0;
+        const g = document.createElement('g');
+
+        // place each sprite
+        g.setAttribute(
+          'transform',
+          `translate(${tile.sprite.x},${tile.sprite.y}) rotate(${rotation}) scale(${tile.sprite.scale.x},${tile.sprite.scale.y})`,
+        );
+
+        const data = tile.svgData;
+
+        // add each bar
+        for (let i = 0; i < data.barXValues.length; i++) {
+          const rect = document.createElement('rect');
+          rect.setAttribute('fill', data.barColors[i]);
+          rect.setAttribute('stroke', data.barColors[i]);
+
+          rect.setAttribute('x', data.barXValues[i]);
+          rect.setAttribute('y', data.barYValues[i]);
+          rect.setAttribute('height', data.barHeights[i]);
+          rect.setAttribute('width', data.barWidths[i]);
+          if (tile.barBorders) {
+            rect.setAttribute('stroke-width', '0.1');
+            rect.setAttribute('stroke', 'black');
+          }
+
+          g.appendChild(rect);
+        }
+
+        output.appendChild(g);
+      }
+
+      return [base, base];
+    }
+
+
     /**
      * Shows value and type for each bar
      *
