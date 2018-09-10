@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HiGlass</title>
+  <style type="text/css">
+    .canvasjs-chart-credit {
+      display: none;
+    }
+  </style>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="hglib.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react-dom.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.2/pixi.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.31.0/react-bootstrap.min.js"></script>
+</head>
+<body>
+Here's some text
+<div style=""></div>
+<div style="margin: auto">
+  <div style="height: 1500px; width: 600px; border: 1px solid black;"
+       id="development-demo">
+  </div>
+</div>
+And some other text
+<div style="height: 1500px"></div>
+</body>
+<script src="hglib.js"></script>
+<script>
+  var viewConfig =
+    {
+      "editable": true,
+      "trackSourceServers": [
+        "http://higlass.io/api/v1"
+      ],
+      "exportViewUrl": "http://localhost:8000/api/v1/viewconfs",
+      "views": [
+        {
+          "uid": "a",
+          "initialXDomain": [
+            2231150396.2027874,
+            2231709043.400973
+          ],
+          "tracks": {
+            "top": [
+              {
+                "name": "Gene Annotations (hg19)",
+                "created": "2017-02-05T19:31:52.412319Z",
+                "server": "http://higlass.io/api/v1",
+                "tilesetUid": "OHJakQICQD6gTD7skx4EWA",
+                "uid": "d8Ct-TtBSKO3H7d-V3i6Fw",
+                "type": "horizontal-gene-annotations",
+                "options": {
+                  "labelColor": "black",
+                  "labelPosition": "hidden",
+                  "plusStrandColor": "blue",
+                  "minusStrandColor": "red",
+                  "trackBorderWidth": 0,
+                  "trackBorderColor": "black",
+                  "showMousePosition": false,
+                  "mousePositionColor": "#999999",
+                  "name": "Gene Annotations (hg19)"
+                },
+                "width": 20,
+                "height": 55,
+                "header": "",
+                "position": "top"
+              },
+              {
+                "uid": "KPLa0A2ATy-LgpFJz-Z3iQ",
+                "tilesetUid": "PjIJKXGbSNCalUZO21e_HQ",
+                "height": 100,
+                "width": 568,
+                "position": "top",
+                "server": "http://higlass.io/api/v1",
+                "type": "horizontal-line",
+                "options": {
+                  "name": "GM12878-E116-H3K27ac.fc.signal",
+                  "valueScaling": "linear",
+                  "lineStrokeWidth": 2,
+                  "lineStrokeColor": "blue",
+                  "labelPosition": "topLeft",
+                  "labelColor": "black",
+                  "axisPositionHorizontal": "right",
+                  "trackBorderWidth": 2,
+                  "trackBorderColor": "white",
+                  "labelTextOpacity": 0.4,
+                  "showMousePosition": false,
+                  "mousePositionColor": "#999999",
+                  "showTooltip": false,
+                  "heatmapValueScaling": "log"
+                },
+                "name": "GM12878-E116-H3K27ac.fc.signal"
+              },
+              {
+                "uid": "aTpD5OitQmmB9ljbx_zjBw",
+                "tilesetUid": "PdAaSdibTLK34hCw7ubqKA",
+                "height": 100,
+                "width": 568,
+                "position": "top",
+                "server": "http://higlass.io/api/v1",
+                "type": "horizontal-line",
+                "options": {
+                  "name": "GM12878-E116-H3K27me3.fc.signal",
+                  "valueScaling": "linear",
+                  "lineStrokeWidth": 2,
+                  "lineStrokeColor": "turquoise",
+                  "labelPosition": "topLeft",
+                  "labelColor": "black",
+                  "axisPositionHorizontal": "right",
+                  "trackBorderWidth": 1,
+                  "trackBorderColor": "white",
+                  "labelTextOpacity": 0.4,
+                  "showMousePosition": false,
+                  "mousePositionColor": "#999999",
+                  "showTooltip": false,
+                  "heatmapValueScaling": "log"
+                },
+                "name": "GM12878-E116-H3K27me3.fc.signal"
+              },
+              {
+                "uid": "line2",
+                "tilesetUid": "e0DYtZBSTqiMLHoaimsSpg",
+                "height": 100,
+                "width": 568,
+                "position": "top",
+                "server": "http://higlass.io/api/v1",
+                "type": "horizontal-line",
+                "options": {
+                  "name": "GM12878-E116-H3K4me1.fc.signal",
+                  "valueScaling": "linear",
+                  "lineStrokeWidth": 2,
+                  "lineStrokeColor": "red",
+                  "labelPosition": "topLeft",
+                  "labelColor": "black",
+                  "axisPositionHorizontal": "right",
+                  "trackBorderWidth": 1,
+                  "trackBorderColor": "white",
+                  "labelTextOpacity": 0.4,
+                  "showMousePosition": false,
+                  "mousePositionColor": "#999999",
+                  "showTooltip": false,
+                  "heatmapValueScaling": "log"
+                },
+                "name": "GM12878-E116-H3K4me1.fc.signal"
+              },
+              {
+                "uid": "Fbd3ugOZR_qnmogyxBtAcQ",
+                "tilesetUid": "cE0nGyd0Q_yVYSyBUe89Ww",
+                "height": 100,
+                "width": 568,
+                "position": "top",
+                "server": "http://higlass.io/api/v1",
+                "type": "horizontal-line",
+                "options": {
+                  "name": "GM12878-E116-H3K4me3.fc.signal",
+                  "valueScaling": "linear",
+                  "lineStrokeWidth": 2,
+                  "lineStrokeColor": "orange",
+                  "labelPosition": "topLeft",
+                  "labelColor": "black",
+                  "axisPositionHorizontal": "right",
+                  "trackBorderWidth": 2,
+                  "trackBorderColor": "white",
+                  "labelTextOpacity": 0.4,
+                  "showMousePosition": false,
+                  "mousePositionColor": "#999999",
+                  "showTooltip": false,
+                  "heatmapValueScaling": "log"
+                },
+                "name": "GM12878-E116-H3K4me3.fc.signal"
+              }
+            ],
+            "left": [],
+            "center": [],
+            "bottom": [],
+            "right": [],
+            "whole": [],
+            "gallery": []
+          },
+          "layout": {
+            "w": 12,
+            "h": 6,
+            "x": 0,
+            "y": 0,
+            "i": "a",
+            "moved": false,
+            "static": false
+          },
+          "initialYDomain": [
+            1544509274.1455395,
+            1545480022.0057676
+          ],
+          "genomePositionSearchBoxVisible": true,
+          "genomePositionSearchBox": {
+            "autocompleteServer": "http://higlass.io/api/v1",
+            "chromInfoServer": "http://higlass.io/api/v1",
+            "visible": true,
+            "chromInfoId": "hg19",
+            "autocompleteId": "OHJakQICQD6gTD7skx4EWA"
+          }
+        }
+      ],
+      "zoomLocks": {
+        "locksByViewUid": {},
+        "locksDict": {}
+      },
+      "locationLocks": {
+        "locksByViewUid": {},
+        "locksDict": {}
+      },
+      "valueScaleLocks": {
+        "locksByViewUid": {},
+        "locksDict": {}
+      }
+    };
+  //window.higlassApi;
+  window.hglib.createHgComponent(
+    document.getElementById('development-demo'),
+    viewConfig,
+    {bounded: true}
+  );
+</script>
+<script>
+  (function (i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function () {
+        (i[r].q = i[r].q || []).push(arguments)
+      }, i[r].l = 1 * new Date();
+    a = s.createElement(o),
+      m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m)
+  })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+  ga('create', 'UA-77756807-1', 'auto');
+  ga('send', 'pageview');
+</script>
+</html>
