@@ -345,6 +345,9 @@ const StackedBarTrack = (HGC, ...args) => {
     }
 
     exportSVG() {
+      const visibleAndFetched = this.visibleAndFetchedTiles();
+      visibleAndFetched.map((tile) => { this.initTile(tile) } );
+
       let track = null;
       let base = null;
 
