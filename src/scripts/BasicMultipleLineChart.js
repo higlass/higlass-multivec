@@ -120,6 +120,8 @@ const BasicMultipleLineChart = (HGC, ...args) => {
       let base = document.createElement('g');
       let track = base;
 
+      [base, track] = super.superSVG();
+
       base.setAttribute('class', 'exported-line-track');
       const output = document.createElement('g');
 

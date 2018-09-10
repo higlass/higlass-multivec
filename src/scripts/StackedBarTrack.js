@@ -354,6 +354,8 @@ const StackedBarTrack = (HGC, ...args) => {
       base = document.createElement('g');
       track = base;
 
+      [base, track] = super.superSVG();
+
       const output = document.createElement('g');
       track.appendChild(output);
 
@@ -367,6 +369,8 @@ const StackedBarTrack = (HGC, ...args) => {
       for (const tile of this.visibleAndFetchedTiles()) {
         const rotation = 0;
         const g = document.createElement('g');
+
+
 
         // place each sprite
         g.setAttribute(

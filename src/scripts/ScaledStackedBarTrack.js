@@ -289,6 +289,8 @@ const ScaledStackedBarTrack = (HGC, ...args) => {
       base = document.createElement('g');
       track = base;
 
+      [base, track] = super.superSVG();
+
       const output = document.createElement('g');
       track.appendChild(output);
 
