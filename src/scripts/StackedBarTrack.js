@@ -1,5 +1,13 @@
 import {mix} from 'mixwith';
 import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
+import { color } from 'd3-color';
+
+const colorToHex = (colorValue) => {
+    const c = color(colorValue);
+    const hex = PIXI.utils.rgb2hex([c.r / 255.0, c.g / 255.0, c.b / 255.0]);
+
+    return hex;
+};
 
 const StackedBarTrack = (HGC, ...args) => {
   if (!new.target) {
@@ -20,6 +28,18 @@ const StackedBarTrack = (HGC, ...args) => {
         min: null
       };
 
+    }
+
+    rerender(options, force) {
+      super.rerender(options, force);
+
+      this.options = options;
+
+      this.visibleAndFetchedTiles().forEach((tile) => {
+        this.renderTile(tile);
+      });
+
+      this.rescaleTiles();
     }
 
     /**
@@ -140,6 +160,9 @@ const StackedBarTrack = (HGC, ...args) => {
       let lowestY = this.dimensions[1];
 
       const width = 10;
+
+      graphics.beginFill(colorToHex(this.options.backgroundColor));
+      graphics.drawRect(0, 0, width * matrix.length, trackHeight);
 
       // if (this.options.barBorder && tile.tileData.zoomLevel === (this.tilesetInfo.resolutions.length - 1)) {
       //   //tile.barBorders = true;
