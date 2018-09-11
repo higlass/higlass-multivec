@@ -31,13 +31,8 @@ const StackedBarTrack = (HGC, ...args) => {
     }
 
     rerender(options, force) {
+      // super points to OneDimensionalMixin
       super.rerender(options, force);
-
-      this.options = options;
-
-      this.visibleAndFetchedTiles().forEach((tile) => {
-        this.renderTile(tile);
-      });
 
       this.rescaleTiles();
     }
