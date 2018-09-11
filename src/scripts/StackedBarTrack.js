@@ -161,7 +161,13 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const width = 10;
 
-      graphics.beginFill(colorToHex(this.options.backgroundColor));
+      if (this.options.backgroundColor == 'transparent') {
+        // set alpha to 0 for transparent background
+        graphics.beginFill(colorToHex(this.options.backgroundColor), 0);
+      } else {
+        graphics.beginFill(colorToHex(this.options.backgroundColor));
+      }
+
       graphics.drawRect(0, 0, width * matrix.length, trackHeight);
 
       // if (this.options.barBorder && tile.tileData.zoomLevel === (this.tilesetInfo.resolutions.length - 1)) {
