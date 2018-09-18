@@ -78,7 +78,7 @@ const viewconf = {
               "heatmapValueScaling": "log",
               "name": "all.KL.bed.multires.mv5",
               "scaledHeight": false,
-              "backgroundColor": "white",
+              "backgroundColor": "black",
               "sortLargestOnTop": true,
               "colorScale": [
                 "#FF0000",
@@ -203,7 +203,7 @@ describe('Test HiGlass Component', () => {
     });
 
     it('Exports a zoomed in SVG and then zooms out', (done) => {
-      hgc.instance().handleExportSVG();
+      // hgc.instance().handleExportSVG();
       hgc.instance().api.on('location', (data) => {
         console.log('location:', data);
       });
@@ -223,12 +223,15 @@ describe('Test HiGlass Component', () => {
 
     it ('Exports to SVG again', (done) => {
       console.log('test2');
-      hgc.instance().handleExportSVG();
+      // hgc.instance().handleExportSVG();
       const svgText = hgc.instance().api.exportAsSvg();
       const rectHeightIndex = svgText.indexOf('87.1567759');
 
       console.log('rectHeightIndex:', rectHeightIndex);
       expect(rectHeightIndex).to.be.below(0);
+
+      // make sure the background is black
+      expect(svgText.indexOf('black')).to.be.above(0);
 
       done();
     })
