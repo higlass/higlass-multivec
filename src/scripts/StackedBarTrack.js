@@ -156,19 +156,11 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const width = 10;
 
-      if (this.options.backgroundColor == 'transparent') {
-        // set alpha to 0 for transparent background
-        graphics.beginFill(colorToHex(this.options.backgroundColor), 0);
-      } else {
-        graphics.beginFill(colorToHex(this.options.backgroundColor));
-      }
+      // calls drawBackground in PixiTrack.js
+      this.drawBackground(matrix, graphics);
 
-      graphics.drawRect(0, 0, width * matrix.length, trackHeight);
-
-      // if (this.options.barBorder && tile.tileData.zoomLevel === (this.tilesetInfo.resolutions.length - 1)) {
-      //   //tile.barBorders = true;
-      //graphics.lineStyle(1, 0x000000, 1);
-      // }
+      // borders around each bar
+      (this.options.barBorder) ? graphics.lineStyle(1, 0x000000, 1) : undefined;
 
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
@@ -190,7 +182,8 @@ const StackedBarTrack = (HGC, ...args) => {
           if (lowestY > y)
             lowestY = y;
         }
-        //draw negative values
+
+        // draw negative values
         const negative = matrix[j][1];
         const valueToPixelsNegative = scaleLinear()
           .domain([-Math.abs(negativeMax), 0])
@@ -204,24 +197,6 @@ const StackedBarTrack = (HGC, ...args) => {
           graphics.drawRect(x, y, width, height);
           negativeStackedHeight = negativeStackedHeight + height;
         }
-
-        // todo this background is hacky. try doing it with sprites?
-        // // sets background to black if black option enabled
-        // const backgroundColor = this.options.backgroundColor;
-        // if (backgroundColor === 'black') {
-        //   this.options.labelColor = 'white';
-        //   graphics.beginFill(backgroundColor);
-        //   graphics.drawRect(x, 0, width, trackHeight - positiveStackedHeight); // positive background
-        //   graphics.drawRect(x, negativeStackedHeight + positiveTrackHeight,    // negative background
-        //     width, negativeTrackHeight - negativeStackedHeight);
-        //
-        //   this.addSVGInfo(tile, x, 0, width, trackHeight - positiveStackedHeight, 'black'); // positive
-        //   this.addSVGInfo(tile, x, negativeStackedHeight + positiveTrackHeight, width,
-        //     negativeTrackHeight - negativeStackedHeight, 'black'); // negative
-        //
-        //   positiveStackedHeight = 0;
-        //   negativeStackedHeight = 0;
-        // }
 
       }
 
