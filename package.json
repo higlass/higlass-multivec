@@ -37,7 +37,7 @@
     "webpack-dev-server": "^3.1.8"
   },
   "scripts": {
-    "build": "./node_modules/webpack/bin/webpack.js --config webpack.prod.js --mode production",
+    "build": "NODE_ENV=production ./node_modules/webpack/bin/webpack.js --mode production",
     "build-debug": "NODE_ENV=development; ./node_modules/webpack/bin/webpack.js --mode=development",
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --open",
     "test-watch": "NODE_ENV=development; npm run build-debug && ./node_modules/karma/bin/karma start karma.conf.js",
