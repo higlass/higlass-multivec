@@ -56,13 +56,27 @@ Configure the track in your view config; you should be all set from here!
 For an example, see [`src/index.html`](src/index.html).
 ## Development
 
+### Testing
+
+To run the test suite:
+
+```
+npm run test-watch
+```
+
+
 ### Installation
 
 ```bash
-$ git clone https://github.com/daniellenguyen/higlass-multivec.git
+$ git clone https://github.com/hms-dbmi/higlass-multivec.git
+$ cd higlass-multivec
 $ npm install
 ```
+If you have a local copy of higlass, you can then run this command in the higlass-multivec directory:
 
+```bash
+npm link higlass
+```
 
 ### Commands
 
