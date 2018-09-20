@@ -19,7 +19,7 @@ before_script:
     - npm install --quiet -g gulp
     - npm install
 script:
-    - npm run compile
+    - npm run build
     - xvfb-maybe ./node_modules/karma/bin/karma start karma.conf.js --single-run
 before_deploy:
     - npm run prerelease
