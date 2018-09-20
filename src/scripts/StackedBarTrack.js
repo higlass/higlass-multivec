@@ -69,6 +69,14 @@ const StackedBarTrack = (HGC, ...args) => {
     rescaleTiles() {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
+      visibleAndFetched.map(tile => {
+        if (tile.minValue > this.maxAndMin.min
+          && tile.maxValue > this.maxAndMin.max) {
+          this.maxAndMin.min = tile.minValue;
+          this.maxAndMin.max = tile.maxValue;
+        }
+      });
+
       visibleAndFetched.map(a => {
         const valueToPixels = scaleLinear()
           .domain([0, this.maxAndMin.max + Math.abs(this.maxAndMin.min)])
@@ -160,7 +168,9 @@ const StackedBarTrack = (HGC, ...args) => {
       this.drawBackground(matrix, graphics);
 
       // borders around each bar
-      (this.options.barBorder) ? graphics.lineStyle(1, 0x000000, 1) : undefined;
+      if (this.options.barBorder) {
+        graphics.lineStyle(1, 0x000000, 1);
+      }
 
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
