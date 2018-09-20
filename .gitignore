@@ -1,4 +1,6 @@
 *.un~
+*.swn
+*.swo
 *.swp
 node_modules
 dist
