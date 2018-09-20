@@ -19,7 +19,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     publicPath: '/'
   },
-  devtool: 'cheap-source-map',
+  devtool: process.env.NODE_ENV === 'production' ? false : 'cheap-source-map',
   devServer: {
     contentBase: [
       path.join(__dirname, 'node_modules/higlass/build'),
