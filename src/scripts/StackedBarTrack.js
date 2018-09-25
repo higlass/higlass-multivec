@@ -70,8 +70,7 @@ const StackedBarTrack = (HGC, ...args) => {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       visibleAndFetched.map(tile => {
-        if (tile.minValue > this.maxAndMin.min
-          && tile.maxValue > this.maxAndMin.max) {
+        if (tile.minValue + tile.maxValue > this.maxAndMin.min + this.maxAndMin.max) {
           this.maxAndMin.min = tile.minValue;
           this.maxAndMin.max = tile.maxValue;
         }
