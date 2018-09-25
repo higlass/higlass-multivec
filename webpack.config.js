@@ -161,6 +161,10 @@ module.exports = {
       template: './src/blog-post.html',
       filename: './blog-post.html',
     }),
+    new HtmlWebPackPlugin({
+      template: './src/bedgraph-comparison.html',
+      filename: './bedgraph-comparison.html',
+    }),
     new UnminifiedWebpackPlugin(),
   ],
 };
