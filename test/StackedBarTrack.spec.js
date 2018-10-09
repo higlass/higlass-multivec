@@ -43,7 +43,8 @@ register({
 });
 
 
-const viewconf = {
+const viewconf = 
+{
   "editable": true,
   "zoomFixed": false,
   "trackSourceServers": [
@@ -163,6 +164,155 @@ const viewconf = {
     "locksDict": {}
   }
 };
+const viewconfAlex1 = 
+{
+  "editable": true,
+  "zoomFixed": false,
+  "trackSourceServers": [
+    "http://explorer.altius.org/api/v1",
+    "http://higlass.io/api/v1"
+  ],
+  "exportViewUrl": "http://explorer.altius.org/api/v1/viewconfs/",
+  "views": [
+    {
+      "tracks": {
+        "top": [
+          {
+            "type": "combined",
+            "uid": "UzVmW1iYSaSmUGlAeev9fw",
+            "height": 168,
+            "width": 770,
+            "contents": [
+              {
+                "name": "locus_reg_comp_maj_dist10000.bedGraph.binned.mtx.qcat.multires.mv5",
+                "created": "2018-08-30T23:23:44.875875Z",
+                "server": "http://explorer.altius.org/api/v1",
+                "tilesetUid": "Flm-wUf_QgKLkeZ5GqlTXQ",
+                "uid": "PoEMRREZQrSJ3Ps2QnixUw",
+                "type": "horizontal-stacked-bar",
+                "options": {
+                  "labelPosition": "topLeft",
+                  "labelColor": "black",
+                  "labelTextOpacity": 0.4,
+                  "valueScaling": "linear",
+                  "trackBorderWidth": 0,
+                  "trackBorderColor": "black",
+                  "backgroundColor": "white",
+                  "barBorder": true,
+                  "scaledHeight": false,
+                  "sortLargestOnTop": true,
+                  "colorScale": [
+                    "#C3C3C3",
+                    "#BB2DD4",
+                    "#05C1D9",
+                    "#7A00FF",
+                    "#FE8102",
+                    "#4A6876",
+                    "#FFE500",
+                    "#0467FD",
+                    "#07AF00",
+                    "#692108",
+                    "#B9461D",
+                    "#4C7D14",
+                    "#009588",
+                    "#414613",
+                    "#FF0000",
+                    "#08245B"
+                  ],
+                  "name": "locus_reg_comp_maj_dist10000.bedGraph.binned.mtx.qcat.multires.mv5"
+                },
+                "width": 770,
+                "height": 168,
+                "resolutions": [
+                  13107200,
+                  6553600,
+                  3276800,
+                  1638400,
+                  819200,
+                  409600,
+                  204800,
+                  102400,
+                  51200,
+                  25600,
+                  12800,
+                  6400,
+                  3200,
+                  1600,
+                  800,
+                  400,
+                  200
+                ],
+                "position": "top"
+              },
+              {
+                "uid": "Yc90UhFDTDeFWMc_Oe4O0g",
+                "type": "viewport-projection-horizontal",
+                "fromViewUid": "N0uHVmRERtWIarBP1GZXHA",
+                "options": {
+                  "projectionFillColor": "#777",
+                  "projectionStrokeColor": "#777",
+                  "projectionFillOpacity": 0.3,
+                  "projectionStrokeOpacity": 0.7,
+                  "strokeWidth": 1
+                },
+                "name": "ViewportProjection",
+                "position": "top",
+                "width": 770,
+                "height": 168
+              }
+            ],
+            "position": "top",
+            "options": {}
+          }
+        ],
+        "left": [],
+        "center": [],
+        "right": [],
+        "bottom": [],
+        "whole": [],
+        "gallery": []
+      },
+      "initialXDomain": [
+        2917504168.8394694,
+        2917516595.0753956
+      ],
+      "initialYDomain": [
+        2924149066.47558,
+        2924149389.234955
+      ],
+      "layout": {
+        "w": 12,
+        "h": 6,
+        "x": 0,
+        "y": 0,
+        "i": "V4Zyes86TQOdh4j8UV7D_A",
+        "moved": false,
+        "static": false
+      },
+      "uid": "V4Zyes86TQOdh4j8UV7D_A",
+      "genomePositionSearchBoxVisible": true,
+      "genomePositionSearchBox": {
+        "autocompleteServer": "http://higlass.io/api/v1",
+        "chromInfoServer": "http://higlass.io/api/v1",
+        "visible": true,
+        "chromInfoId": "hg38",
+        "autocompleteId": "P0PLbQMwTYGy-5uPIQid7A"
+      }
+    }
+  ],
+  "zoomLocks": {
+    "locksByViewUid": {},
+    "locksDict": {}
+  },
+  "locationLocks": {
+    "locksByViewUid": {},
+    "locksDict": {}
+  },
+  "valueScaleLocks": {
+    "locksByViewUid": {},
+    "locksDict": {}
+  }
+}
 
 import Adapter from 'enzyme-adapter-react-16';
 configure({ adapter: new Adapter() });
@@ -172,6 +322,42 @@ describe('Test HiGlass Component', () => {
   let div = null;
 
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 7000;
+  describe('', () => {
+    it('Cleans up previously created instances and mounts a new component', (done) => {
+      if (hgc) {
+        hgc.unmount();
+        hgc.detach();
+      }
+
+      if (div) {
+        global.document.body.removeChild(div);
+      }
+
+      div = global.document.createElement('div');
+      global.document.body.appendChild(div);
+
+      div.setAttribute('style', 'width:800px;background-color: lightgreen');
+      div.setAttribute('id', 'simple-hg-component');
+
+      hgc = mount(<HiGlassComponent
+        options={{ bounded: false }}
+        viewConfig={viewconfAlex1}
+      />, { attachTo: div });
+
+      hgc.update();
+      console.log('waitForTilesLoaded:', waitForTilesLoaded);
+
+      waitForTilesLoaded(hgc.instance(), done);
+      // done();
+    });
+
+    it ("Exports to SVG", (done) => {
+      hgc.instance().handleExportSVG();
+
+      done();
+    })
+  });
+  return;
 
   describe('', () => {
     it('Cleans up previously created instances and mounts a new component', (done) => {
@@ -220,6 +406,7 @@ describe('Test HiGlass Component', () => {
       console.log('test1');
       waitForTilesLoaded(hgc.instance(), done);
     });
+    return;
 
     it ('Exports to SVG again', (done) => {
       console.log('test2');
