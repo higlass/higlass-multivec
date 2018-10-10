@@ -179,7 +179,7 @@ const viewconfAlex1 =
         "top": [
           {
             "type": "combined",
-            "uid": "UzVmW1iYSaSmUGlAeev9fw",
+            "uid": "aa",
             "height": 168,
             "width": 770,
             "contents": [
@@ -289,7 +289,7 @@ const viewconfAlex1 =
         "moved": false,
         "static": false
       },
-      "uid": "V4Zyes86TQOdh4j8UV7D_A",
+      "uid": "aa",
       "genomePositionSearchBoxVisible": true,
       "genomePositionSearchBox": {
         "autocompleteServer": "http://higlass.io/api/v1",
@@ -352,9 +352,17 @@ describe('Test HiGlass Component', () => {
     });
 
     it ("Exports to SVG", (done) => {
-      hgc.instance().handleExportSVG();
+      //hgc.instance().handleExportSVG();
 
       done();
+    })
+
+    it ("Zooms to another location", (done) => {
+      hgc.instance().zoomTo('aa', 0, 2400000, 0, 2500000)
+
+      setTimeout(() => {
+        hgc.instance().handleExportSVG();
+      }, 1000)
     })
   });
   return;
