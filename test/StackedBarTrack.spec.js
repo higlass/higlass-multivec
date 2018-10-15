@@ -43,6 +43,9 @@ register({
 });
 
 
+export const getTrackObjectFromHGC = (hgc, viewUid, trackUid) => hgc
+  .tiledPlots[viewUid].trackRenderer.getTrackObject(trackUid);
+
 const viewconf = 
 {
   "editable": true,
@@ -178,7 +181,12 @@ const viewconfAlex1 =
       "tracks": {
         "top": [
           {
-            "type": "top-axis"
+            "type": "top-axis",
+            "height": 20,
+            "position": "top",
+            "uid": "DysOQksLQpau5AzDB7HHRQ",
+            "name": "Top Axis",
+            "options": {}
           },
           {
             "type": "combined",
@@ -191,11 +199,15 @@ const viewconfAlex1 =
                 "created": "2017-07-17T14:16:45.346835Z",
                 "server": "http://higlass.io/api/v1",
                 "tilesetUid": "NyITQvZsS_mOFNlz5C2LJg",
-                "uid": "UqbmiMzqRmu21UHxZ4nVnA",
+                "uid": "xyx",
                 "type": "horizontal-chromosome-labels",
                 "options": {
                   "showMousePosition": false,
-                  "mousePositionColor": "#999999"
+                  "mousePositionColor": "#999999",
+                  "color": "#777777",
+                  "stroke": "#FFFFFF",
+                  "fontSize": 12,
+                  "fontIsAligned": false
                 },
                 "width": 1811,
                 "height": 30,
@@ -227,7 +239,11 @@ const viewconfAlex1 =
                   "trackBorderColor": "black",
                   "showMousePosition": false,
                   "mousePositionColor": "#999999",
-                  "name": "GeneAnnotations(hg38)"
+                  "name": "GeneAnnotations(hg38)",
+                  "fontSize": 11,
+                  "geneAnnotationHeight": 10,
+                  "geneLabelPosition": "outside",
+                  "geneStrandSpacing": 4
                 },
                 "width": 1811,
                 "height": 55,
@@ -249,14 +265,14 @@ const viewconfAlex1 =
                 "created": "2018-08-30T22:53:24.984599Z",
                 "server": "http://explorer.altius.org/api/v1",
                 "tilesetUid": "T6fMrq_zSNa4-ZoJGEMfaw",
-                "uid": "e7d_4xXsR2SXdT1YddXz9g",
+                "uid": "xx",
                 "type": "horizontal-stacked-bar",
                 "options": {
                   "labelPosition": "topLeft",
                   "labelColor": "black",
                   "labelTextOpacity": 0.4,
                   "valueScaling": "exponential",
-                  "trackBorderWidth": 0,
+                  "trackBorderWidth": 1,
                   "trackBorderColor": "black",
                   "backgroundColor": "white",
                   "barBorder": true,
@@ -326,23 +342,23 @@ const viewconfAlex1 =
         "gallery": []
       },
       "initialXDomain": [
-        672747068.96925,
-        672952406.8776586
+        672769742.1501925,
+        672785652.0868267
       ],
       "initialYDomain": [
-        672829087.5364432,
-        672880450.359474
+        672792990.4126441,
+        672793341.6709855
       ],
       "layout": {
         "w": 12,
-        "h": 12,
+        "h": 13,
         "x": 0,
         "y": 0,
         "i": "V4Zyes86TQOdh4j8UV7D_A",
         "moved": false,
         "static": false
       },
-      "uid": "V4Zyes86TQOdh4j8UV7D_A",
+      "uid": "aa",
       "genomePositionSearchBoxVisible": true,
       "genomePositionSearchBox": {
         "autocompleteServer": "http://higlass.io/api/v1",
@@ -446,19 +462,27 @@ describe('Test HiGlass Component', () => {
       />, { attachTo: div });
 
       hgc.update();
-      console.log('waitForTilesLoaded:', waitForTilesLoaded);
 
       waitForTilesLoaded(hgc.instance(), done);
       // done();
     });
 
     it ("Exports to SVG", (done) => {
+      // console.log('exporting svg-----------------------------');
       hgc.instance().handleExportSVG();
 
-      done();
+      setTimeout(() => {
+        hgc.instance().zoomTo('aa', 672764000, 672778000, 672764000, 672778000);
+        hgc.instance().handleExportSVG();
+
+        const trackObject = getTrackObjectFromHGC(hgc.instance(), 'aa', 'xx');
+        const maxAndMin = trackObject.maxAndMin;
+
+        expect(maxAndMin.min).to.be.above(0);
+        done();
+      }, 500);
     })
   });
-  return;
 
   describe('', () => {
     it('Cleans up previously created instances and mounts a new component', (done) => {
@@ -483,7 +507,6 @@ describe('Test HiGlass Component', () => {
       />, { attachTo: div });
 
       hgc.update();
-      console.log('waitForTilesLoaded:', waitForTilesLoaded);
 
       waitForTilesLoaded(hgc.instance(), done);
       // done();
@@ -492,7 +515,7 @@ describe('Test HiGlass Component', () => {
     it('Exports a zoomed in SVG and then zooms out', (done) => {
       // hgc.instance().handleExportSVG();
       hgc.instance().api.on('location', (data) => {
-        console.log('location:', data);
+        // console.log('location:', data);
       });
       const svgText = hgc.instance().api.exportAsSvg();
       const rectHeightIndex = svgText.indexOf('87.1567759');
@@ -504,17 +527,14 @@ describe('Test HiGlass Component', () => {
         1768077217.7076137, 
         1768076496.9583907);
 
-      console.log('test1');
       waitForTilesLoaded(hgc.instance(), done);
     });
 
     it ('Exports to SVG again', (done) => {
-      console.log('test2');
       // hgc.instance().handleExportSVG();
       const svgText = hgc.instance().api.exportAsSvg();
       const rectHeightIndex = svgText.indexOf('87.1567759');
 
-      console.log('rectHeightIndex:', rectHeightIndex);
       expect(rectHeightIndex).to.be.below(0);
 
       // make sure the background is black

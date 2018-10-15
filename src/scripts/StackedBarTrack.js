@@ -43,7 +43,7 @@ const StackedBarTrack = (HGC, ...args) => {
       this.maxAndMin.min = this.scale.minValue;
 
       // console.log('initTile:', tile.tileId, this.maxAndMin);
-      tile.minValue = this.scale.minValue;
+      // tile.minValue = this.scale.minValue;
 
       this.localColorToHexScale();
 
@@ -113,13 +113,19 @@ const StackedBarTrack = (HGC, ...args) => {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       visibleAndFetched.map(tile => {
-        // console.log('tile:', tile);
+        // console.log('tile:', tile.tileId, tile.minValue, tile.maxValue);
 
         if (tile.minValue + tile.maxValue > this.maxAndMin.min + this.maxAndMin.max) {
           this.maxAndMin.min = tile.minValue;
           this.maxAndMin.max = tile.maxValue;
         }
+          // if (!(this.maxAndMin && this.maxAndMin.min && this.maxAndMin.min < tile.minValue)) {
+          //   this.maxAndMin.min = tile.minValue;
+          // }
 
+          // if (!(this.maxAndMin && this.maxAndMin.max && this.maxAndMin.max > tile.maxValue)) {
+          //   this.maxAndMin.max = tile.maxValue;
+          // }
         // console.log('this.maxAndMin:', this.maxAndMin);
       });
     }
@@ -131,6 +137,8 @@ const StackedBarTrack = (HGC, ...args) => {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       this.syncMaxAndMin();
+
+      // console.log('maxAndMin:', this.maxAndMin);
 
       visibleAndFetched.map(a => {
         const valueToPixels = scaleLinear()
@@ -222,7 +230,7 @@ const StackedBarTrack = (HGC, ...args) => {
         const matrix = this.simpleUnFlatten(tile, flattenedArray);
 
         const maxAndMin = this.findMaxAndMin(matrix);
-        // console.log('unflatten', maxAndMin.min, maxAndMin.max);
+        // console.log('unflatten', tile.tileId, maxAndMin.min, maxAndMin.max);
 
         tile.matrix = matrix;
         tile.maxValue = maxAndMin.max;
@@ -327,7 +335,11 @@ const StackedBarTrack = (HGC, ...args) => {
 
       // get amount of trackHeight reserved for positive and for negative
       const unscaledHeight = positiveMax + (Math.abs(negativeMax));
+
+      // fraction of the track devoted to positive values
       const positiveTrackHeight = (positiveMax * trackHeight) / unscaledHeight;
+
+      // fraction of the track devoted to negative values
       const negativeTrackHeight = (Math.abs(negativeMax) * trackHeight) / unscaledHeight;
 
       // console.log('positiveTrackHeight', tile.tileId, positiveTrackHeight);
@@ -390,7 +402,7 @@ const StackedBarTrack = (HGC, ...args) => {
       sprite.x = this._xScale(tileX);
       tile.sprite = sprite;
       tile.lowestY = lowestY;
-      // console.log('new lowestY:', lowestY, tile.svgData);;
+      // console.log('new lowestY:', tile.tileId, lowestY, tile.svgData);;
     }
 
     /**
