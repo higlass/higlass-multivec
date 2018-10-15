@@ -14,8 +14,8 @@ module.exports = function(config) {
       'node_modules/react-bootstrap/dist/react-bootstrap.js',
       'node_modules/bootstrap/dist/css/bootstrap.min.css',
       'test/**/*.+(js|jsx)',
-      'node_modules/higlass/dist/styles/hglib.css',
-      'node_modules/higlass/dist/scripts/hglib.js',
+      'node_modules/higlass/dist/hglib.css',
+      'node_modules/higlass/dist/hglib.js',
     ],
 
     preprocessors: {

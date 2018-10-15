@@ -43,6 +43,9 @@ register({
 });
 
 
+export const getTrackObjectFromHGC = (hgc, viewUid, trackUid) => hgc
+  .tiledPlots[viewUid].trackRenderer.getTrackObject(trackUid);
+
 const viewconf = 
 {
   "editable": true,
@@ -178,51 +181,122 @@ const viewconfAlex1 =
       "tracks": {
         "top": [
           {
+            "type": "top-axis",
+            "height": 20,
+            "position": "top",
+            "uid": "DysOQksLQpau5AzDB7HHRQ",
+            "name": "Top Axis",
+            "options": {}
+          },
+          {
             "type": "combined",
-            "uid": "UzVmW1iYSaSmUGlAeev9fw",
-            "height": 168,
-            "width": 770,
+            "uid": "XzUV-Yk0S520fLEBgCM-SA",
+            "height": 30,
+            "width": 1811,
             "contents": [
               {
-                "name": "locus_reg_comp_maj_dist10000.bedGraph.binned.mtx.qcat.multires.mv5",
-                "created": "2018-08-30T23:23:44.875875Z",
+                "name": "ChromosomeAxis",
+                "created": "2017-07-17T14:16:45.346835Z",
+                "server": "http://higlass.io/api/v1",
+                "tilesetUid": "NyITQvZsS_mOFNlz5C2LJg",
+                "uid": "xyx",
+                "type": "horizontal-chromosome-labels",
+                "options": {
+                  "showMousePosition": false,
+                  "mousePositionColor": "#999999",
+                  "color": "#777777",
+                  "stroke": "#FFFFFF",
+                  "fontSize": 12,
+                  "fontIsAligned": false
+                },
+                "width": 1811,
+                "height": 30,
+                "position": "top"
+              }
+            ],
+            "position": "top",
+            "options": {}
+          },
+          {
+            "type": "combined",
+            "uid": "B-8YI-7ART6hLvth3pl6EA",
+            "height": 55,
+            "width": 1811,
+            "contents": [
+              {
+                "name": "Gene Annotations (hg38)",
+                "created": "2017-07-14T15:27:46.989053Z",
+                "server": "http://higlass.io/api/v1",
+                "tilesetUid": "P0PLbQMwTYGy-5uPIQid7A",
+                "uid": "IhMLwYPAQFS8Pc64KThWDg",
+                "type": "horizontal-gene-annotations",
+                "options": {
+                  "labelColor": "black",
+                  "labelPosition": "hidden",
+                  "plusStrandColor": "blue",
+                  "minusStrandColor": "red",
+                  "trackBorderWidth": 0,
+                  "trackBorderColor": "black",
+                  "showMousePosition": false,
+                  "mousePositionColor": "#999999",
+                  "name": "GeneAnnotations(hg38)",
+                  "fontSize": 11,
+                  "geneAnnotationHeight": 10,
+                  "geneLabelPosition": "outside",
+                  "geneStrandSpacing": 4
+                },
+                "width": 1811,
+                "height": 55,
+                "header": "1\t2\t3\t4\t5\t6\t7\t8\t9\t10\t11\t12\t13\t14",
+                "position": "top"
+              }
+            ],
+            "position": "top",
+            "options": {}
+          },
+          {
+            "type": "combined",
+            "uid": "AhhvfB7vTrK210oytPcGcQ",
+            "height": 178,
+            "width": 1811,
+            "contents": [
+              {
+                "name": "hg38.all.KL.bed.multires.mv5",
+                "created": "2018-08-30T22:53:24.984599Z",
                 "server": "http://explorer.altius.org/api/v1",
-                "tilesetUid": "Flm-wUf_QgKLkeZ5GqlTXQ",
-                "uid": "PoEMRREZQrSJ3Ps2QnixUw",
+                "tilesetUid": "T6fMrq_zSNa4-ZoJGEMfaw",
+                "uid": "xx",
                 "type": "horizontal-stacked-bar",
                 "options": {
                   "labelPosition": "topLeft",
                   "labelColor": "black",
                   "labelTextOpacity": 0.4,
-                  "valueScaling": "linear",
-                  "trackBorderWidth": 0,
+                  "valueScaling": "exponential",
+                  "trackBorderWidth": 1,
                   "trackBorderColor": "black",
                   "backgroundColor": "white",
                   "barBorder": true,
                   "scaledHeight": false,
                   "sortLargestOnTop": true,
                   "colorScale": [
-                    "#C3C3C3",
-                    "#BB2DD4",
-                    "#05C1D9",
-                    "#7A00FF",
-                    "#FE8102",
-                    "#4A6876",
-                    "#FFE500",
-                    "#0467FD",
-                    "#07AF00",
-                    "#692108",
-                    "#B9461D",
-                    "#4C7D14",
-                    "#009588",
-                    "#414613",
                     "#FF0000",
-                    "#08245B"
+                    "#FF4500",
+                    "#32CD32",
+                    "#008000",
+                    "#006400",
+                    "#C2E105",
+                    "#FFFF00",
+                    "#66CDAA",
+                    "#8A91D0",
+                    "#CD5C5C",
+                    "#E9967A",
+                    "#BDB76B",
+                    "#808080",
+                    "#C0C0C0",
+                    "#FFFFFF"
                   ],
-                  "name": "locus_reg_comp_maj_dist10000.bedGraph.binned.mtx.qcat.multires.mv5"
+                  "name": "hg38.all.KL.bed.multires.mv5"
                 },
-                "width": 770,
-                "height": 168,
                 "resolutions": [
                   13107200,
                   6553600,
@@ -242,25 +316,20 @@ const viewconfAlex1 =
                   400,
                   200
                 ],
-                "position": "top"
-              },
-              {
-                "uid": "Yc90UhFDTDeFWMc_Oe4O0g",
-                "type": "viewport-projection-horizontal",
-                "fromViewUid": "N0uHVmRERtWIarBP1GZXHA",
-                "options": {
-                  "projectionFillColor": "#777",
-                  "projectionStrokeColor": "#777",
-                  "projectionFillOpacity": 0.3,
-                  "projectionStrokeOpacity": 0.7,
-                  "strokeWidth": 1
-                },
-                "name": "ViewportProjection",
                 "position": "top",
-                "width": 770,
-                "height": 168
+                "width": 1811,
+                "height": 178
               }
             ],
+            "position": "top",
+            "options": {}
+          },
+          {
+            "type": "combined",
+            "uid": "UzVmW1iYSaSmUGlAeev9fw",
+            "height": 168,
+            "width": 1811,
+            "contents": [],
             "position": "top",
             "options": {}
           }
@@ -273,23 +342,23 @@ const viewconfAlex1 =
         "gallery": []
       },
       "initialXDomain": [
-        2917504168.8394694,
-        2917516595.0753956
+        672769742.1501925,
+        672785652.0868267
       ],
       "initialYDomain": [
-        2924149066.47558,
-        2924149389.234955
+        672792990.4126441,
+        672793341.6709855
       ],
       "layout": {
         "w": 12,
-        "h": 6,
+        "h": 13,
         "x": 0,
         "y": 0,
         "i": "V4Zyes86TQOdh4j8UV7D_A",
         "moved": false,
         "static": false
       },
-      "uid": "V4Zyes86TQOdh4j8UV7D_A",
+      "uid": "aa",
       "genomePositionSearchBoxVisible": true,
       "genomePositionSearchBox": {
         "autocompleteServer": "http://higlass.io/api/v1",
@@ -301,12 +370,60 @@ const viewconfAlex1 =
     }
   ],
   "zoomLocks": {
-    "locksByViewUid": {},
-    "locksDict": {}
+    "locksByViewUid": {
+      "V4Zyes86TQOdh4j8UV7D_A": "BurowhwMTmSbp9x-aS-xEg"
+    },
+    "locksDict": {
+      "BurowhwMTmSbp9x-aS-xEg": {
+        "V4Zyes86TQOdh4j8UV7D_A": [
+          2923791782.255352,
+          2923798379.8138356,
+          91.75218915939331
+        ],
+        "uid": "BurowhwMTmSbp9x-aS-xEg"
+      }
+    }
   },
   "locationLocks": {
-    "locksByViewUid": {},
-    "locksDict": {}
+    "locksByViewUid": {
+      "LiiO1Fs-T7W78gKfD7gvWQ": "bv148xQ5TIihjK8vta2ZyQ",
+      "XM-B2LPcTlGS5EhixxpX6A": "bv148xQ5TIihjK8vta2ZyQ",
+      "N0uHVmRERtWIarBP1GZXHA": "P-BMOkUVQtKPyvMtNnprZA",
+      "V4Zyes86TQOdh4j8UV7D_A": "P-BMOkUVQtKPyvMtNnprZA"
+    },
+    "locksDict": {
+      "bv148xQ5TIihjK8vta2ZyQ": {
+        "N0uHVmRERtWIarBP1GZXHA": [
+          2266356132.2537093,
+          2266341124.2021,
+          19.305949211120605
+        ],
+        "XM-B2LPcTlGS5EhixxpX6A": [
+          672870206.853404,
+          672903745.59448,
+          90.8034143447876
+        ],
+        "LiiO1Fs-T7W78gKfD7gvWQ": [
+          2266362674.127864,
+          2266329759.8567386,
+          14.535412788391113
+        ],
+        "uid": "bv148xQ5TIihjK8vta2ZyQ"
+      },
+      "P-BMOkUVQtKPyvMtNnprZA": {
+        "N0uHVmRERtWIarBP1GZXHA": [
+          2923791947.5,
+          2923791961,
+          10.65656566619873
+        ],
+        "V4Zyes86TQOdh4j8UV7D_A": [
+          2923791782.255352,
+          2923798379.8138356,
+          91.75218915939331
+        ],
+        "uid": "P-BMOkUVQtKPyvMtNnprZA"
+      }
+    }
   },
   "valueScaleLocks": {
     "locksByViewUid": {},
@@ -345,19 +462,27 @@ describe('Test HiGlass Component', () => {
       />, { attachTo: div });
 
       hgc.update();
-      console.log('waitForTilesLoaded:', waitForTilesLoaded);
 
       waitForTilesLoaded(hgc.instance(), done);
       // done();
     });
 
     it ("Exports to SVG", (done) => {
+      // console.log('exporting svg-----------------------------');
       hgc.instance().handleExportSVG();
 
-      done();
+      setTimeout(() => {
+        hgc.instance().zoomTo('aa', 672764000, 672778000, 672764000, 672778000);
+        hgc.instance().handleExportSVG();
+
+        const trackObject = getTrackObjectFromHGC(hgc.instance(), 'aa', 'xx');
+        const maxAndMin = trackObject.maxAndMin;
+
+        expect(maxAndMin.min).to.be.above(0);
+        done();
+      }, 500);
     })
   });
-  return;
 
   describe('', () => {
     it('Cleans up previously created instances and mounts a new component', (done) => {
@@ -382,7 +507,6 @@ describe('Test HiGlass Component', () => {
       />, { attachTo: div });
 
       hgc.update();
-      console.log('waitForTilesLoaded:', waitForTilesLoaded);
 
       waitForTilesLoaded(hgc.instance(), done);
       // done();
@@ -391,7 +515,7 @@ describe('Test HiGlass Component', () => {
     it('Exports a zoomed in SVG and then zooms out', (done) => {
       // hgc.instance().handleExportSVG();
       hgc.instance().api.on('location', (data) => {
-        console.log('location:', data);
+        // console.log('location:', data);
       });
       const svgText = hgc.instance().api.exportAsSvg();
       const rectHeightIndex = svgText.indexOf('87.1567759');
@@ -403,18 +527,14 @@ describe('Test HiGlass Component', () => {
         1768077217.7076137, 
         1768076496.9583907);
 
-      console.log('test1');
       waitForTilesLoaded(hgc.instance(), done);
     });
-    return;
 
     it ('Exports to SVG again', (done) => {
-      console.log('test2');
       // hgc.instance().handleExportSVG();
       const svgText = hgc.instance().api.exportAsSvg();
       const rectHeightIndex = svgText.indexOf('87.1567759');
 
-      console.log('rectHeightIndex:', rectHeightIndex);
       expect(rectHeightIndex).to.be.below(0);
 
       // make sure the background is black
