@@ -43,8 +43,8 @@ register({
 });
 
 
-export const getTrackObjectFromHGC = (hgc, viewUid, trackUid) => hgc
-  .tiledPlots[viewUid].trackRenderer.getTrackObject(trackUid);
+// export const getTrackObjectFromHGC = (hgc, viewUid, trackUid) => hgc
+//   .tiledPlots[viewUid].trackRenderer.getTrackObject(trackUid);
 
 const viewconf = 
 {
@@ -500,48 +500,48 @@ describe('Test HiGlass Component', () => {
 
   });
 
-    describe('Second version', () => {
-    it('Cleans up previously created instances and mounts a new component', (done) => {
-      if (hgc) {
-        hgc.unmount();
-        hgc.detach();
-      }
+  //   describe('Second version', () => {
+  //   it('Cleans up previously created instances and mounts a new component', (done) => {
+  //     if (hgc) {
+  //       hgc.unmount();
+  //       hgc.detach();
+  //     }
 
-      if (div) {
-        global.document.body.removeChild(div);
-      }
+  //     if (div) {
+  //       global.document.body.removeChild(div);
+  //     }
 
-      div = global.document.createElement('div');
-      global.document.body.appendChild(div);
+  //     div = global.document.createElement('div');
+  //     global.document.body.appendChild(div);
 
-      div.setAttribute('style', 'width:800px;background-color: lightgreen');
-      div.setAttribute('id', 'simple-hg-component');
+  //     div.setAttribute('style', 'width:800px;background-color: lightgreen');
+  //     div.setAttribute('id', 'simple-hg-component');
 
-      hgc = mount(<HiGlassComponent
-        options={{ bounded: false }}
-        viewConfig={viewconfAlex1}
-      />, { attachTo: div });
+  //     hgc = mount(<HiGlassComponent
+  //       options={{ bounded: false }}
+  //       viewConfig={viewconfAlex1}
+  //     />, { attachTo: div });
 
-      hgc.update();
+  //     hgc.update();
 
-      waitForTilesLoaded(hgc.instance(), done);
-      // done();
-    });
+  //     waitForTilesLoaded(hgc.instance(), done);
+  //     // done();
+  //   });
 
-    it ("Exports to SVG", (done) => {
-      // console.log('exporting svg-----------------------------');
-      hgc.instance().handleExportSVG();
+  //   it ("Exports to SVG", (done) => {
+  //     // console.log('exporting svg-----------------------------');
+  //     hgc.instance().handleExportSVG();
 
-      setTimeout(() => {
-        hgc.instance().zoomTo('aa', 672764000, 672778000, 672764000, 672778000);
-        hgc.instance().handleExportSVG();
+  //     setTimeout(() => {
+  //       hgc.instance().zoomTo('aa', 672764000, 672778000, 672764000, 672778000);
+  //       hgc.instance().handleExportSVG();
 
-        const trackObject = getTrackObjectFromHGC(hgc.instance(), 'aa', 'xx');
-        const maxAndMin = trackObject.maxAndMin;
+  //       const trackObject = getTrackObjectFromHGC(hgc.instance(), 'aa', 'xx');
+  //       const maxAndMin = trackObject.maxAndMin;
 
-        expect(maxAndMin.min).to.be.above(0);
-        done();
-      }, 500);
-    })
-  });
+  //       expect(maxAndMin.min).to.be.above(0);
+  //       done();
+  //     }, 500);
+  //   })
+  // });
 });
