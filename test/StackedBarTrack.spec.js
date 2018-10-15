@@ -458,51 +458,6 @@ describe('Test HiGlass Component', () => {
 
       hgc = mount(<HiGlassComponent
         options={{ bounded: false }}
-        viewConfig={viewconfAlex1}
-      />, { attachTo: div });
-
-      hgc.update();
-
-      waitForTilesLoaded(hgc.instance(), done);
-      // done();
-    });
-
-    it ("Exports to SVG", (done) => {
-      // console.log('exporting svg-----------------------------');
-      hgc.instance().handleExportSVG();
-
-      setTimeout(() => {
-        hgc.instance().zoomTo('aa', 672764000, 672778000, 672764000, 672778000);
-        hgc.instance().handleExportSVG();
-
-        const trackObject = getTrackObjectFromHGC(hgc.instance(), 'aa', 'xx');
-        const maxAndMin = trackObject.maxAndMin;
-
-        expect(maxAndMin.min).to.be.above(0);
-        done();
-      }, 500);
-    })
-  });
-
-  describe('', () => {
-    it('Cleans up previously created instances and mounts a new component', (done) => {
-      if (hgc) {
-        hgc.unmount();
-        hgc.detach();
-      }
-
-      if (div) {
-        global.document.body.removeChild(div);
-      }
-
-      div = global.document.createElement('div');
-      global.document.body.appendChild(div);
-
-      div.setAttribute('style', 'width:800px;background-color: lightgreen');
-      div.setAttribute('id', 'simple-hg-component');
-
-      hgc = mount(<HiGlassComponent
-        options={{ bounded: false }}
         viewConfig={viewconf}
       />, { attachTo: div });
 
@@ -543,5 +498,50 @@ describe('Test HiGlass Component', () => {
       done();
     })
 
+  });
+
+    describe('Second version', () => {
+    it('Cleans up previously created instances and mounts a new component', (done) => {
+      if (hgc) {
+        hgc.unmount();
+        hgc.detach();
+      }
+
+      if (div) {
+        global.document.body.removeChild(div);
+      }
+
+      div = global.document.createElement('div');
+      global.document.body.appendChild(div);
+
+      div.setAttribute('style', 'width:800px;background-color: lightgreen');
+      div.setAttribute('id', 'simple-hg-component');
+
+      hgc = mount(<HiGlassComponent
+        options={{ bounded: false }}
+        viewConfig={viewconfAlex1}
+      />, { attachTo: div });
+
+      hgc.update();
+
+      waitForTilesLoaded(hgc.instance(), done);
+      // done();
+    });
+
+    it ("Exports to SVG", (done) => {
+      // console.log('exporting svg-----------------------------');
+      hgc.instance().handleExportSVG();
+
+      setTimeout(() => {
+        hgc.instance().zoomTo('aa', 672764000, 672778000, 672764000, 672778000);
+        hgc.instance().handleExportSVG();
+
+        const trackObject = getTrackObjectFromHGC(hgc.instance(), 'aa', 'xx');
+        const maxAndMin = trackObject.maxAndMin;
+
+        expect(maxAndMin.min).to.be.above(0);
+        done();
+      }, 500);
+    })
   });
 });
