@@ -135,6 +135,7 @@ const StackedBarTrack = (HGC, ...args) => {
      * Rescales the sprites of all visible tiles when zooming and panning.
      */
     rescaleTiles() {
+      // console.log('rescale:')
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       this.syncMaxAndMin();
@@ -486,53 +487,6 @@ const StackedBarTrack = (HGC, ...args) => {
     }
 
     /**
-     * Scales y values and heights for one row of mouseover matrix at 
-     a time to match tile scaling
-     * 
-     * Called from getMouseOverHtml
-     */
-    scaleRow(row) {
-      const visibleAndFetched = this.visibleAndFetchedTiles();
-      const scaledRow = row;
-      const yScale = scaleLinear()
-        .domain([0, this.oldDimensions[1]])
-        .range([0, this.dimensions[1]]);
-      const xScale = scaleLinear()
-        .domain([0, this.oldDimensions[0]])
-        .range([0, this.dimensions[0]]);
-      for(let i = 0; i < row.length; i++) {
-        let prevUnscaledHeight = null;
-        let prevScaledHeight = null;
-        const currentHeight = yScale(row[i].height);
-        if(i === 0) { //
-          scaledRow[i].height = currentHeight;
-          prevUnscaledHeight = row[i].height;
-          prevScaledHeight = currentHeight;
-        }
-        else {
-          if(prevScaledHeight < prevUnscaledHeight) {
-            scaledRow[i].y = scaledRow[i].y - (prevUnscaledHeight - prevScaledHeight);
-            scaledRow[i].height = currentHeight;
-            prevUnscaledHeight = row[i - 1].height;
-            prevScaledHeight = scaledRow[i - 1].height;
-          }
-          else if (prevScaledHeight > prevUnscaledHeight) {
-            scaledRow[i].y = scaledRow[i].y +  (prevScaledHeight - prevUnscaledHeight);
-            scaledRow[i].height = currentHeight;
-            prevUnscaledHeight = row[i - 1].height;
-            prevScaledHeight = scaledRow[i - 1].height;
-          }
-          else {
-            prevUnscaledHeight = row[i - 1].height;
-            prevScaledHeight = scaledRow[i - 1].height;
-          }
-        }
-      }
-
-      return scaledRow;
-    }
-
-    /**
      * Realigns tiles when exporting to SVG
      */
      /*
@@ -552,7 +506,10 @@ const StackedBarTrack = (HGC, ...args) => {
 
     exportSVG() {
       const visibleAndFetched = this.visibleAndFetchedTiles();
-      visibleAndFetched.map((tile) => { this.initTile(tile) } );
+      visibleAndFetched.map((tile) => { 
+        this.initTile(tile);
+        this.draw();
+      });
 
       let track = null;
       let base = null;

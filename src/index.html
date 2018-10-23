@@ -11,10 +11,10 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="hglib.css">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.5.4/react-dom.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.5.2/pixi.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.31.0/react-bootstrap.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/4.8.1/pixi.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.32.1/react-bootstrap.min.js"></script>
 </head>
 <body>
 Here's some text
@@ -30,7 +30,6 @@ And some other text
 <script src="hglib.js"></script>
 <script>
   var viewConfig = 
-
   {
   "editable": true,
   "zoomFixed": false,
@@ -45,7 +44,6 @@ And some other text
         "top": [
           {
             "type": "combined",
-            "uid": "XzUV-Yk0S520fLEBgCM-SA",
             "height": 30,
             "width": 1143,
             "contents": [
@@ -54,18 +52,20 @@ And some other text
                 "created": "2017-07-17T14:16:45.346835Z",
                 "server": "http://higlass.io/api/v1",
                 "tilesetUid": "NyITQvZsS_mOFNlz5C2LJg",
-                "uid": "UqbmiMzqRmu21UHxZ4nVnA",
                 "type": "horizontal-chromosome-labels",
                 "options": {
                   "showMousePosition": false,
-                  "mousePositionColor": "#999999"
+                  "mousePositionColor": "#999999",
+                  "color": "#777777",
+                  "stroke": "#FFFFFF",
+                  "fontSize": 12,
+                  "fontIsAligned": false
                 },
                 "width": 1143,
                 "height": 30,
                 "position": "top"
               },
               {
-                "uid": "Xo0876l8TGuW5dWwXRVaFQ",
                 "type": "viewport-projection-horizontal",
                 "fromViewUid": "N0uHVmRERtWIarBP1GZXHA",
                 "options": {
@@ -84,7 +84,6 @@ And some other text
           },
           {
             "type": "combined",
-            "uid": "B-8YI-7ART6hLvth3pl6EA",
             "height": 55,
             "width": 1143,
             "contents": [
@@ -93,7 +92,6 @@ And some other text
                 "created": "2017-07-14T15:27:46.989053Z",
                 "server": "http://higlass.io/api/v1",
                 "tilesetUid": "P0PLbQMwTYGy-5uPIQid7A",
-                "uid": "IhMLwYPAQFS8Pc64KThWDg",
                 "type": "horizontal-gene-annotations",
                 "options": {
                   "labelColor": "black",
@@ -104,7 +102,11 @@ And some other text
                   "trackBorderColor": "black",
                   "showMousePosition": false,
                   "mousePositionColor": "#999999",
-                  "name": "GeneAnnotations(hg38)"
+                  "name": "GeneAnnotations(hg38)",
+                  "fontSize": 11,
+                  "geneAnnotationHeight": 10,
+                  "geneLabelPosition": "outside",
+                  "geneStrandSpacing": 4
                 },
                 "width": 1143,
                 "height": 55,
@@ -112,7 +114,6 @@ And some other text
                 "position": "top"
               },
               {
-                "uid": "DYiY8jX_T16zlddGG7lb1Q",
                 "type": "viewport-projection-horizontal",
                 "fromViewUid": "N0uHVmRERtWIarBP1GZXHA",
                 "options": {
@@ -131,7 +132,6 @@ And some other text
           },
           {
             "type": "combined",
-            "uid": "AhhvfB7vTrK210oytPcGcQ",
             "height": 178,
             "width": 1143,
             "contents": [
@@ -140,7 +140,6 @@ And some other text
                 "created": "2018-08-30T22:53:24.984599Z",
                 "server": "http://explorer.altius.org/api/v1",
                 "tilesetUid": "T6fMrq_zSNa4-ZoJGEMfaw",
-                "uid": "e7d_4xXsR2SXdT1YddXz9g",
                 "type": "horizontal-stacked-bar",
                 "options": {
                   "labelPosition": "topLeft",
@@ -194,7 +193,6 @@ And some other text
                 "position": "top"
               },
               {
-                "uid": "LKjZxjlRQc-7vidFVLllpg",
                 "type": "viewport-projection-horizontal",
                 "fromViewUid": "N0uHVmRERtWIarBP1GZXHA",
                 "options": {
@@ -213,7 +211,6 @@ And some other text
           },
           {
             "type": "combined",
-            "uid": "UzVmW1iYSaSmUGlAeev9fw",
             "height": 168,
             "width": 1143,
             "contents": [
@@ -222,7 +219,6 @@ And some other text
                 "created": "2018-08-30T23:23:44.875875Z",
                 "server": "http://explorer.altius.org/api/v1",
                 "tilesetUid": "Flm-wUf_QgKLkeZ5GqlTXQ",
-                "uid": "PoEMRREZQrSJ3Ps2QnixUw",
                 "type": "horizontal-stacked-bar",
                 "options": {
                   "labelPosition": "topLeft",
@@ -279,7 +275,6 @@ And some other text
                 "position": "top"
               },
               {
-                "uid": "Yc90UhFDTDeFWMc_Oe4O0g",
                 "type": "viewport-projection-horizontal",
                 "fromViewUid": "N0uHVmRERtWIarBP1GZXHA",
                 "options": {
@@ -305,12 +300,12 @@ And some other text
         "gallery": []
       },
       "initialXDomain": [
-        2921974383.6041136,
-        2922386272.0029745
+        2923809234.699874,
+        2923822022.308888
       ],
       "initialYDomain": [
-        2923778289.5240707,
-        2924507070.934023
+        2923765472.012453,
+        2923765404.7092476
       ],
       "layout": {
         "w": 12,
@@ -321,7 +316,6 @@ And some other text
         "moved": false,
         "static": false
       },
-      "uid": "V4Zyes86TQOdh4j8UV7D_A",
       "genomePositionSearchBoxVisible": true,
       "genomePositionSearchBox": {
         "autocompleteServer": "http://higlass.io/api/v1",
@@ -334,25 +328,31 @@ And some other text
   ],
   "zoomLocks": {
     "locksByViewUid": {
-      "V4Zyes86TQOdh4j8UV7D_A": "YMNPKtiES_q6j0IaPC_x8Q"
+      "N0uHVmRERtWIarBP1GZXHA": "BurowhwMTmSbp9x-aS-xEg",
+      "V4Zyes86TQOdh4j8UV7D_A": "BurowhwMTmSbp9x-aS-xEg"
     },
     "locksDict": {
-      "YMNPKtiES_q6j0IaPC_x8Q": {
-        "V4Zyes86TQOdh4j8UV7D_A": [
-          2266354004.9572506,
-          2266372121.7050934,
-          163.2200722694397
+      "BurowhwMTmSbp9x-aS-xEg": {
+        "N0uHVmRERtWIarBP1GZXHA": [
+          2923791947.5,
+          2923791961,
+          10.65656566619873
         ],
-        "uid": "YMNPKtiES_q6j0IaPC_x8Q"
+        "V4Zyes86TQOdh4j8UV7D_A": [
+          2923791782.255352,
+          2923798379.8138356,
+          91.75218915939331
+        ],
+        "uid": "BurowhwMTmSbp9x-aS-xEg"
       }
     }
   },
   "locationLocks": {
     "locksByViewUid": {
-      "V4Zyes86TQOdh4j8UV7D_A": "bv148xQ5TIihjK8vta2ZyQ",
       "LiiO1Fs-T7W78gKfD7gvWQ": "bv148xQ5TIihjK8vta2ZyQ",
       "XM-B2LPcTlGS5EhixxpX6A": "bv148xQ5TIihjK8vta2ZyQ",
-      "N0uHVmRERtWIarBP1GZXHA": "bv148xQ5TIihjK8vta2ZyQ"
+      "N0uHVmRERtWIarBP1GZXHA": "P-BMOkUVQtKPyvMtNnprZA",
+      "V4Zyes86TQOdh4j8UV7D_A": "P-BMOkUVQtKPyvMtNnprZA"
     },
     "locksDict": {
       "bv148xQ5TIihjK8vta2ZyQ": {
@@ -366,17 +366,25 @@ And some other text
           672903745.59448,
           90.8034143447876
         ],
-        "V4Zyes86TQOdh4j8UV7D_A": [
-          2266354004.9572506,
-          2266372121.7050934,
-          163.2200722694397
-        ],
         "LiiO1Fs-T7W78gKfD7gvWQ": [
           2266362674.127864,
           2266329759.8567386,
           14.535412788391113
         ],
         "uid": "bv148xQ5TIihjK8vta2ZyQ"
+      },
+      "P-BMOkUVQtKPyvMtNnprZA": {
+        "N0uHVmRERtWIarBP1GZXHA": [
+          2923791947.5,
+          2923791961,
+          10.65656566619873
+        ],
+        "V4Zyes86TQOdh4j8UV7D_A": [
+          2923791782.255352,
+          2923798379.8138356,
+          91.75218915939331
+        ],
+        "uid": "P-BMOkUVQtKPyvMtNnprZA"
       }
     }
   },
@@ -384,13 +392,12 @@ And some other text
     "locksByViewUid": {},
     "locksDict": {}
   }
-}
-
+};;
   // window.higlassApi;
-  window.hglib.createHgComponent(
+  window.hglib.viewer(
     document.getElementById('development-demo'),
     viewConfig,
-    {bounded: true}
+    {bounded: false}
   );
 </script>
 <script>
