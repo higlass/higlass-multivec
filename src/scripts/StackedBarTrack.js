@@ -104,6 +104,7 @@ const StackedBarTrack = (HGC, ...args) => {
         this.maxAndMin.max, this.maxAndMin.min, tile);
 
       // console.log('tile.sprite', tile.sprite.x, tile.sprite.y, tile.sprite.scale.x, tile.sprite.scale.y)
+      // console.log('this.maxAndMin', this.maxAndMin);
 
       graphics.addChild(tile.sprite);
       this.makeMouseOverData(tile);
@@ -285,9 +286,10 @@ const StackedBarTrack = (HGC, ...args) => {
       const matrixWithColors = [];
       for (let j = 0; j < matrix.length; j++) {
         const columnColors = [];
+
         for (let i = 0; i < matrix[j].length; i++) {
           columnColors[i] = {
-            value: matrix[j][i],
+            value: isNaN(matrix[j][i]) ? 0 : matrix[j][i],
             color: colorScale[i]
           }
         }
@@ -392,7 +394,6 @@ const StackedBarTrack = (HGC, ...args) => {
           graphics.drawRect(x, y, width, height);
           negativeStackedHeight = negativeStackedHeight + height;
         }
-
       }
 
       // vertical bars are drawn onto the graphics object and a texture is generated from that
@@ -459,6 +460,8 @@ const StackedBarTrack = (HGC, ...args) => {
       const barHeights = tile.svgData.barHeights;
       const barColors = tile.svgData.barColors;
       let mouseOverData = [];
+
+      // console.log('barHeights:', barHeights);
 
       for (let i = 0; i < shapeX; i++) {
         for (let j = 0; j < shapeY; j++) {
@@ -639,15 +642,19 @@ const StackedBarTrack = (HGC, ...args) => {
       const matrixRow = fetchedTile.matrix[posInTileX];
       let row = fetchedTile.mouseOverData[posInTileX];
 
+      // console.log('matrixRow:', matrixRow);
 
       const dataY = ((trackY - fetchedTile.sprite.y) 
         / fetchedTile.sprite.scale.y) + fetchedTile.lowestY;
 
-      //const dataY1 = dataY + fetchedTile.lowestY;
+      // console.log('trackX:', trackX, 'trackY:', trackY, 'tilePos:', 
+      //   tilePos, 'posInTileX', posInTileX);
+      // console.log('matrixRow:', matrixRow);
+
+      // const dataY1 = dataY + fetchedTile.lowestY;
       // console.log('dataY', dataY, 'dataY1', dataY1);
       // console.log('fetchedTile:', fetchedTile);
       // console.log('trackY:', trackY, 'lowestY:', fetchedTile.lowestY);
-      // console.log('dataY', dataY, 'row:', row);
 
       // row = this.scaleRow(row);
 

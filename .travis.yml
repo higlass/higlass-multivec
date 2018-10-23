@@ -33,7 +33,7 @@ deploy:
     on:
       tags: true
       branch: master
-      repo: hms-dbmi/higlass-multivec
+      repo: higlass/higlass-multivec
   - provider: npm
     skip_cleanup: true
     email: pkerpedjiev@gmail.com
@@ -42,4 +42,4 @@ deploy:
     on:
       tags: true
       branch: master
-      repo: hms-dbmi/higlass-multivec
+      repo: higlass/higlass-multivec
