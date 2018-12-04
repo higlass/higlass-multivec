@@ -1,12 +1,4 @@
 import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
-import { color } from 'd3-color';
-
-const colorToHex = (colorValue) => {
-    const c = color(colorValue);
-    const hex = PIXI.utils.rgb2hex([c.r / 255.0, c.g / 255.0, c.b / 255.0]);
-
-    return hex;
-};
 
 const StackedBarTrack = (HGC, ...args) => {
   if (!new.target) {
@@ -16,7 +8,10 @@ const StackedBarTrack = (HGC, ...args) => {
   }
 
   // Services
-  const {tileProxy} = HGC.services;
+  const { tileProxy } = HGC.services;
+
+  // Utils
+  const { colorToHex } = HGC.utils;
 
   class StackedBarTrackClass extends HGC.tracks.BarTrack {
     constructor(context, options) {
