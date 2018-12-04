@@ -19,8 +19,8 @@ const StackedBarTrack = (HGC, ...args) => {
   const {tileProxy} = HGC.services;
 
   class StackedBarTrackClass extends HGC.tracks.BarTrack {
-    constructor(scene, trackConfig, dataConfig, handleTilesetInfoReceived, animate, onValueScaleChanged) {
-      super(scene, dataConfig, handleTilesetInfoReceived, trackConfig.options, animate, onValueScaleChanged);
+    constructor(context, options) {
+      super(context, options);
 
 
       this.maxAndMin = {
@@ -472,7 +472,7 @@ const StackedBarTrack = (HGC, ...args) => {
             height: barHeights[index],
             color: barColors[index]
           };
-          (mouseOverData[j] === undefined) ? mouseOverData[j] = [dataPoint] 
+          (mouseOverData[j] === undefined) ? mouseOverData[j] = [dataPoint]
             : mouseOverData[j].push(dataPoint);
         }
       }
@@ -506,7 +506,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
     exportSVG() {
       const visibleAndFetched = this.visibleAndFetchedTiles();
-      visibleAndFetched.map((tile) => { 
+      visibleAndFetched.map((tile) => {
         this.initTile(tile);
         this.draw();
       });
@@ -581,8 +581,8 @@ const StackedBarTrack = (HGC, ...args) => {
       const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
 
       const zoomLevel = this.calculateZoomLevel();
-      const tileWidth = tileProxy.calculateTileWidth(this.tilesetInfo, 
-        zoomLevel, 
+      const tileWidth = tileProxy.calculateTileWidth(this.tilesetInfo,
+        zoomLevel,
         this.tilesetInfo.tile_size);
 
       // the position of the tile containing the query position
@@ -601,10 +601,10 @@ const StackedBarTrack = (HGC, ...args) => {
 
       // console.log('matrixRow:', matrixRow);
 
-      const dataY = ((trackY - fetchedTile.sprite.y) 
+      const dataY = ((trackY - fetchedTile.sprite.y)
         / fetchedTile.sprite.scale.y) + fetchedTile.lowestY;
 
-      // console.log('trackX:', trackX, 'trackY:', trackY, 'tilePos:', 
+      // console.log('trackX:', trackX, 'trackY:', trackY, 'tilePos:',
       //   tilePos, 'posInTileX', posInTileX);
       // console.log('matrixRow:', matrixRow);
 
@@ -622,7 +622,7 @@ const StackedBarTrack = (HGC, ...args) => {
       }
 
       // // if mousing over a blank area
-      if (dataY < row[0].y || dataY 
+      if (dataY < row[0].y || dataY
         >= (row[row.length - 1].y + row[row.length - 1].height)) {
         return '';
       }
