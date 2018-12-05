@@ -12,8 +12,8 @@ const BasicMultipleBarChart = (HGC, ...args) => {
   const {tileProxy} = HGC.services;
 
   class BasicMultipleBarChartClass extends mix(HGC.tracks.BarTrack).with(HGC.tracks.OneDimensionalMixin) {
-    constructor(scene, trackConfig, dataConfig, handleTilesetInfoReceived, animate, onValueScaleChanged) {
-      super(scene, dataConfig, handleTilesetInfoReceived, trackConfig.options, animate, onValueScaleChanged);
+    constructor(context, options) {
+      super(context, options);
 
       this.maxAndMin = {
         max: null,
