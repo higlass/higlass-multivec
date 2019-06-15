@@ -30,7 +30,7 @@ And some other text
 <script src="hglib.js"></script>
 <script>
   var viewConfig =
-  {
+{
   "editable": true,
   "zoomFixed": false,
   "trackSourceServers": [
@@ -43,9 +43,133 @@ And some other text
       "tracks": {
         "top": [
           {
+            "name": "Epilogos (hg38)",
+            "created": "2018-07-07T23:41:02.815824Z",
+            "project": null,
+            "project_name": "",
+            "description": "",
+            "server": "http://higlass.io/api/v1",
+            "tilesetUid": "WtBJUYawQzS9M2WVIIHnlA",
+            "uid": "JLGa4dyvQH-dGDa3bDGpmA",
+            "type": "horizontal-stacked-bar",
+            "options": {
+              "labelPosition": "topLeft",
+              "labelColor": "black",
+              "labelTextOpacity": 0.4,
+              "valueScaling": "exponential",
+              "trackBorderWidth": 0,
+              "trackBorderColor": "black",
+              "backgroundColor": "white",
+              "barBorder": true,
+              "sortLargestOnTop": true,
+              "colorScale": [
+                "#FF0000",
+                "#FF4500",
+                "#32CD32",
+                "#008000",
+                "#006400",
+                "#C2E105",
+                "#FFFF00",
+                "#66CDAA",
+                "#8A91D0",
+                "#CD5C5C",
+                "#E9967A",
+                "#BDB76B",
+                "#808080",
+                "#C0C0C0",
+                "#FFFFFF"
+              ],
+              "name": "Epilogos (hg38)"
+            },
+            "width": 568,
+            "height": 85,
+            "resolutions": [
+              13107200,
+              6553600,
+              3276800,
+              1638400,
+              819200,
+              409600,
+              204800,
+              102400,
+              51200,
+              25600,
+              12800,
+              6400,
+              3200,
+              1600,
+              800,
+              400,
+              200
+            ],
+            "position": "top"
+          },
+          {
+            "name": "Epilogos (hg19)",
+            "created": "2018-07-07T23:40:51.460644Z",
+            "project": "b'F8e0Ac-gTOGV29fmwvD2Jg'",
+            "project_name": "Epilogos",
+            "description": "",
+            "server": "http://higlass.io/api/v1",
+            "tilesetUid": "ClhFclOOQMWKSebXaXItoA",
+            "uid": "D-_UfEMxT22zfsH7CP20Tw",
+            "type": "horizontal-stacked-bar",
+            "options": {
+              "labelPosition": "topLeft",
+              "labelColor": "black",
+              "labelTextOpacity": 0.4,
+              "valueScaling": "exponential",
+              "trackBorderWidth": 0,
+              "trackBorderColor": "black",
+              "backgroundColor": "white",
+              "barBorder": true,
+              "sortLargestOnTop": true,
+              "colorScale": [
+                "#FF0000",
+                "#FF4500",
+                "#32CD32",
+                "#008000",
+                "#006400",
+                "#C2E105",
+                "#FFFF00",
+                "#66CDAA",
+                "#8A91D0",
+                "#CD5C5C",
+                "#E9967A",
+                "#BDB76B",
+                "#808080",
+                "#C0C0C0",
+                "#FFFFFF"
+              ],
+              "name": "Epilogos (hg19)"
+            },
+            "width": 568,
+            "height": 79,
+            "resolutions": [
+              13107200,
+              6553600,
+              3276800,
+              1638400,
+              819200,
+              409600,
+              204800,
+              102400,
+              51200,
+              25600,
+              12800,
+              6400,
+              3200,
+              1600,
+              800,
+              400,
+              200
+            ],
+            "position": "top"
+          },
+          {
             "type": "combined",
             "height": 30,
-            "width": 1143,
+            "width": 568,
             "contents": [
               {
                 "name": "ChromosomeAxis",
@@ -61,9 +185,10 @@ And some other text
                   "fontSize": 12,
                   "fontIsAligned": false
                 },
-                "width": 1143,
+                "width": 568,
                 "height": 30,
-                "position": "top"
+                "position": "top",
+                "uid": "f4tyGIbzS5SJl9Ywv2gq_Q"
               },
               {
                 "type": "viewport-projection-horizontal",
@@ -76,16 +201,20 @@ And some other text
                   "strokeWidth": 1
                 },
                 "name": "ViewportProjection",
-                "position": "top"
+                "position": "top",
+                "uid": "OR_VUiT0R_WMSBvDklZ6aA",
+                "width": 568,
+                "height": 30
               }
             ],
             "position": "top",
-            "options": {}
+            "options": {},
+            "uid": "KgU3y6JmQw-t-sCTPxpCLA"
           },
           {
             "type": "combined",
             "height": 55,
-            "width": 1143,
+            "width": 568,
             "contents": [
               {
                 "name": "Gene Annotations (hg38)",
@@ -106,12 +235,17 @@ And some other text
                   "fontSize": 11,
                   "geneAnnotationHeight": 10,
                   "geneLabelPosition": "outside",
-                  "geneStrandSpacing": 4
+                  "geneStrandSpacing": 4,
+                  "labelLeftMargin": 0,
+                  "labelRightMargin": 0,
+                  "labelTopMargin": 0,
+                  "labelBottomMargin": 0
                 },
-                "width": 1143,
+                "width": 568,
                 "height": 55,
                 "header": "1\t2\t3\t4\t5\t6\t7\t8\t9\t10\t11\t12\t13\t14",
-                "position": "top"
+                "position": "top",
+                "uid": "GaPi_EwQSAWYrHBte8JHGA"
               },
               {
                 "type": "viewport-projection-horizontal",
@@ -124,172 +258,15 @@ And some other text
                   "strokeWidth": 1
                 },
                 "name": "ViewportProjection",
-                "position": "top"
+                "position": "top",
+                "uid": "YJd-rBanTqSKh8ZE49M2Yw",
+                "width": 568,
+                "height": 55
               }
             ],
             "position": "top",
-            "options": {}
-          },
-          {
-            "type": "combined",
-            "height": 178,
-            "width": 1143,
-            "contents": [
-              {
-                "name": "hg38.all.KL.bed.multires.mv5",
-                "created": "2018-08-30T22:53:24.984599Z",
-                "server": "http://explore.altius.org/api/v1",
-                "tilesetUid": "T6fMrq_zSNa4-ZoJGEMfaw",
-                "type": "horizontal-stacked-bar",
-                "options": {
-                  "labelPosition": "topLeft",
-                  "labelColor": "black",
-                  "labelTextOpacity": 0.4,
-                  "valueScaling": "exponential",
-                  "trackBorderWidth": 0,
-                  "trackBorderColor": "black",
-                  "backgroundColor": "white",
-                  "barBorder": true,
-                  "scaledHeight": false,
-                  "sortLargestOnTop": true,
-                  "colorScale": [
-                    "#FF0000",
-                    "#FF4500",
-                    "#32CD32",
-                    "#008000",
-                    "#006400",
-                    "#C2E105",
-                    "#FFFF00",
-                    "#66CDAA",
-                    "#8A91D0",
-                    "#CD5C5C",
-                    "#E9967A",
-                    "#BDB76B",
-                    "#808080",
-                    "#C0C0C0",
-                    "#FFFFFF"
-                  ],
-                  "name": "hg38.all.KL.bed.multires.mv5"
-                },
-                "resolutions": [
-                  13107200,
-                  6553600,
-                  3276800,
-                  1638400,
-                  819200,
-                  409600,
-                  204800,
-                  102400,
-                  51200,
-                  25600,
-                  12800,
-                  6400,
-                  3200,
-                  1600,
-                  800,
-                  400,
-                  200
-                ],
-                "position": "top"
-              },
-              {
-                "type": "viewport-projection-horizontal",
-                "fromViewUid": "N0uHVmRERtWIarBP1GZXHA",
-                "options": {
-                  "projectionFillColor": "#777",
-                  "projectionStrokeColor": "#777",
-                  "projectionFillOpacity": 0.3,
-                  "projectionStrokeOpacity": 0.7,
-                  "strokeWidth": 1
-                },
-                "name": "ViewportProjection",
-                "position": "top"
-              }
-            ],
-            "position": "top",
-            "options": {}
-          },
-          {
-            "type": "combined",
-            "height": 168,
-            "width": 1143,
-            "contents": [
-              {
-                "name": "locus_reg_comp_maj_dist10000.bedGraph.binned.mtx.qcat.multires.mv5",
-                "created": "2018-08-30T23:23:44.875875Z",
-                "server": "http://explore.altius.org/api/v1",
-                "tilesetUid": "Flm-wUf_QgKLkeZ5GqlTXQ",
-                "type": "horizontal-stacked-bar",
-                "options": {
-                  "labelPosition": "topLeft",
-                  "labelColor": "black",
-                  "labelTextOpacity": 0.4,
-                  "valueScaling": "linear",
-                  "trackBorderWidth": 0,
-                  "trackBorderColor": "black",
-                  "backgroundColor": "white",
-                  "barBorder": true,
-                  "scaledHeight": false,
-                  "sortLargestOnTop": true,
-                  "colorScale": [
-                    "#C3C3C3",
-                    "#BB2DD4",
-                    "#05C1D9",
-                    "#7A00FF",
-                    "#FE8102",
-                    "#4A6876",
-                    "#FFE500",
-                    "#0467FD",
-                    "#07AF00",
-                    "#692108",
-                    "#B9461D",
-                    "#4C7D14",
-                    "#009588",
-                    "#414613",
-                    "#FF0000",
-                    "#08245B"
-                  ],
-                  "name": "locus_reg_comp_maj_dist10000.bedGraph.binned.mtx.qcat.multires.mv5"
-                },
-                "width": 1143,
-                "height": 168,
-                "resolutions": [
-                  13107200,
-                  6553600,
-                  3276800,
-                  1638400,
-                  819200,
-                  409600,
-                  204800,
-                  102400,
-                  51200,
-                  25600,
-                  12800,
-                  6400,
-                  3200,
-                  1600,
-                  800,
-                  400,
-                  200
-                ],
-                "position": "top"
-              },
-              {
-                "type": "viewport-projection-horizontal",
-                "fromViewUid": "N0uHVmRERtWIarBP1GZXHA",
-                "options": {
-                  "projectionFillColor": "#777",
-                  "projectionStrokeColor": "#777",
-                  "projectionFillOpacity": 0.3,
-                  "projectionStrokeOpacity": 0.7,
-                  "strokeWidth": 1
-                },
-                "name": "ViewportProjection",
-                "position": "top"
-              }
-            ],
-            "position": "top",
-            "options": {}
+            "options": {},
+            "uid": "OebMiyh-TsePDTbd0id2uQ"
           }
         ],
         "left": [],
@@ -300,19 +277,19 @@ And some other text
         "gallery": []
       },
       "initialXDomain": [
-        2923809234.699874,
-        2923822022.308888
+        2923485987.868739,
+        2923796967.145453
       ],
       "initialYDomain": [
-        2923765472.012453,
-        2923765404.7092476
+        2923818112.9147615,
+        2923828515.390567
       ],
       "layout": {
         "w": 12,
-        "h": 12,
+        "h": 8,
         "x": 0,
         "y": 0,
-        "i": "V4Zyes86TQOdh4j8UV7D_A",
+        "i": "eumZav-RSFapnxOIGuy3ew",
         "moved": false,
         "static": false
       },
@@ -323,7 +300,8 @@ And some other text
         "visible": true,
         "chromInfoId": "hg38",
         "autocompleteId": "P0PLbQMwTYGy-5uPIQid7A"
-      }
+      },
+      "uid": "eumZav-RSFapnxOIGuy3ew"
     }
   ],
   "zoomLocks": {
@@ -389,10 +367,25 @@ And some other text
     }
   },
   "valueScaleLocks": {
-    "locksByViewUid": {},
-    "locksDict": {}
+    "locksByViewUid": {
+      "eumZav-RSFapnxOIGuy3ew.D-_UfEMxT22zfsH7CP20Tw": "bul6Z9aJSHqHVeyUm5bRXg",
+      "eumZav-RSFapnxOIGuy3ew.JLGa4dyvQH-dGDa3bDGpmA": "bul6Z9aJSHqHVeyUm5bRXg"
+    },
+    "locksDict": {
+      "bul6Z9aJSHqHVeyUm5bRXg": {
+        "eumZav-RSFapnxOIGuy3ew.D-_UfEMxT22zfsH7CP20Tw": {
+          "view": "eumZav-RSFapnxOIGuy3ew",
+          "track": "D-_UfEMxT22zfsH7CP20Tw"
+        },
+        "eumZav-RSFapnxOIGuy3ew.JLGa4dyvQH-dGDa3bDGpmA": {
+          "view": "eumZav-RSFapnxOIGuy3ew",
+          "track": "JLGa4dyvQH-dGDa3bDGpmA"
+        },
+        "uid": "bul6Z9aJSHqHVeyUm5bRXg"
+      }
+    }
   }
-};;
+}
   // window.higlassApi;
   window.hglib.viewer(
     document.getElementById('development-demo'),

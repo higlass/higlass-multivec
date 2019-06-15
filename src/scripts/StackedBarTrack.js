@@ -1,5 +1,9 @@
 import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
 
+function cumSum(array) {
+  return array.reduce((a, x, i) => [...a, x + (a[i-1] || 0)], []);
+}
+
 const StackedBarTrack = (HGC, ...args) => {
   if (!new.target) {
     throw new Error(
@@ -40,6 +44,8 @@ const StackedBarTrack = (HGC, ...args) => {
       // console.log('initTile:', tile.tileId, this.maxAndMin);
       // tile.minValue = this.scale.minValue;
 
+      this.valueScale = scaleLinear()
+        .domain([this.maxAndMin.min, this.maxAndMin.max]);
       this.localColorToHexScale();
 
       this.unFlatten(tile);
@@ -50,24 +56,25 @@ const StackedBarTrack = (HGC, ...args) => {
 
 
     rerender(newOptions) {
-      super.rerender(newOptions);
-
       this.options = newOptions;
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       for (let i = 0; i < visibleAndFetched.length; i++) {
-        this.updateTile(visibleAndFetched[i]);
+        this.renderTile(visibleAndFetched[i]);
       }
+
+      console.log('rerender', this.valueScale.domain());
 
       this.rescaleTiles();
     }
 
-    updateTile() {
+    updateTile(tile) {
+      // console.trace('updateTile')
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       for (let i = 0; i < visibleAndFetched.length; i++) {
         const tile = visibleAndFetched[i];
-        this.unFlatten(tile);
+        this.renderTile(tile);
       }
 
       this.rescaleTiles();
@@ -96,7 +103,8 @@ const StackedBarTrack = (HGC, ...args) => {
 
       // creates a sprite containing all of the rectangles in this tile
       this.drawVerticalBars(this.mapOriginalColors(matrix), tileX, tileWidth,
-        this.maxAndMin.max, this.maxAndMin.min, tile);
+        this.valueScale.domain()[0], 
+        this.valueScale.domain()[1], tile);
 
       // console.log('tile.sprite', tile.sprite.x, tile.sprite.y, tile.sprite.scale.x, tile.sprite.scale.y)
       // console.log('this.maxAndMin', this.maxAndMin);
@@ -130,11 +138,13 @@ const StackedBarTrack = (HGC, ...args) => {
      * Rescales the sprites of all visible tiles when zooming and panning.
      */
     rescaleTiles() {
-      // console.log('rescale:')
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
-      this.syncMaxAndMin();
-
+      // take the max and min values from valueScale because it
+      // can be locked to other tracks and modified by
+      // HiGlassComponent.syncValueScale
+      this.maxAndMin.min = this.valueScale.domain()[0];
+      this.maxAndMin.max = this.valueScale.domain()[1];
       // console.log('maxAndMin:', this.maxAndMin);
 
       visibleAndFetched.map(a => {
@@ -355,16 +365,32 @@ const StackedBarTrack = (HGC, ...args) => {
         graphics.lineStyle(1, 0x000000, 1);
       }
 
+      // this.valueScale = scaleLinear()
+      // .domain([-Math.abs(negativeMax), positiveMax])
+      // .range([negativeTrackHeight, positiveTrackHeight])
+
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
         (j === 0) ? start = x : start;
 
         // draw positive values
         const positive = matrix[j][0];
+        const negative = matrix[j][1];
+
         const valueToPixelsPositive = scaleLinear()
           .domain([0, positiveMax])
           .range([0, positiveTrackHeight]);
         let positiveStackedHeight = 0;
+
+        // console.log('positive:', positive)
+        // console.log('negative:', negative);
+
+        // const positiveCumValues = cumSum(positive.map(x => +x.value));
+        // const negativeCumValues = cumSum(negative.map(x => +x.value));
+
+        // console.log('positiveCumValues', positiveCumValues);
+        // console.log('negativeCumValues:', negativeCumValues);
+
         for (let i = 0; i < positive.length; i++) {
           const height = valueToPixelsPositive(positive[i].value);
           const y = positiveTrackHeight - (positiveStackedHeight + height);
@@ -377,7 +403,7 @@ const StackedBarTrack = (HGC, ...args) => {
         }
 
         // draw negative values
-        const negative = matrix[j][1];
+
         const valueToPixelsNegative = scaleLinear()
           .domain([-Math.abs(negativeMax), 0])
           .range([negativeTrackHeight, 0]);
@@ -390,15 +416,22 @@ const StackedBarTrack = (HGC, ...args) => {
           graphics.drawRect(x, y, width, height);
           negativeStackedHeight = negativeStackedHeight + height;
         }
+
+        // console.log('negative', negative);
       }
 
       // vertical bars are drawn onto the graphics object and a texture is generated from that
       const texture = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
       const sprite = new PIXI.Sprite(texture);
+      sprite.roundPixels = true;
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
       tile.sprite = sprite;
       tile.lowestY = lowestY;
+      tile.positiveMax = positiveMax;
+      tile.negativeMax = -Math.abs(negativeMax);
+
+      // console.log('negativeMax', tile);
       // console.log('new lowestY:', tile.tileId, lowestY, tile.svgData);;
     }
 
