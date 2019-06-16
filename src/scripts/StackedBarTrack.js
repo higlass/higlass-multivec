@@ -21,6 +21,7 @@ const StackedBarTrack = (HGC, ...args) => {
     constructor(context, options) {
       super(context, options);
 
+      this.prevOptions = options;
 
       this.maxAndMin = {
         max: null,
@@ -41,7 +42,6 @@ const StackedBarTrack = (HGC, ...args) => {
       this.maxAndMin.max = this.scale.maxValue;
       this.maxAndMin.min = this.scale.minValue;
 
-      // console.log('initTile:', tile.tileId, this.maxAndMin);
       // tile.minValue = this.scale.minValue;
 
       this.valueScale = scaleLinear()
@@ -59,11 +59,22 @@ const StackedBarTrack = (HGC, ...args) => {
       this.options = newOptions;
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
+      if (JSON.stringify(newOptions) == JSON.stringify(this.prevOptions)
+        && JSON.stringify(this.valueScale.domain()) == JSON.stringify(this.prevValueScale.domain())) {
+        // nothing changed so no need to update.
+        return;
+      }
+
+      // Rerender can be called when the value scale is locked with
+      // another track and valueScale is changed from syncValueScales
+      // in HiGlassComponent. A bug there is that it doesn't set
+      // prevValueScale so we have to do it here.
+      this.prevValueScale = this.valueScale.copy();
+      this.prevOptions = JSON.parse(JSON.stringify(newOptions));
+
       for (let i = 0; i < visibleAndFetched.length; i++) {
         this.renderTile(visibleAndFetched[i]);
       }
-
-      console.log('rerender', this.valueScale.domain());
 
       this.rescaleTiles();
     }
@@ -106,9 +117,6 @@ const StackedBarTrack = (HGC, ...args) => {
         this.valueScale.domain()[0], 
         this.valueScale.domain()[1], tile);
 
-      // console.log('tile.sprite', tile.sprite.x, tile.sprite.y, tile.sprite.scale.x, tile.sprite.scale.y)
-      // console.log('this.maxAndMin', this.maxAndMin);
-
       graphics.addChild(tile.sprite);
       this.makeMouseOverData(tile);
     }
@@ -117,8 +125,6 @@ const StackedBarTrack = (HGC, ...args) => {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       visibleAndFetched.map(tile => {
-        // console.log('tile:', tile.tileId, tile.minValue, tile.maxValue);
-
         if (tile.minValue + tile.maxValue > this.maxAndMin.min + this.maxAndMin.max) {
           this.maxAndMin.min = tile.minValue;
           this.maxAndMin.max = tile.maxValue;
@@ -130,7 +136,6 @@ const StackedBarTrack = (HGC, ...args) => {
           // if (!(this.maxAndMin && this.maxAndMin.max && this.maxAndMin.max > tile.maxValue)) {
           //   this.maxAndMin.max = tile.maxValue;
           // }
-        // console.log('this.maxAndMin:', this.maxAndMin);
       });
     }
 
@@ -145,7 +150,6 @@ const StackedBarTrack = (HGC, ...args) => {
       // HiGlassComponent.syncValueScale
       this.maxAndMin.min = this.valueScale.domain()[0];
       this.maxAndMin.max = this.valueScale.domain()[1];
-      // console.log('maxAndMin:', this.maxAndMin);
 
       visibleAndFetched.map(a => {
         const valueToPixels = scaleLinear()
@@ -200,7 +204,6 @@ const StackedBarTrack = (HGC, ...args) => {
         }
 
         let negativeValues = temp.filter(a => a < 0);
-        // console.log('negativeValues:', negativeValues);
 
         if (negativeValues.length > 0) {
           negativeValues = negativeValues.map(a => Math.abs(a));
@@ -237,7 +240,6 @@ const StackedBarTrack = (HGC, ...args) => {
         const matrix = this.simpleUnFlatten(tile, flattenedArray);
 
         const maxAndMin = this.findMaxAndMin(matrix);
-        // console.log('unflatten', tile.tileId, maxAndMin.min, maxAndMin.max);
 
         tile.matrix = matrix;
         tile.maxValue = maxAndMin.max;
@@ -339,7 +341,6 @@ const StackedBarTrack = (HGC, ...args) => {
     drawVerticalBars(matrix, tileX, tileWidth, positiveMax, negativeMax, tile) {
       let graphics = new PIXI.Graphics();
       const trackHeight = this.dimensions[1];
-      // console.log('drawing vertical:', trackHeight, positiveMax, negativeMax);
 
       // get amount of trackHeight reserved for positive and for negative
       const unscaledHeight = positiveMax + (Math.abs(negativeMax));
@@ -349,8 +350,6 @@ const StackedBarTrack = (HGC, ...args) => {
 
       // fraction of the track devoted to negative values
       const negativeTrackHeight = (Math.abs(negativeMax) * trackHeight) / unscaledHeight;
-
-      // console.log('positiveTrackHeight', tile.tileId, positiveTrackHeight);
 
       let start = null;
       let lowestY = this.dimensions[1];
@@ -382,15 +381,6 @@ const StackedBarTrack = (HGC, ...args) => {
           .range([0, positiveTrackHeight]);
         let positiveStackedHeight = 0;
 
-        // console.log('positive:', positive)
-        // console.log('negative:', negative);
-
-        // const positiveCumValues = cumSum(positive.map(x => +x.value));
-        // const negativeCumValues = cumSum(negative.map(x => +x.value));
-
-        // console.log('positiveCumValues', positiveCumValues);
-        // console.log('negativeCumValues:', negativeCumValues);
-
         for (let i = 0; i < positive.length; i++) {
           const height = valueToPixelsPositive(positive[i].value);
           const y = positiveTrackHeight - (positiveStackedHeight + height);
@@ -403,7 +393,6 @@ const StackedBarTrack = (HGC, ...args) => {
         }
 
         // draw negative values
-
         const valueToPixelsNegative = scaleLinear()
           .domain([-Math.abs(negativeMax), 0])
           .range([negativeTrackHeight, 0]);
@@ -416,8 +405,6 @@ const StackedBarTrack = (HGC, ...args) => {
           graphics.drawRect(x, y, width, height);
           negativeStackedHeight = negativeStackedHeight + height;
         }
-
-        // console.log('negative', negative);
       }
 
       // vertical bars are drawn onto the graphics object and a texture is generated from that
@@ -430,9 +417,6 @@ const StackedBarTrack = (HGC, ...args) => {
       tile.lowestY = lowestY;
       tile.positiveMax = positiveMax;
       tile.negativeMax = -Math.abs(negativeMax);
-
-      // console.log('negativeMax', tile);
-      // console.log('new lowestY:', tile.tileId, lowestY, tile.svgData);;
     }
 
     /**
@@ -489,8 +473,6 @@ const StackedBarTrack = (HGC, ...args) => {
       const barHeights = tile.svgData.barHeights;
       const barColors = tile.svgData.barColors;
       let mouseOverData = [];
-
-      // console.log('barHeights:', barHeights);
 
       for (let i = 0; i < shapeX; i++) {
         for (let j = 0; j < shapeY; j++) {
@@ -627,19 +609,8 @@ const StackedBarTrack = (HGC, ...args) => {
       const matrixRow = fetchedTile.matrix[posInTileX];
       let row = fetchedTile.mouseOverData[posInTileX];
 
-      // console.log('matrixRow:', matrixRow);
-
       const dataY = ((trackY - fetchedTile.sprite.y)
         / fetchedTile.sprite.scale.y) + fetchedTile.lowestY;
-
-      // console.log('trackX:', trackX, 'trackY:', trackY, 'tilePos:',
-      //   tilePos, 'posInTileX', posInTileX);
-      // console.log('matrixRow:', matrixRow);
-
-      // const dataY1 = dataY + fetchedTile.lowestY;
-      // console.log('dataY', dataY, 'dataY1', dataY1);
-      // console.log('fetchedTile:', fetchedTile);
-      // console.log('trackY:', trackY, 'lowestY:', fetchedTile.lowestY);
 
       // row = this.scaleRow(row);
 
