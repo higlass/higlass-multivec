@@ -50,6 +50,10 @@ const StackedBarTrack = (HGC, ...args) => {
 
       this.unFlatten(tile);
 
+      this.valueScale.domain([
+        -this.maxAndMin.min,
+        this.maxAndMin.max]);
+
       this.renderTile(tile);
       this.rescaleTiles();
     }
@@ -114,8 +118,8 @@ const StackedBarTrack = (HGC, ...args) => {
 
       // creates a sprite containing all of the rectangles in this tile
       this.drawVerticalBars(this.mapOriginalColors(matrix), tileX, tileWidth,
-        this.valueScale.domain()[0], 
-        this.valueScale.domain()[1], tile);
+        this.valueScale.domain()[1], 
+        this.valueScale.domain()[0], tile);
 
       graphics.addChild(tile.sprite);
       this.makeMouseOverData(tile);
@@ -148,8 +152,10 @@ const StackedBarTrack = (HGC, ...args) => {
       // take the max and min values from valueScale because it
       // can be locked to other tracks and modified by
       // HiGlassComponent.syncValueScale
+
       this.maxAndMin.min = this.valueScale.domain()[0];
       this.maxAndMin.max = this.valueScale.domain()[1];
+
 
       visibleAndFetched.map(a => {
         const valueToPixels = scaleLinear()
@@ -161,6 +167,7 @@ const StackedBarTrack = (HGC, ...args) => {
         const y = newZero - valueToPixels(a.maxValue);
 
         if (sprite) {
+          // console.log('rescaleTiles:', sprite.height, height);
           sprite.height = height;
 
           sprite.y = y;
@@ -356,6 +363,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
       const width = 10;
 
+      // console.log('negativeMax', negativeMax, 'positiveMax:', positiveMax);
       // calls drawBackground in PixiTrack.js
       this.drawBackground(matrix, graphics);
 
@@ -375,6 +383,7 @@ const StackedBarTrack = (HGC, ...args) => {
         // draw positive values
         const positive = matrix[j][0];
         const negative = matrix[j][1];
+
 
         const valueToPixelsPositive = scaleLinear()
           .domain([0, positiveMax])
