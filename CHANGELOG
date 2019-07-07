@@ -1,3 +1,7 @@
+v0.2.1 2019-07-07
+
+- Use PIXIv5
+
 v0.2.0 2018-09-20
 
 - Performance improvements by using sprites instead of individually drawing every
