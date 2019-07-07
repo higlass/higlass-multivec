@@ -8,7 +8,7 @@ const StackedBarTrack = (HGC, ...args) => {
   }
 
   // Services
-  const { tileProxy } = HGC.services;
+  const { tileProxy, pixiRenderer } = HGC.services;
 
   // Utils
   const { colorToHex } = HGC.utils;
@@ -392,8 +392,11 @@ const StackedBarTrack = (HGC, ...args) => {
         }
       }
 
-      // vertical bars are drawn onto the graphics object and a texture is generated from that
-      const texture = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
+      // vertical bars are drawn onto the graphics object
+      // and a texture is generated from that
+      const texture = pixiRenderer.generateTexture(
+        graphics, PIXI.SCALE_MODES.NEAREST
+      );
       const sprite = new PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
