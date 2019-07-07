@@ -1,8 +1,8 @@
-v0.2.1 2019-07-07
+**v0.2.1**
 
-- Use PIXIv5
+- Add support for HiGlass `v1.6` (related to PIXI `v5`)
 
-v0.2.0 2018-09-20
+**v0.2.0**
 
 - Performance improvements by using sprites instead of individually drawing every
 rectangle
