@@ -92,13 +92,62 @@ const unFlatten = (track, tile) => {
   tile.maxValue = maxAndMin.max;
   tile.minValue = maxAndMin.min;
 
-  track.syncMaxAndMin();
+  syncMaxAndMin(track);
 
   return matrix;
 };
 
+const syncMaxAndMin = (track) => {
+  const visibleAndFetched = track.visibleAndFetchedTiles();
+
+  visibleAndFetched.forEach((tile) => {
+    // console.log('tile:', tile.tileId, tile.minValue, tile.maxValue);
+
+    if (tile.minValue + tile.maxValue > track.maxAndMin.min + track.maxAndMin.max) {
+      track.maxAndMin.min = tile.minValue;
+      track.maxAndMin.max = tile.maxValue;
+    }
+  });
+};
+
+/**
+ * Converts all colors in a colorScale to Hex colors.
+ */
+const localColorToHexScale = (track) => {
+  const colorScale = track.options.colorScale || track.scaleOrdinal(schemeCategory10);
+  const colorHexMap = {};
+  for (let i = 0; i < colorScale.length; i++) {
+    colorHexMap[colorScale[i]] = track.colorToHex(colorScale[i]);
+  }
+  track.colorHexMap = colorHexMap;
+}
+
+const initTile = (track, tile) => {
+  // create the tile
+  // should be overwritten by child classes
+  track.scale.minRawValue = track.minVisibleValue();
+  track.scale.maxRawValue = track.maxVisibleValue();
+
+  track.scale.minValue = track.scale.minRawValue;
+  track.scale.maxValue = track.scale.maxRawValue;
+
+  track.maxAndMin.max = track.scale.maxValue;
+  track.maxAndMin.min = track.scale.minValue;
+
+  // console.log('initTile:', tile.tileId, this.maxAndMin);
+  // tile.minValue = this.scale.minValue;
+
+  matrixTrackUtils.localColorToHexScale(track);
+  matrixTrackUtils.unFlatten(track, tile);
+
+  track.renderTile(tile);
+};
+
 const matrixTrackUtils = {
   unFlatten,
+  syncMaxAndMin,
+  localColorToHexScale,
+  initTile,
 };
 
 export default matrixTrackUtils;

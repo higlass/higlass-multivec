@@ -1,5 +1,5 @@
-import {mix} from 'mixwith';
 import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
+import matrixTrackUtils from './MatrixTrackUtils';
 
 const BasicMultipleLineChart = (HGC, ...args) => {
   if (!new.target) {
@@ -9,19 +9,22 @@ const BasicMultipleLineChart = (HGC, ...args) => {
   }
 
   // Services
-  const {tileProxy} = HGC.services;
+  const { tileProxy } = HGC.services;
 
   class BasicMultipleLineChart extends HGC.tracks.BarTrack {
     constructor(context, options) {
       super(context, options);
+      this.colorToHex = HGC.utils.colorToHex;
 
       this.maxAndMin = {
         max: null,
         min: null
       };
-
     }
 
+    initTile(tile) {
+      matrixTrackUtils.initTile(this, tile);
+    }
     /**
      * Draws exactly one tile.
      * @param tile
@@ -35,7 +38,7 @@ const BasicMultipleLineChart = (HGC, ...args) => {
       const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
         tile.tileData.tilePos, this.tilesetInfo.tile_size);
 
-      const matrix = tile.matrix;
+      const matrix = matrixTrackUtils.unFlatten(this, tile);
       const trackHeight = this.dimensions[1];
       const matrixDimensions = tile.tileData.shape;
       const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);

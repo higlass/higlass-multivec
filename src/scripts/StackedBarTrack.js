@@ -1,4 +1,4 @@
-import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
+import { scaleLinear, scaleOrdinal, schemeCategory10 } from 'd3-scale';
 import matrixTrackUtils from './MatrixTrackUtils';
 
 const StackedBarTrack = (HGC, ...args) => {
@@ -17,31 +17,18 @@ const StackedBarTrack = (HGC, ...args) => {
   class StackedBarTrackClass extends HGC.tracks.BarTrack {
     constructor(context, options) {
       super(context, options);
-
+      this.colorToHex = colorToHex;
 
       this.maxAndMin = {
         max: null,
         min: null
       };
-
     }
 
     initTile(tile) {
-      // create the tile
-      // should be overwritten by child classes
-      this.scale.minRawValue = this.minVisibleValue();
-      this.scale.maxRawValue = this.maxVisibleValue();
+      matrixTrackUtils.initTile(this, tile);
 
-      this.scale.minValue = this.scale.minRawValue;
-      this.scale.maxValue = this.scale.maxRawValue;
-
-      this.maxAndMin.max = this.scale.maxValue;
-      this.maxAndMin.min = this.scale.minValue;
-
-      // console.log('initTile:', tile.tileId, this.maxAndMin);
-      // tile.minValue = this.scale.minValue;
-
-      this.localColorToHexScale();
+      matrixTrackUtils.localColorToHexScale(this);
       matrixTrackUtils.unFlatten(this, tile);
 
       this.renderTile(tile);
@@ -105,27 +92,6 @@ const StackedBarTrack = (HGC, ...args) => {
       this.makeMouseOverData(tile);
     }
 
-    syncMaxAndMin() {
-      const visibleAndFetched = this.visibleAndFetchedTiles();
-
-      visibleAndFetched.map(tile => {
-        // console.log('tile:', tile.tileId, tile.minValue, tile.maxValue);
-
-        if (tile.minValue + tile.maxValue > this.maxAndMin.min + this.maxAndMin.max) {
-          this.maxAndMin.min = tile.minValue;
-          this.maxAndMin.max = tile.maxValue;
-        }
-          // if (!(this.maxAndMin && this.maxAndMin.min && this.maxAndMin.min < tile.minValue)) {
-          //   this.maxAndMin.min = tile.minValue;
-          // }
-
-          // if (!(this.maxAndMin && this.maxAndMin.max && this.maxAndMin.max > tile.maxValue)) {
-          //   this.maxAndMin.max = tile.maxValue;
-          // }
-        // console.log('this.maxAndMin:', this.maxAndMin);
-      });
-    }
-
     /**
      * Rescales the sprites of all visible tiles when zooming and panning.
      */
@@ -133,7 +99,7 @@ const StackedBarTrack = (HGC, ...args) => {
       // console.log('rescale:')
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
-      this.syncMaxAndMin();
+      matrixTrackUtils.syncMaxAndMin(this);
 
       // console.log('maxAndMin:', this.maxAndMin);
 
@@ -152,19 +118,6 @@ const StackedBarTrack = (HGC, ...args) => {
           sprite.y = y;
         }
       });
-    }
-
-
-    /**
-     * Converts all colors in a colorScale to Hex colors.
-     */
-    localColorToHexScale() {
-      const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
-      const colorHexMap = {};
-      for (let i = 0; i < colorScale.length; i++) {
-        colorHexMap[colorScale[i]] = colorToHex(colorScale[i]);
-      }
-      this.colorHexMap = colorHexMap;
     }
 
     /**
