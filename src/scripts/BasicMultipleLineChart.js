@@ -11,7 +11,7 @@ const BasicMultipleLineChart = (HGC, ...args) => {
   // Services
   const {tileProxy} = HGC.services;
 
-  class BasicMultipleLineChart extends mix(HGC.tracks.BarTrack).with(HGC.tracks.OneDimensionalMixin) {
+  class BasicMultipleLineChart extends HGC.tracks.BarTrack {
     constructor(context, options) {
       super(context, options);
 

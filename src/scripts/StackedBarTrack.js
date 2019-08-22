@@ -1,4 +1,5 @@
 import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
+import matrixTrackUtils from './MatrixTrackUtils';
 
 const StackedBarTrack = (HGC, ...args) => {
   if (!new.target) {
@@ -41,8 +42,7 @@ const StackedBarTrack = (HGC, ...args) => {
       // tile.minValue = this.scale.minValue;
 
       this.localColorToHexScale();
-
-      this.unFlatten(tile);
+      matrixTrackUtils.unFlatten(this, tile);
 
       this.renderTile(tile);
       this.rescaleTiles();
@@ -67,7 +67,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
       for (let i = 0; i < visibleAndFetched.length; i++) {
         const tile = visibleAndFetched[i];
-        this.unFlatten(tile);
+        matrixTrackUtils.unFlatten(this, tile);
       }
 
       this.rescaleTiles();
@@ -90,7 +90,7 @@ const StackedBarTrack = (HGC, ...args) => {
       const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
         tile.tileData.tilePos, this.tilesetInfo.tile_size);
 
-      const matrix = this.unFlatten(tile);
+      const matrix = matrixTrackUtils.unFlatten(this, tile);
 
       this.oldDimensions = this.dimensions; // for mouseover
 
@@ -203,70 +203,6 @@ const StackedBarTrack = (HGC, ...args) => {
 
       return maxAndMin;
     }
-
-
-      /**
-       * un-flatten data into matrix of tile.tileData.shape[0] x tile.tileData.shape[1]
-       *
-       * @param tile
-       * @returns {Array} 2d array of numerical values for each column
-       */
-      unFlatten(tile) {
-        if (tile.matrix) {
-          return tile.matrix;
-        }
-
-        const flattenedArray = tile.tileData.dense;
-
-        // if any data is negative, switch to exponential scale
-        if (flattenedArray.filter(a => a < 0).length > 0 && this.options.valueScaling === 'linear') {
-          console.warn('Negative values present in data. Defaulting to exponential scale.');
-          this.options.valueScaling = 'exponential';
-        }
-
-        const matrix = this.simpleUnFlatten(tile, flattenedArray);
-
-        const maxAndMin = this.findMaxAndMin(matrix);
-        // console.log('unflatten', tile.tileId, maxAndMin.min, maxAndMin.max);
-
-        tile.matrix = matrix;
-        tile.maxValue = maxAndMin.max;
-        tile.minValue = maxAndMin.min;
-
-        this.syncMaxAndMin();
-
-        return matrix;
-      }
-
-      /**
-       *
-       * @param tile
-       * @param data array of values to reshape
-       * @returns {Array} 2D array representation of data
-       */
-      simpleUnFlatten(tile, data) {
-        const shapeX = tile.tileData.shape[0]; // number of different nucleotides in each bar
-        const shapeY = tile.tileData.shape[1]; // number of bars
-
-        // matrix[0] will be [flattenedArray[0], flattenedArray[256], flattenedArray[512], etc.]
-        // because of how flattenedArray comes back from the server.
-        const matrix = [];
-        for (let i = 0; i < shapeX; i++) { // 6
-          for (let j = 0; j < shapeY; j++) { // 256;
-            let singleBar;
-            if (matrix[j] === undefined) {
-              singleBar = [];
-            } else {
-              singleBar = matrix[j];
-            }
-            singleBar.push(data[(shapeY * i) + j]);
-            matrix[j] = singleBar;
-          }
-        }
-
-        return matrix;
-      }
-
 
     /**
      * Map each value in every array in the matrix to a color depending on position in the array
