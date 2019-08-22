@@ -120,7 +120,7 @@ const localColorToHexScale = (track) => {
     colorHexMap[colorScale[i]] = track.colorToHex(colorScale[i]);
   }
   track.colorHexMap = colorHexMap;
-}
+};
 
 const initTile = (track, tile) => {
   // create the tile
@@ -137,8 +137,8 @@ const initTile = (track, tile) => {
   // console.log('initTile:', tile.tileId, this.maxAndMin);
   // tile.minValue = this.scale.minValue;
 
-  matrixTrackUtils.localColorToHexScale(track);
-  matrixTrackUtils.unFlatten(track, tile);
+  localColorToHexScale(track);
+  unFlatten(track, tile);
 
   track.renderTile(tile);
 };
