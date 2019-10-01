@@ -15,7 +15,8 @@
   "unpkg": "./dist/higlass-multivec.min.js",
   "module": "./es",
   "files": [
-    "dist"
+    "dist",
+    "es"
   ],
   "repository": "github:higlass/higlass-multivec",
   "devDependencies": {
