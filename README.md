@@ -70,7 +70,11 @@ Then StackedBarTrack would automatically be imported from the `./es` directory (
 import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
 ```
 
-[Background Info](https://nodejs.org/api/esm.html#esm_introduction)
+#### Background Info (from Google)
+
+- https://dev.to/bennypowers/you-should-be-using-esm-kn3
+- https://hashnode.com/post/write-clean-npm-packages-and-make-them-esm-ready-cj6m68sc701esnfwu5gzrp0az
+- https://nodejs.org/api/esm.html#esm_introduction
 
 ## Development
 
