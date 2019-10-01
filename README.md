@@ -78,7 +78,7 @@ import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
 import { HiGlassComponent } from 'higlass/dist/hglib';
 import { default as higlassRegister } from 'higlass-register';
 
-// Call this sometime before we render out MyComponent below.
+// Call this sometime before we render out MyComponent below (synchronous)
 higlassRegister({
     name: 'StackedBarTrack',
     track: StackedBarTrack,
@@ -88,14 +88,20 @@ higlassRegister({
 ...
 
 
-export const MyComponent = React.memo(function MyComponent(props){
+function MyComponent(props){
     const { viewConfig, options, width, height, ...otherProps } = props;
     return (
         <div className="container">
             <HiGlassComponent {...{ viewConfig, options, width, height }} />
         </div>
     );
-});
+}
+MyComponent.defaultProps = { ... };
+
+ReactDOM.render(
+    <MyComponent {...someData} />,
+    document.getElementById("root")
+);
 
 ```
 
