@@ -70,7 +70,36 @@ Then StackedBarTrack would automatically be imported from the `./es` directory (
 import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
 ```
 
-#### Background Info (from Google)
+To use this then along with HiGlassComponent, assuming are developing with React either in an environment where `window` is available (client-side), is via the following:
+
+```javascript
+import React from 'react';
+import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
+import { HiGlassComponent } from 'higlass/dist/hglib';
+import { default as higlassRegister } from 'higlass-register';
+
+// Call this sometime before we render out MyComponent below.
+higlassRegister({
+    name: 'StackedBarTrack',
+    track: StackedBarTrack,
+    config: StackedBarTrack.config,
+})
+
+...
+
+
+export const MyComponent = React.memo(function MyComponent(props){
+    const { viewConfig, options, width, height, ...otherProps } = props;
+    return (
+        <div className="container">
+            <HiGlassComponent {...{ viewConfig, options, width, height }} />
+        </div>
+    );
+});
+
+```
+
+#### Minor Background Info
 
 - https://dev.to/bennypowers/you-should-be-using-esm-kn3
 - https://nodejs.org/api/esm.html#esm_introduction
