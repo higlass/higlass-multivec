@@ -32,7 +32,7 @@ const BasicMultipleBarChart = (HGC, ...args) => {
       graphics.children.map(child => {graphics.removeChild(child)});
       tile.drawnAtScale = this._xScale.copy();
 
-      let localGraphics = new PIXI.Graphics();
+      let localGraphics = new HGC.libraries.PIXI.Graphics();
 
       // we're setting the start of the tile to the current zoom level
       const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
@@ -65,8 +65,8 @@ const BasicMultipleBarChart = (HGC, ...args) => {
 
       }
 
-      const texture = localGraphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
-      const sprite = new PIXI.Sprite(texture);
+      const texture = localGraphics.generateTexture(HGC.libraries.PIXI.SCALE_MODES.NEAREST);
+      const sprite = new HGC.libraries.PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
       graphics.addChild(sprite);

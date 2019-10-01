@@ -146,7 +146,7 @@ const ScaledStackedBarTrack = (HGC, ...args) => {
      */
     drawNormalizedBars(matrix, tileX, tileWidth, tile) {
       const trackHeight = this.dimensions[1];
-      let graphics = new PIXI.Graphics();
+      let graphics = new HGC.libraries.PIXI.Graphics();
       let start = null;
       let lowestY = this.dimensions[1];
 
@@ -194,8 +194,8 @@ const ScaledStackedBarTrack = (HGC, ...args) => {
         negativeStackedHeight = 0;
       }
 
-      const texture = graphics.generateTexture(PIXI.SCALE_MODES.NEAREST);
-      const sprite = new PIXI.Sprite(texture);
+      const texture = graphics.generateTexture(HGC.libraries.PIXI.SCALE_MODES.NEAREST);
+      const sprite = new HGC.libraries.PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
       tile.sprite = sprite;

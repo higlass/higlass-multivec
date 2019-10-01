@@ -13,10 +13,11 @@
   ],
   "main": "./src/index.js",
   "unpkg": "./dist/higlass-multivec.min.js",
-  "module" : "./es",
+  "module": "./es",
   "files": [
     "dist"
   ],
+  "repository": "github:higlass/higlass-multivec",
   "devDependencies": {
     "autoprefixer": "^8.6.5",
     "babel-core": "^6.26.3",
@@ -39,7 +40,7 @@
     "webpack-dev-server": "^3.1.8"
   },
   "scripts": {
-    "build-es" : "rm -rf ./es/* && npx babel ./src/scripts/ --out-dir ./es/ --env-name esm",
+    "build-es": "rm -rf ./es/* && npx babel ./src/scripts/ --out-dir ./es/ --env-name esm",
     "build": "npm run build-es && NODE_ENV=production ./node_modules/webpack/bin/webpack.js --mode production",
     "build-debug": "NODE_ENV=development; ./node_modules/webpack/bin/webpack.js --mode=development",
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --open",
