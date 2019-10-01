@@ -11,8 +11,9 @@
       "url": "http://github.com/daniellenguyen"
     }
   ],
-  "main": "src/index.js",
-  "unpkg": "dist/higlass-multivec.min.js",
+  "main": "./src/index.js",
+  "unpkg": "./dist/higlass-multivec.min.js",
+  "module" : "./es",
   "files": [
     "dist"
   ],

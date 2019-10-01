@@ -1,9 +1,6 @@
 import register from 'higlass-register';
 
-import StackedBarTrack from './scripts/StackedBarTrack';
-import ScaledStackedBarTrack from './scripts/ScaledStackedBarTrack';
-import BasicMultipleLineChart from './scripts/BasicMultipleLineChart';
-import BasicMultipleBarChart from './scripts/BasicMultipleBarChart';
+import { StackedBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart } from './scripts';
 
 register({
   name: 'StackedBarTrack',
