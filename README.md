@@ -54,6 +54,24 @@ Configure the track in your view config; you should be all set from here!
 ]   
 ```
 For an example, see [`src/index.html`](src/index.html).
+
+### ECMAScript Modules (ESM)
+
+We also build out ES modules for usage by applications who may need to import or use `higlass-multivec` as a component.
+
+Whenever have a statement such as the following, assuming `higlass-multivec` is in your node_modules folder:
+```javascript
+import { StackedBarTrack } from 'higlass-multivec';
+```
+
+Then StackedBarTrack would automatically be imported from the `./es` directory (set via package.json's `"module"` value). Can also import component(s) directly, especially if only need to use one or two, e.g.:
+
+```javascript
+import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
+```
+
+[Background Info](https://nodejs.org/api/esm.html#esm_introduction)
+
 ## Development
 
 ### Testing
