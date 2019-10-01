@@ -38,13 +38,15 @@
     "webpack-dev-server": "^3.1.8"
   },
   "scripts": {
-    "build": "NODE_ENV=production ./node_modules/webpack/bin/webpack.js --mode production",
+    "build-es" : "rm -rf ./es/* && npx babel ./src/scripts/ --out-dir ./es/ --env-name esm",
+    "build": "npm run build-es && NODE_ENV=production ./node_modules/webpack/bin/webpack.js --mode production",
     "build-debug": "NODE_ENV=development; ./node_modules/webpack/bin/webpack.js --mode=development",
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --open",
     "test-watch": "NODE_ENV=development; npm run build-debug && ./node_modules/karma/bin/karma start karma.conf.js",
     "prerelease": "rm -rf dist/*; npm run build; zip -r dist.zip dist"
   },
   "dependencies": {
+    "babel-cli": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-react": "^6.24.1",
