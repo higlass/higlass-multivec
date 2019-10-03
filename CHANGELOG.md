@@ -1,3 +1,7 @@
+**v0.2.2**
+
+- Changed the size of the icon
+
 **v0.2.1**
 
 - Add support for HiGlass `v1.6` (related to PIXI `v5`)
