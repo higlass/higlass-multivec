@@ -1,4 +1,3 @@
-import {mix} from 'mixwith';
 import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
 
 const BasicMultipleBarChart = (HGC, ...args) => {

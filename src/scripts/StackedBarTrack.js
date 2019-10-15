@@ -1,4 +1,5 @@
-import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
+import { scaleLinear, scaleOrdinal, schemeCategory10 } from 'd3-scale';
+import matrixTrackUtils from './MatrixTrackUtils';
 
 const StackedBarTrack = (HGC, ...args) => {
   if (!new.target) {
@@ -16,33 +17,19 @@ const StackedBarTrack = (HGC, ...args) => {
   class StackedBarTrackClass extends HGC.tracks.BarTrack {
     constructor(context, options) {
       super(context, options);
-
+      this.colorToHex = colorToHex;
 
       this.maxAndMin = {
         max: null,
         min: null
       };
-
     }
 
     initTile(tile) {
-      // create the tile
-      // should be overwritten by child classes
-      this.scale.minRawValue = this.minVisibleValue();
-      this.scale.maxRawValue = this.maxVisibleValue();
+      matrixTrackUtils.initTile(this, tile);
 
-      this.scale.minValue = this.scale.minRawValue;
-      this.scale.maxValue = this.scale.maxRawValue;
-
-      this.maxAndMin.max = this.scale.maxValue;
-      this.maxAndMin.min = this.scale.minValue;
-
-      // console.log('initTile:', tile.tileId, this.maxAndMin);
-      // tile.minValue = this.scale.minValue;
-
-      this.localColorToHexScale();
-
-      this.unFlatten(tile);
+      matrixTrackUtils.localColorToHexScale(this);
+      matrixTrackUtils.unFlatten(this, tile);
 
       this.renderTile(tile);
       this.rescaleTiles();
@@ -67,7 +54,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
       for (let i = 0; i < visibleAndFetched.length; i++) {
         const tile = visibleAndFetched[i];
-        this.unFlatten(tile);
+        matrixTrackUtils.unFlatten(this, tile);
       }
 
       this.rescaleTiles();
@@ -90,7 +77,7 @@ const StackedBarTrack = (HGC, ...args) => {
       const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
         tile.tileData.tilePos, this.tilesetInfo.tile_size);
 
-      const matrix = this.unFlatten(tile);
+      const matrix = matrixTrackUtils.unFlatten(this, tile);
 
       this.oldDimensions = this.dimensions; // for mouseover
 
@@ -105,27 +92,6 @@ const StackedBarTrack = (HGC, ...args) => {
       this.makeMouseOverData(tile);
     }
 
-    syncMaxAndMin() {
-      const visibleAndFetched = this.visibleAndFetchedTiles();
-
-      visibleAndFetched.map(tile => {
-        // console.log('tile:', tile.tileId, tile.minValue, tile.maxValue);
-
-        if (tile.minValue + tile.maxValue > this.maxAndMin.min + this.maxAndMin.max) {
-          this.maxAndMin.min = tile.minValue;
-          this.maxAndMin.max = tile.maxValue;
-        }
-          // if (!(this.maxAndMin && this.maxAndMin.min && this.maxAndMin.min < tile.minValue)) {
-          //   this.maxAndMin.min = tile.minValue;
-          // }
-
-          // if (!(this.maxAndMin && this.maxAndMin.max && this.maxAndMin.max > tile.maxValue)) {
-          //   this.maxAndMin.max = tile.maxValue;
-          // }
-        // console.log('this.maxAndMin:', this.maxAndMin);
-      });
-    }
-
     /**
      * Rescales the sprites of all visible tiles when zooming and panning.
      */
@@ -133,7 +99,7 @@ const StackedBarTrack = (HGC, ...args) => {
       // console.log('rescale:')
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
-      this.syncMaxAndMin();
+      matrixTrackUtils.syncMaxAndMin(this);
 
       // console.log('maxAndMin:', this.maxAndMin);
 
@@ -152,19 +118,6 @@ const StackedBarTrack = (HGC, ...args) => {
           sprite.y = y;
         }
       });
-    }
-
-
-    /**
-     * Converts all colors in a colorScale to Hex colors.
-     */
-    localColorToHexScale() {
-      const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
-      const colorHexMap = {};
-      for (let i = 0; i < colorScale.length; i++) {
-        colorHexMap[colorScale[i]] = colorToHex(colorScale[i]);
-      }
-      this.colorHexMap = colorHexMap;
     }
 
     /**
@@ -203,70 +156,6 @@ const StackedBarTrack = (HGC, ...args) => {
 
       return maxAndMin;
     }
-
-
-      /**
-       * un-flatten data into matrix of tile.tileData.shape[0] x tile.tileData.shape[1]
-       *
-       * @param tile
-       * @returns {Array} 2d array of numerical values for each column
-       */
-      unFlatten(tile) {
-        if (tile.matrix) {
-          return tile.matrix;
-        }
-
-        const flattenedArray = tile.tileData.dense;
-
-        // if any data is negative, switch to exponential scale
-        if (flattenedArray.filter(a => a < 0).length > 0 && this.options.valueScaling === 'linear') {
-          console.warn('Negative values present in data. Defaulting to exponential scale.');
-          this.options.valueScaling = 'exponential';
-        }
-
-        const matrix = this.simpleUnFlatten(tile, flattenedArray);
-
-        const maxAndMin = this.findMaxAndMin(matrix);
-        // console.log('unflatten', tile.tileId, maxAndMin.min, maxAndMin.max);
-
-        tile.matrix = matrix;
-        tile.maxValue = maxAndMin.max;
-        tile.minValue = maxAndMin.min;
-
-        this.syncMaxAndMin();
-
-        return matrix;
-      }
-
-      /**
-       *
-       * @param tile
-       * @param data array of values to reshape
-       * @returns {Array} 2D array representation of data
-       */
-      simpleUnFlatten(tile, data) {
-        const shapeX = tile.tileData.shape[0]; // number of different nucleotides in each bar
-        const shapeY = tile.tileData.shape[1]; // number of bars
-
-        // matrix[0] will be [flattenedArray[0], flattenedArray[256], flattenedArray[512], etc.]
-        // because of how flattenedArray comes back from the server.
-        const matrix = [];
-        for (let i = 0; i < shapeX; i++) { // 6
-          for (let j = 0; j < shapeY; j++) { // 256;
-            let singleBar;
-            if (matrix[j] === undefined) {
-              singleBar = [];
-            } else {
-              singleBar = matrix[j];
-            }
-            singleBar.push(data[(shapeY * i) + j]);
-            matrix[j] = singleBar;
-          }
-        }
-
-        return matrix;
-      }
-
 
     /**
      * Map each value in every array in the matrix to a color depending on position in the array
