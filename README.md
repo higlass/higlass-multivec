@@ -70,7 +70,7 @@ Then StackedBarTrack would automatically be imported from the `./es` directory (
 import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
 ```
 
-To use this then along with HiGlassComponent, assuming are developing with React either in an environment where `window` is available (client-side), is via the following:
+To use this then along with HiGlassComponent, assuming you are developing with React either in an environment where `window` is available (client-side), use via the following:
 
 ```javascript
 import React from 'react';
