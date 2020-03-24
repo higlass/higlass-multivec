@@ -53,7 +53,7 @@
     "d3-scale": "^1.0.7",
     "enzyme": "^3.6.0",
     "enzyme-adapter-react-16": "^1.6.0",
-    "higlass": "^1.6.2",
+    "higlass": "^1.9.1",
     "higlass-register": "^0.1.0",
     "i": "^0.3.6",
     "jasmine": "^2.99.0",
