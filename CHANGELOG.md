@@ -1,3 +1,6 @@
+
+- Add support for HiGlass `v1.9` 
+
 **v0.2.2**
 
 - Changed the size of the icon
