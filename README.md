@@ -20,6 +20,10 @@ npm install higlass-multivec
 ```
 ## Usage
 
+The live scripts can be found at:
+
+- https://unpkg.com/higlass-multivec/dist/higlass-multivec.min.js
+
 There are three types of tracks to choose from:
 
 ```
