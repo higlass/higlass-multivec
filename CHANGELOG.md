@@ -1,7 +1,8 @@
+- Make use of ES modules for integrating with other builds/apps
+
 **v0.2.3**
 
 - Add support for HiGlass `v1.9` 
-
 
 **v0.2.2**
 
