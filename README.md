@@ -58,6 +58,62 @@ Configure the track in your view config; you should be all set from here!
 ]   
 ```
 For an example, see [`src/index.html`](src/index.html).
+
+### ECMAScript Modules (ESM)
+
+We also build out ES modules for usage by applications who may need to import or use `higlass-multivec` as a component.
+
+Whenever have a statement such as the following, assuming `higlass-multivec` is in your node_modules folder:
+```javascript
+import { StackedBarTrack } from 'higlass-multivec';
+```
+
+Then StackedBarTrack would automatically be imported from the `./es` directory (set via package.json's `"module"` value). Can also import component(s) directly, especially if only need to use one or two, e.g.:
+
+```javascript
+import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
+```
+
+To use this then along with HiGlassComponent, assuming you are developing with React either in an environment where `window` is available (client-side), use via the following:
+
+```javascript
+import React from 'react';
+import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
+import { HiGlassComponent } from 'higlass/dist/hglib';
+import { default as higlassRegister } from 'higlass-register';
+
+// Call this sometime before we render out MyComponent below (synchronous)
+higlassRegister({
+    name: 'StackedBarTrack',
+    track: StackedBarTrack,
+    config: StackedBarTrack.config,
+})
+
+...
+
+
+function MyComponent(props){
+    const { viewConfig, options, width, height, ...otherProps } = props;
+    return (
+        <div className="container">
+            <HiGlassComponent {...{ viewConfig, options, width, height }} />
+        </div>
+    );
+}
+MyComponent.defaultProps = { ... };
+
+ReactDOM.render(
+    <MyComponent {...someData} />,
+    document.getElementById("root")
+);
+
+```
+
+#### Minor Background Info
+
+- https://dev.to/bennypowers/you-should-be-using-esm-kn3
+- https://nodejs.org/api/esm.html#esm_introduction
+
 ## Development
 
 ### Testing

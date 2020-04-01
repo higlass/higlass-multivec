@@ -11,11 +11,14 @@
       "url": "http://github.com/daniellenguyen"
     }
   ],
-  "main": "src/index.js",
-  "unpkg": "dist/higlass-multivec.min.js",
+  "main": "./src/index.js",
+  "unpkg": "./dist/higlass-multivec.min.js",
+  "module": "./es",
   "files": [
-    "dist"
+    "dist",
+    "es"
   ],
+  "repository": "github:higlass/higlass-multivec",
   "devDependencies": {
     "autoprefixer": "^8.6.5",
     "babel-core": "^6.26.3",
@@ -28,6 +31,7 @@
     "karma-phantomjs2-launcher": "^0.5.0",
     "node-sass": "^4.9.3",
     "optimize-css-assets-webpack-plugin": "^4.0.3",
+    "pixi.js": "^5.0.3",
     "postcss-flexbugs-fixes": "^3.3.1",
     "postcss-loader": "^2.1.6",
     "sass-loader": "^7.1.0",
@@ -38,13 +42,15 @@
     "webpack-dev-server": "^3.1.8"
   },
   "scripts": {
-    "build": "NODE_ENV=production ./node_modules/webpack/bin/webpack.js --mode production",
+    "build-es": "rm -rf ./es/* && npx babel ./src/scripts/ --out-dir ./es/ --env-name esm",
+    "build": "npm run build-es && NODE_ENV=production ./node_modules/webpack/bin/webpack.js --mode production",
     "build-debug": "NODE_ENV=development; ./node_modules/webpack/bin/webpack.js --mode=development",
     "start": "./node_modules/webpack-dev-server/bin/webpack-dev-server.js --mode development --open",
     "test-watch": "NODE_ENV=development; npm run build-debug && ./node_modules/karma/bin/karma start karma.conf.js",
     "prerelease": "rm -rf dist/*; npm run build; zip -r dist.zip dist"
   },
   "dependencies": {
+    "babel-cli": "^6.26.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-react": "^6.24.1",
