@@ -57,8 +57,8 @@ var StackedBarTrack = function StackedBarTrack(HGC) {
         this.scale.minValue = this.scale.minRawValue;
         this.scale.maxValue = this.scale.maxRawValue;
 
-        this.maxAndMin.max = this.scale.maxValue;
-        this.maxAndMin.min = this.scale.minValue;
+        this.maxAndMin.min = this.minValueInArray(tile.tileData.dense);
+        this.maxAndMin.max = this.maxValueInArray(tile.tileData.dense);
 
         // console.log('initTile:', tile.tileId, this.maxAndMin);
         // tile.minValue = this.scale.minValue;
@@ -245,8 +245,10 @@ var StackedBarTrack = function StackedBarTrack(HGC) {
             maxAndMin.max = localPositiveMax;
           }
 
+          // When dealing with states data we have positive values including 0
+          // maxAndMin.min should be 0 in this case
           var negativeValues = temp.filter(function (a) {
-            return a < 0;
+            return a <= 0;
           });
           // console.log('negativeValues:', negativeValues);
 
@@ -457,16 +459,18 @@ var StackedBarTrack = function StackedBarTrack(HGC) {
           }
 
           // draw negative values
-          var negative = matrix[j][1];
-          var valueToPixelsNegative = scaleLinear().domain([-Math.abs(negativeMax), 0]).range([negativeTrackHeight, 0]);
-          var negativeStackedHeight = 0;
-          for (var _i2 = 0; _i2 < negative.length; _i2++) {
-            var _height = valueToPixelsNegative(negative[_i2].value);
-            var _y = positiveTrackHeight + negativeStackedHeight;
-            this.addSVGInfo(tile, x, _y, width, _height, negative[_i2].color);
-            graphics.beginFill(this.colorHexMap[negative[_i2].color]);
-            graphics.drawRect(x, _y, width, _height);
-            negativeStackedHeight = negativeStackedHeight + _height;
+          if (negativeMax > 0) {
+            var negative = matrix[j][1];
+            var valueToPixelsNegative = scaleLinear().domain([-Math.abs(negativeMax), 0]).range([negativeTrackHeight, 0]);
+            var negativeStackedHeight = 0;
+            for (var _i2 = 0; _i2 < negative.length; _i2++) {
+              var _height = valueToPixelsNegative(negative[_i2].value);
+              var _y = positiveTrackHeight + negativeStackedHeight;
+              this.addSVGInfo(tile, x, _y, width, _height, negative[_i2].color);
+              graphics.beginFill(this.colorHexMap[negative[_i2].color]);
+              graphics.drawRect(x, _y, width, _height);
+              negativeStackedHeight = negativeStackedHeight + _height;
+            }
           }
         }
 
@@ -510,6 +514,46 @@ var StackedBarTrack = function StackedBarTrack(HGC) {
             barColors: [color]
           };
         }
+      }
+
+      /**
+      * Get the minimum of an array
+      * 
+      * @param {array} arr 
+      */
+
+    }, {
+      key: 'minValueInArray',
+      value: function minValueInArray(arr) {
+
+        var min = arr[0];
+
+        for (var i = 1; i < arr.length; i++) {
+          var value = arr[i];
+          min = value < min ? value : min;
+        }
+
+        return min;
+      }
+
+      /**
+        * Get the maximum of an array
+        * 
+        * @param {array} arr 
+        */
+
+    }, {
+      key: 'maxValueInArray',
+      value: function maxValueInArray(arr) {
+
+        var max = arr[0];
+
+        for (var i = 1; i < arr.length; i++) {
+          var value = arr[i];
+          max = value > max ? value : max;
+        }
+
+        return max;
       }
 
       /**
@@ -645,7 +689,7 @@ var StackedBarTrack = function StackedBarTrack(HGC) {
               rect.setAttribute('y', data.barYValues[i] - tile.lowestY);
               rect.setAttribute('height', data.barHeights[i]);
               rect.setAttribute('width', data.barWidths[i]);
-              if (tile.barBorders) {
+              if (this.options.barBorder) {
                 rect.setAttribute('stroke-width', '0.1');
                 rect.setAttribute('stroke', 'black');
               }
