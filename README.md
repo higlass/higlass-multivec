@@ -20,6 +20,10 @@ npm install higlass-multivec
 ```
 ## Usage
 
+The live scripts can be found at:
+
+- https://unpkg.com/higlass-multivec/dist/higlass-multivec.min.js
+
 There are three types of tracks to choose from:
 
 ```
@@ -70,7 +74,42 @@ Then StackedBarTrack would automatically be imported from the `./es` directory (
 import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
 ```
 
-#### Background Info (from Google)
+To use this then along with HiGlassComponent, assuming you are developing with React either in an environment where `window` is available (client-side), use via the following:
+
+```javascript
+import React from 'react';
+import { StackedBarTrack } from 'higlass-multivec/es/StackedBarTrack';
+import { HiGlassComponent } from 'higlass/dist/hglib';
+import { default as higlassRegister } from 'higlass-register';
+
+// Call this sometime before we render out MyComponent below (synchronous)
+higlassRegister({
+    name: 'StackedBarTrack',
+    track: StackedBarTrack,
+    config: StackedBarTrack.config,
+})
+
+...
+
+
+function MyComponent(props){
+    const { viewConfig, options, width, height, ...otherProps } = props;
+    return (
+        <div className="container">
+            <HiGlassComponent {...{ viewConfig, options, width, height }} />
+        </div>
+    );
+}
+MyComponent.defaultProps = { ... };
+
+ReactDOM.render(
+    <MyComponent {...someData} />,
+    document.getElementById("root")
+);
+
+```
+
+#### Minor Background Info
 
 - https://dev.to/bennypowers/you-should-be-using-esm-kn3
 - https://nodejs.org/api/esm.html#esm_introduction

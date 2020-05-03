@@ -72,6 +72,16 @@ const StackedBarTrack = (HGC, ...args) => {
 
       this.rescaleTiles();
     }
+
+    /**
+     * Prevent BarTracks draw method from having an effect
+     *
+     * @param tile
+     */
+    drawTile(tile) {
+
+    }
+
     /**
      * Draws exactly one tile.
      *
