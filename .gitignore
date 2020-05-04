@@ -4,6 +4,7 @@
 *.swp
 node_modules
 dist
+es
 *.zip
 *.log
 *.DS_cache

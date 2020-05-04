@@ -82,7 +82,7 @@ const StackedBarTrack = (HGC, ...args) => {
       this.rescaleTiles();
     }
 
-     /**
+    /**
      * Prevent BarTracks draw method from having an effect
      *
      * @param tile
@@ -347,7 +347,7 @@ const StackedBarTrack = (HGC, ...args) => {
      * @param tile
      */
     drawVerticalBars(matrix, tileX, tileWidth, positiveMax, negativeMax, tile) {
-      let graphics = new PIXI.Graphics();
+      let graphics = new HGC.libraries.PIXI.Graphics();
       const trackHeight = this.dimensions[1];
       // console.log('drawing vertical:', trackHeight, positiveMax, negativeMax);
 
@@ -419,9 +419,9 @@ const StackedBarTrack = (HGC, ...args) => {
       // vertical bars are drawn onto the graphics object
       // and a texture is generated from that
       const texture = pixiRenderer.generateTexture(
-        graphics, PIXI.SCALE_MODES.NEAREST
+        graphics, HGC.libraries.PIXI.SCALE_MODES.NEAREST
       );
-      const sprite = new PIXI.Sprite(texture);
+      const sprite = new HGC.libraries.PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
       tile.sprite = sprite;
