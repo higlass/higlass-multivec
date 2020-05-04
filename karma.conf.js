@@ -15,6 +15,7 @@ module.exports = function(config) {
       'node_modules/bootstrap/dist/css/bootstrap.min.css',
       //'test/**/*.+(js|jsx)',
       'test/SVGExportTests.js',
+      'test/StackedBarTests.js',
       'node_modules/higlass/dist/hglib.css',
       'node_modules/higlass/dist/hglib.js',
     ],

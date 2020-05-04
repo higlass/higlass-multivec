@@ -1,0 +1,91 @@
+{
+   "editable": true,
+   "zoomFixed": false,
+   "trackSourceServers": [
+     "/api/v1",
+     "http://higlass.io/api/v1"
+   ],
+   "exportViewUrl": "/api/v1/viewconfs/",
+   "views": [
+     {
+       "tracks": {
+         "top": [
+           {
+             "server": "http://54.88.112.8:8170/api/v1",
+             "tilesetUid": "DkNY0G9vQYy2z0h_ScEvdw",
+             "uid": "t1",
+             "type": "horizontal-stacked-bar",
+             "options": {
+               "labelPosition": "topLeft",
+               "labelColor": "black",
+               "labelTextOpacity": 0.4,
+               "valueScaling": "linear",
+               "trackBorderWidth": 0,
+               "trackBorderColor": "black",
+               "heatmapValueScaling": "log",
+               "name": "spin states_test v1",
+               "backgroundColor": "white",
+               "barBorder": true,
+               "sortLargestOnTop": true,
+               "colorScale": [
+                 "#FF0000",
+                 "#008080"
+               ]
+             },
+             "width": 942,
+             "height": 126,
+             "resolutions": [
+               12800000,
+               6400000,
+               3200000,
+               1600000,
+               800000,
+               400000,
+               200000,
+               100000,
+               50000,
+               25000,
+               12500,
+               6250
+             ]
+           }
+         ],
+         "left": [],
+         "center": [],
+         "right": [],
+         "bottom": [],
+         "whole": [],
+         "gallery": []
+       },
+       "initialXDomain": [
+         1252861173.8917694,
+         1280803420.706086
+       ],
+       "initialYDomain": [
+         -2694922731.5570602,
+         -2686201064.412427
+       ],
+       "layout": {
+         "w": 12,
+         "h": 12,
+         "x": 0,
+         "y": 0,
+         "moved": false,
+         "static": false
+       },
+       "uid": "aa"
+     }
+   ],
+   "zoomLocks": {
+     "locksByViewUid": {},
+     "locksDict": {}
+   },
+   "locationLocks": {
+     "locksByViewUid": {},
+     "locksDict": {}
+   },
+   "valueScaleLocks": {
+     "locksByViewUid": {},
+     "locksDict": {}
+   }
+ }
