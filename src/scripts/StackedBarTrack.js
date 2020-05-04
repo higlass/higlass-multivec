@@ -611,7 +611,7 @@ const StackedBarTrack = (HGC, ...args) => {
           rect.setAttribute('height', data.barHeights[i]);
           rect.setAttribute('width', data.barWidths[i]);
           if (this.options.barBorder) {
-            rect.setAttribute('stroke-width', '0.2');
+            rect.setAttribute('stroke-width', '0.1');
             rect.setAttribute('stroke', 'black');
           }
 
