@@ -16,16 +16,28 @@ const StackedBarTrack = (HGC, ...args) => {
   class StackedBarTrackClass extends HGC.tracks.BarTrack {
     constructor(context, options) {
       super(context, options);
+      this.initializeStackedBarTrack();
+    }
 
+    /** Factor out some initialization code for the track. This is
+    necessary because we can now load tiles synchronously and so
+    we have to check if the track is initialized in initTiles
+    and not in the constructor */
+    initializeStackedBarTrack() {
+      if (this.stackedBarTrackInitialized) return;
 
       this.maxAndMin = {
         max: null,
         min: null
       };
 
+      this.stackedBarTrackInitialized = true
     }
 
     initTile(tile) {
+      
+      this.initializeStackedBarTrack();
+
       // create the tile
       // should be overwritten by child classes
       this.scale.minRawValue = this.minVisibleValue();
@@ -34,11 +46,8 @@ const StackedBarTrack = (HGC, ...args) => {
       this.scale.minValue = this.scale.minRawValue;
       this.scale.maxValue = this.scale.maxRawValue;
 
-      this.maxAndMin.max = this.scale.maxValue;
-      this.maxAndMin.min = this.scale.minValue;
-
-      // console.log('initTile:', tile.tileId, this.maxAndMin);
-      // tile.minValue = this.scale.minValue;
+      this.maxAndMin.min = this.minValueInArray(tile.tileData.dense);
+      this.maxAndMin.max = this.maxValueInArray(tile.tileData.dense);
 
       this.localColorToHexScale();
 
@@ -120,7 +129,7 @@ const StackedBarTrack = (HGC, ...args) => {
 
       visibleAndFetched.map(tile => {
         // console.log('tile:', tile.tileId, tile.minValue, tile.maxValue);
-
+        
         if (tile.minValue + tile.maxValue > this.maxAndMin.min + this.maxAndMin.max) {
           this.maxAndMin.min = tile.minValue;
           this.maxAndMin.max = tile.maxValue;
@@ -199,8 +208,9 @@ const StackedBarTrack = (HGC, ...args) => {
           maxAndMin.max = localPositiveMax;
         }
 
-        let negativeValues = temp.filter(a => a < 0);
-        // console.log('negativeValues:', negativeValues);
+        // When dealing with states data we have positive values including 0
+        // maxAndMin.min should be 0 in this case
+        let negativeValues = temp.filter(a => a <= 0);
 
         if (negativeValues.length > 0) {
           negativeValues = negativeValues.map(a => Math.abs(a));
@@ -350,8 +360,6 @@ const StackedBarTrack = (HGC, ...args) => {
       // fraction of the track devoted to negative values
       const negativeTrackHeight = (Math.abs(negativeMax) * trackHeight) / unscaledHeight;
 
-      // console.log('positiveTrackHeight', tile.tileId, positiveTrackHeight);
-
       let start = null;
       let lowestY = this.dimensions[1];
 
@@ -365,6 +373,7 @@ const StackedBarTrack = (HGC, ...args) => {
         graphics.lineStyle(1, 0x000000, 1);
       }
 
+      
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
         (j === 0) ? start = x : start;
@@ -375,30 +384,35 @@ const StackedBarTrack = (HGC, ...args) => {
           .domain([0, positiveMax])
           .range([0, positiveTrackHeight]);
         let positiveStackedHeight = 0;
+
         for (let i = 0; i < positive.length; i++) {
           const height = valueToPixelsPositive(positive[i].value);
           const y = positiveTrackHeight - (positiveStackedHeight + height);
           this.addSVGInfo(tile, x, y, width, height, positive[i].color);
           graphics.beginFill(this.colorHexMap[positive[i].color]);
           graphics.drawRect(x, y, width, height);
+
           positiveStackedHeight = positiveStackedHeight + height;
           if (lowestY > y)
             lowestY = y;
         }
 
-        // draw negative values
-        const negative = matrix[j][1];
-        const valueToPixelsNegative = scaleLinear()
-          .domain([-Math.abs(negativeMax), 0])
-          .range([negativeTrackHeight, 0]);
-        let negativeStackedHeight = 0;
-        for (let i = 0; i < negative.length; i++) {
-          const height = valueToPixelsNegative(negative[i].value);
-          const y = positiveTrackHeight + negativeStackedHeight;
-          this.addSVGInfo(tile, x, y, width, height, negative[i].color);
-          graphics.beginFill(this.colorHexMap[negative[i].color]);
-          graphics.drawRect(x, y, width, height);
-          negativeStackedHeight = negativeStackedHeight + height;
+        // draw negative values, if there are any
+
+        if(Math.abs(negativeMax)>0){
+          const negative = matrix[j][1];
+          const valueToPixelsNegative = scaleLinear()
+            .domain([-Math.abs(negativeMax), 0])
+            .range([negativeTrackHeight, 0]);
+          let negativeStackedHeight = 0;
+          for (let i = 0; i < negative.length; i++) {
+            const height = valueToPixelsNegative(negative[i].value);
+            const y = positiveTrackHeight + negativeStackedHeight;
+            this.addSVGInfo(tile, x, y, width, height, negative[i].color);
+            graphics.beginFill(this.colorHexMap[negative[i].color]);
+            graphics.drawRect(x, y, width, height);
+            negativeStackedHeight = negativeStackedHeight + height;
+          }
         }
       }
 
@@ -458,6 +472,40 @@ const StackedBarTrack = (HGC, ...args) => {
     }
 
     /**
+     * Get the minimum of an array
+     * 
+     * @param {array} arr 
+     */
+    minValueInArray(arr){
+
+      let min = arr[0];
+
+      for (let i = 1; i < arr.length; i++) {
+        let value = arr[i];
+        min = (value < min) ? value : min;
+      }
+    
+      return min
+    }
+
+    /**
+     * Get the maximum of an array
+     * 
+     * @param {array} arr 
+     */
+    maxValueInArray(arr){
+
+      let max = arr[0];
+
+      for (let i = 1; i < arr.length; i++) {
+        let value = arr[i];
+        max = (value > max) ? value : max;
+      }
+    
+      return max
+    }
+
+    /**
      * Sorts relevant data for mouseover for easy iteration later
      *
      * @param tile
@@ -513,12 +561,13 @@ const StackedBarTrack = (HGC, ...args) => {
     */
 
     exportSVG() {
+
       const visibleAndFetched = this.visibleAndFetchedTiles();
       visibleAndFetched.map((tile) => {
         this.initTile(tile);
         this.draw();
       });
-
+            
       let track = null;
       let base = null;
 
@@ -561,7 +610,7 @@ const StackedBarTrack = (HGC, ...args) => {
           rect.setAttribute('y', data.barYValues[i] - tile.lowestY);
           rect.setAttribute('height', data.barHeights[i]);
           rect.setAttribute('width', data.barWidths[i]);
-          if (tile.barBorders) {
+          if (this.options.barBorder) {
             rect.setAttribute('stroke-width', '0.1');
             rect.setAttribute('stroke', 'black');
           }

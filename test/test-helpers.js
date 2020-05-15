@@ -48,9 +48,53 @@ export const mountHGComponent = (prevDiv, prevHgc, viewConf, done, options) => {
   />, { attachTo: div });
 
   hgc.update();
+  
   waitForTilesLoaded(hgc.instance(), () => {
     waitForJsonComplete(done);
   });
 
+  return [div, hgc];
+};
+
+/**
+ * Mount a new HiGlassComponent that uses local tiles and unmount the previously visible one.
+ *
+ * @param {HTML Element} div A div element to detach and recreate for the component
+ * @param {Enzyme wrapped HiGlass component} prevHgc An already mounted
+ *  hgc component
+ * @param {function} done The callback to call when the component is fully loaded
+ */
+export const mountHGComponentLocalTiles = (prevDiv, prevHgc, viewConf, done, options) => {
+  if (prevHgc) {
+    prevHgc.unmount();
+    prevHgc.detach();
+  }
+
+  if (prevDiv) {
+    global.document.body.removeChild(prevDiv);
+  }
+
+  const style = (options && options.style) || 'width:800px; background-color: lightgreen;';
+  const bounded = (options && options.bounded) || false;
+
+  console.log('options', options, 'style:', style);
+  
+  const div = global.document.createElement('div');
+  global.document.body.appendChild(div);
+
+  div.setAttribute('style', style);
+  div.setAttribute('id', 'simple-hg-component');
+
+  const hgc = mount(<HiGlassComponent
+    options={{ bounded }}
+    viewConfig={viewConf}
+  />, { attachTo: div });
+
+  hgc.update();
+
+  setTimeout(() => {
+    done();
+  }, 500);
+ 
   return [div, hgc];
 };
