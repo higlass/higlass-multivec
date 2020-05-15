@@ -1,4 +1,6 @@
 
+**v0.2.4**
+
 - Fix a track height issue with states data
 - Pin HigGlass version to `v1.9.3`
 - Make use of ES modules for integrating with other builds/apps
