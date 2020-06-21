@@ -381,7 +381,8 @@ const ScaledStackedBarTrack = (HGC, ...args) => {
           if (trackY > row[i].y && trackY <= (row[i].y + row[i].height)) {
             const color = row[i].color;
             const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
-            const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
+            const rowInfo = this.tilesetInfo.row_infos[colorScaleMap[color]];
+            const type = rowInfo.name || rowInfo;
 
             return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
             style="fill:${color};stroke:black;stroke-width:2;"></svg>`

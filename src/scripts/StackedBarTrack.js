@@ -34,8 +34,35 @@ const StackedBarTrack = (HGC, ...args) => {
       this.stackedBarTrackInitialized = true
     }
 
-    initTile(tile) {
+    createColorScale() {
+      if (this.options.colorScale) return;
 
+      if (this.tilesetInfo.row_infos && this.tilesetInfo.row_infos[0].color) {
+        this.options.colorScale = this.tilesetInfo.row_infos.map(x => x.color);
+      } else {
+        const DEFAULT_HUMAN_EPILOGOS_COLORS = [
+          "#FF0000",
+          "#FF4500",
+          "#32CD32",
+          "#008000",
+          "#006400",
+          "#C2E105",
+          "#FFFF00",
+          "#66CDAA",
+          "#8A91D0",
+          "#CD5C5C",
+          "#E9967A",
+          "#BDB76B",
+          "#808080",
+          "#C0C0C0",
+          "#FFFFFF"
+        ]
+        this.options.colorScale = DEFAULT_HUMAN_EPILOGOS_COLORS
+      }
+    }
+
+    initTile(tile) {
+      this.createColorScale();
       this.initializeStackedBarTrack();
 
       // create the tile
@@ -658,7 +685,8 @@ const StackedBarTrack = (HGC, ...args) => {
           if (dataY > y && dataY <= (y + height)) {
             const color = row[i].color;
             const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
-            const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
+            const rowInfo = this.tilesetInfo.row_infos[colorScaleMap[color]];
+            const type = rowInfo.name || rowInfo;
 
             return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
             style="fill:${color};stroke:black;stroke-width:2;"></svg>`
@@ -701,23 +729,6 @@ StackedBarTrack.config = {
     backgroundColor: 'white',
     barBorder: true,
     sortLargestOnTop: true,
-    colorScale: [
-      "#FF0000",
-      "#FF4500",
-      "#32CD32",
-      "#008000",
-      "#006400",
-      "#C2E105",
-      "#FFFF00",
-      "#66CDAA",
-      "#8A91D0",
-      "#CD5C5C",
-      "#E9967A",
-      "#BDB76B",
-      "#808080",
-      "#C0C0C0",
-      "#FFFFFF"
-    ],
   },
   otherOptions: {
     'epilogos': {
