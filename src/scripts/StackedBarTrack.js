@@ -31,7 +31,9 @@ const StackedBarTrack = (HGC, ...args) => {
         min: null
       };
 
+      this.textureGraphics = new HGC.libraries.PIXI.Graphics();
       this.stackedBarTrackInitialized = true
+
     }
 
     createColorScale() {
@@ -84,6 +86,13 @@ const StackedBarTrack = (HGC, ...args) => {
       this.rescaleTiles();
     }
 
+    destroyTile(tile) {
+      tile.sprite.destroy(true);
+      tile.graphics.destroy(true);
+
+      tile.graphics = null;
+      tile.sprite = null;
+    }
 
     rerender(newOptions) {
       super.rerender(newOptions);
@@ -359,7 +368,7 @@ const StackedBarTrack = (HGC, ...args) => {
      * @param tile
      */
     drawVerticalBars(matrix, tileX, tileWidth, positiveMax, negativeMax, tile) {
-      let graphics = new HGC.libraries.PIXI.Graphics();
+      this.textureGraphics.clear();
       const trackHeight = this.dimensions[1];
 
       // get amount of trackHeight reserved for positive and for negative
@@ -377,11 +386,11 @@ const StackedBarTrack = (HGC, ...args) => {
       const width = 10;
 
       // calls drawBackground in PixiTrack.js
-      this.drawBackground(matrix, graphics);
+      this.drawBackground(matrix, this.textureGraphics);
 
       // borders around each bar
       if (this.options.barBorder) {
-        graphics.lineStyle(1, 0x000000, 1);
+        this.textureGraphics.lineStyle(1, 0x000000, 1);
       }
 
 
@@ -400,8 +409,8 @@ const StackedBarTrack = (HGC, ...args) => {
           const height = valueToPixelsPositive(positive[i].value);
           const y = positiveTrackHeight - (positiveStackedHeight + height);
           this.addSVGInfo(tile, x, y, width, height, positive[i].color);
-          graphics.beginFill(this.colorHexMap[positive[i].color]);
-          graphics.drawRect(x, y, width, height);
+          this.textureGraphics.beginFill(this.colorHexMap[positive[i].color]);
+          this.textureGraphics.drawRect(x, y, width, height);
 
           positiveStackedHeight = positiveStackedHeight + height;
           if (lowestY > y)
@@ -420,8 +429,8 @@ const StackedBarTrack = (HGC, ...args) => {
             const height = valueToPixelsNegative(negative[i].value);
             const y = positiveTrackHeight + negativeStackedHeight;
             this.addSVGInfo(tile, x, y, width, height, negative[i].color);
-            graphics.beginFill(this.colorHexMap[negative[i].color]);
-            graphics.drawRect(x, y, width, height);
+            this.textureGraphics.beginFill(this.colorHexMap[negative[i].color]);
+            this.textureGraphics.drawRect(x, y, width, height);
             negativeStackedHeight = negativeStackedHeight + height;
           }
         }
@@ -430,7 +439,7 @@ const StackedBarTrack = (HGC, ...args) => {
       // vertical bars are drawn onto the graphics object
       // and a texture is generated from that
       const texture = pixiRenderer.generateTexture(
-        graphics, HGC.libraries.PIXI.SCALE_MODES.NEAREST
+        this.textureGraphics, HGC.libraries.PIXI.SCALE_MODES.NEAREST
       );
       const sprite = new HGC.libraries.PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
