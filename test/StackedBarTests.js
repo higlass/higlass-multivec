@@ -50,8 +50,6 @@ describe('Check bar track with states data', () => {
       
       () => {
         const trackObj = getTrackObjectFromHGC(hgc.instance(), 'view-uid', 'track-uid');
-        
-        expect(trackObj.numCategories).to.be.eql(5);
 
         const matrix = trackObj.simpleUnFlatten(
           { tileData: { shape: [15, 1] } },
