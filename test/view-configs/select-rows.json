@@ -1,0 +1,91 @@
+{
+    "editable": true,
+    "trackSourceServers": [
+      "/api/v1",
+      "http://higlass.io/api/v1"
+    ],
+    "exportViewUrl": "http://higlass.io/api/v1/viewconfs",
+    "views": [
+      {
+        "initialXDomain": [
+          1434280543.6740997,
+          1845758433.2324426
+        ],
+        "initialYDomain": [
+          1726602622.0518713,
+          1726602622.0518713
+        ],
+        "tracks": {
+          "top": [
+            {
+              "server": "http://higlass.io/api/v1",
+              "tilesetUid": "WtBJUYawQzS9M2WVIIHnlA",
+              "uid": "track-uid",
+              "type": "horizontal-stacked-bar",
+              "options": {
+                "labelPosition": "topLeft",
+                "labelColor": "black",
+                "labelTextOpacity": 0.4,
+                "valueScaling": "exponential",
+                "trackBorderWidth": 0,
+                "trackBorderColor": "black",
+                "backgroundColor": "white",
+                "barBorder": true,
+                "sortLargestOnTop": false,
+                "selectRows": [
+                  [14, 1], [2, 3], [4, 5], [6, 7, 8, 9, 10, 11, 12, 13], [0]
+                ],
+                "colorScale": [
+                  "#FF0000",
+                  "#FF4500",
+                  "#32CD32",
+                  "#008000",
+                  "#006400",
+                  "#C2E105",
+                  "#FFFF00",
+                  "#66CDAA",
+                  "#8A91D0",
+                  "#CD5C5C",
+                  "#E9967A",
+                  "#BDB76B",
+                  "#808080",
+                  "#C0C0C0",
+                  "#FFFFFF"
+                ],
+                "name": "Epilogos (hg38)"
+              },
+              "width": 568,
+              "height": 86
+            }
+          ],
+          "left": [],
+          "center": [],
+          "bottom": [],
+          "right": [],
+          "whole": [],
+          "gallery": []
+        },
+        "layout": {
+          "w": 12,
+          "h": 4,
+          "x": 0,
+          "y": 0,
+          "moved": false,
+          "static": false
+        },
+        "uid": "view-uid"
+      }
+    ],
+    "zoomLocks": {
+      "locksByViewUid": {},
+      "locksDict": {}
+    },
+    "locationLocks": {
+      "locksByViewUid": {},
+      "locksDict": {}
+    },
+    "valueScaleLocks": {
+      "locksByViewUid": {},
+      "locksDict": {}
+    }
+}
