@@ -1,4 +1,7 @@
 
+***next release***
+- Add a `selectRows` option to enable filtering and aggregating bars
+
 **v0.2.4**
 
 - Fix a track height issue with states data
