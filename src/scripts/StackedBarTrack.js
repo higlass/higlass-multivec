@@ -78,6 +78,9 @@ const StackedBarTrack = (HGC, ...args) => {
       this.maxAndMin.min = this.minValueInArray(tile.tileData.dense);
       this.maxAndMin.max = this.maxValueInArray(tile.tileData.dense);
 
+      // Number of bars being stacked in each genomic position
+      this.numCategories = this.options.selectRows ? this.options.selectRows.length : tile.tileData.shape[0];
+
       this.localColorToHexScale();
 
       this.unFlatten(tile);
@@ -158,11 +161,17 @@ const StackedBarTrack = (HGC, ...args) => {
       this.makeMouseOverData(tile);
     }
 
+    /**
+     * Share the scale of y-axis across tiles.
+     */
     syncMaxAndMin() {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
-      visibleAndFetched.map(tile => {
+      // Initialize min and max values so that the scale is properly calculated based on the current tile matrixes
+      this.maxAndMin.min = 0;
+      this.maxAndMin.max = 0;
 
+      visibleAndFetched.map(tile => {
         if (tile.minValue + tile.maxValue > this.maxAndMin.min + this.maxAndMin.max) {
           this.maxAndMin.min = tile.minValue;
           this.maxAndMin.max = tile.maxValue;
@@ -286,25 +295,38 @@ const StackedBarTrack = (HGC, ...args) => {
        * @returns {Array} 2D array representation of data
        */
       simpleUnFlatten(tile, data) {
-        const shapeX = tile.tileData.shape[0]; // number of different nucleotides in each bar
-        const shapeY = tile.tileData.shape[1]; // number of bars
+        const shapeX = this.numCategories; // number of different categories on each genomic position
+        const shapeY = tile.tileData.shape[1]; // number of genomic positions
 
         // matrix[0] will be [flattenedArray[0], flattenedArray[256], flattenedArray[512], etc.]
         // because of how flattenedArray comes back from the server.
         const matrix = [];
         for (let i = 0; i < shapeX; i++) { // 6
-          for (let j = 0; j < shapeY; j++) { // 256;
+          for (let j = 0; j < shapeY; j++) { // 256
             let singleBar;
             if (matrix[j] === undefined) {
               singleBar = [];
             } else {
               singleBar = matrix[j];
             }
-            singleBar.push(data[(shapeY * i) + j]);
+            if(this.options.selectRows) {
+              // filter and/or aggregate bars based on the `selectRows` option
+              const idx = this.options.selectRows[i];
+              if(Array.isArray(idx)) {
+                // calculate sum
+                const sum = idx.reduce((cum, cur) => cum + data[(shapeY * cur) + j], 0);
+                singleBar.push(sum);
+              } else {
+                // use the data as it is
+                singleBar.push(data[(shapeY * idx) + j]);
+              }
+            } else {
+              // no filter/aggregate
+              singleBar.push(data[(shapeY * i) + j]);
+            }
             matrix[j] = singleBar;
           }
         }
-
         return matrix;
       }
 
@@ -530,7 +552,7 @@ const StackedBarTrack = (HGC, ...args) => {
      * @param tile
      */
     makeMouseOverData(tile) {
-      const shapeX = tile.tileData.shape[0]; // 15 number of different nucleotides in each bar
+      const shapeX = this.numCategories; // 15 number of different nucleotides in each bar
       const shapeY = tile.tileData.shape[1]; // 3840 number of bars
       const barYValues = tile.svgData.barYValues;
       const barHeights = tile.svgData.barHeights;
@@ -694,13 +716,27 @@ const StackedBarTrack = (HGC, ...args) => {
           if (dataY > y && dataY <= (y + height)) {
             const color = row[i].color;
             const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
-            const rowInfo = this.tilesetInfo.row_infos[colorScaleMap[color]];
-            const type = rowInfo.name || rowInfo;
-
+            
+            let type;
+            if(this.options.selectRows) {
+              // if `selectRows` is used, we need to point to the index specified in it
+              const idx = this.options.selectRows[colorScaleMap[color]];
+              if(Array.isArray(idx)) {
+                // This means multiple types are aggregated. Hence, show the multiple types in the tooltip.
+                const types = idx.map(d => this.tilesetInfo.row_infos[d].name || this.tilesetInfo.row_infos[d]);
+                type = types.join(', ');
+              } else {
+                const rowInfo = this.tilesetInfo.row_infos[idx];
+                type = rowInfo.name || rowInfo;
+              }
+            }
+            else {
+              const rowInfo = this.tilesetInfo.row_infos[colorScaleMap[color]];
+              type = rowInfo.name || rowInfo;
+            }
             return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
             style="fill:${color};stroke:black;stroke-width:2;"></svg>`
               + ` ${type}` + `<br>` + `${value}`;
-
           }
         }
       }
@@ -727,7 +763,7 @@ StackedBarTrack.config = {
   availableOptions: ['labelPosition', 'labelColor', 'valueScaling',
     'labelTextOpacity', 'labelBackgroundOpacity', 'trackBorderWidth',
     'trackBorderColor', 'trackType', 'scaledHeight', 'backgroundColor',
-    'colorScale', 'barBorder', 'sortLargestOnTop'],
+    'colorScale', 'barBorder', 'sortLargestOnTop', 'selectRows'],
   defaultOptions: {
     labelPosition: 'topLeft',
     labelColor: 'black',
@@ -738,6 +774,7 @@ StackedBarTrack.config = {
     backgroundColor: 'white',
     barBorder: true,
     sortLargestOnTop: true,
+    selectRows: null
   },
   otherOptions: {
     'epilogos': {
