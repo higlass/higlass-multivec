@@ -3,7 +3,7 @@
 Display genome-wide multivec tracks in HiGlass!
 
 [![HiGlass](https://img.shields.io/badge/higlass-🌸-brightgreen.svg)](http://higlass.io)
-[![Travis](https://img.shields.io/travis/daniellenguyen/higlass-multivec.svg)](https://travis-ci.org/daniellenguyen/higlass-multivec)
+[![Travis](https://img.shields.io/travis/higlass/higlass-multivec.svg)](https://travis-ci.org/higlass/higlass-multivec)
 
 
 This is the source code for multivec tracks in HiGlass only; for the rest of HiGlass,
