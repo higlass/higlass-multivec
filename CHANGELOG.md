@@ -1,5 +1,5 @@
 
-**next release**
+**v0.2.5**
 - Add a `selectRows` option to enable filtering and aggregating bars
 
 **v0.2.4**
