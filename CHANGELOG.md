@@ -1,4 +1,7 @@
 
+**v0.2.9**
+- New method for log value-scaling
+
 **v0.2.5**
 - Add a `selectRows` option to enable filtering and aggregating bars
 

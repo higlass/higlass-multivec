@@ -104,10 +104,20 @@ const StackedBarTrack = (HGC, ...args) => {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       for (let i = 0; i < visibleAndFetched.length; i++) {
-        this.updateTile(visibleAndFetched[i]);
+        const tile = visibleAndFetched[i];
+        tile.matrix = null;
+
+        this.updateTile(tile);
       }
 
+      for (let i = 0; i < visibleAndFetched.length; i++) {
+        const tile = visibleAndFetched[i];
+
+        this.renderTile(tile);
+      }
+      
       this.rescaleTiles();
+
       this.draw();
     }
 
@@ -327,6 +337,22 @@ const StackedBarTrack = (HGC, ...args) => {
             matrix[j] = singleBar;
           }
         }
+
+        if (this.options.valueScaling === 'log') {
+          const pseudocount = this.options.pseudocount == undefined ? 1 : this.options.pseudocount;
+
+          for (let j = 0; j < shapeY; j++) {
+            const matrixMod = matrix[j].map(x => x + pseudocount)
+            const total = matrixMod.reduce((x,y) => x + y, 0)
+
+            const logs = matrixMod.map(x => Math.log(x));
+            const logsTotal = logs.reduce((x,y) => x+y, 0)
+            const totalLog = Math.log(total);
+            const proportions = logs.map(x => (x / logsTotal) * totalLog)
+            matrix[j] = proportions;
+          }
+        }
+
         return matrix;
       }
 
