@@ -26,4 +26,4 @@ register({
   config: BasicMultipleBarChart.config,
 });
 
-export import { StackedBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart };
+export { StackedBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart };
