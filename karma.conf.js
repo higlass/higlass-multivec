@@ -12,7 +12,6 @@ module.exports = function(config) {
       'node_modules/react-dom/umd/react-dom.development.js',
       'node_modules/pixi.js/dist/pixi.js',
       'node_modules/react-bootstrap/dist/react-bootstrap.js',
-      'node_modules/bootstrap/dist/css/bootstrap.min.css',
       //'test/**/*.+(js|jsx)',
       'test/SVGExportTests.js',
       'test/StackedBarTests.js',
@@ -37,7 +36,7 @@ module.exports = function(config) {
       'karma-jasmine',
       'karma-sourcemap-loader',
       'karma-chrome-launcher',
-      'karma-phantomjs2-launcher',
+      'karma-phantomjs-launcher',
     ],
 
     babelPreprocessor: {
@@ -53,14 +52,15 @@ module.exports = function(config) {
     browsers: ['Chrome'],
     singleRun: false,
     customLaunchers: {
-      Chrome_travis_ci: {
+      Chrome_ci: {
         base: 'Chrome',
         flags: ['--no-sandbox'],
       },
     },
   });
 
-  if (process.env.TRAVIS) {
-    config.browsers = ['Chrome_travis_ci'];
+  if (process.env.GITHUB_ACTIONS) {
+    config.browsers = ['Chrome_ci'];
+    config.singleRun = true;
   }
 };

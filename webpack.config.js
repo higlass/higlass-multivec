@@ -1,9 +1,7 @@
 const path = require('path');
-
-const autoprefixer = require('autoprefixer');
+const webpack = require('webpack');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const UnminifiedWebpackPlugin = require('unminified-webpack-plugin');
 
 module.exports = {
@@ -28,15 +26,9 @@ module.exports = {
     watchContentBase: true,
   },
   optimization: {
+    minimize: process.env.NODE_ENV === 'production' ? true : false,
     minimizer: [
-      new UglifyJsPlugin({
-        include: /\.min\.js$/,
-        cache: true,
-        parallel: true,
-        sourceMap: false,
-      }),
-      new OptimizeCssAssetsPlugin({}),
-    ],
+      new TerserPlugin()],
     splitChunks: {
       cacheGroups: {
         styles: {
@@ -57,39 +49,6 @@ module.exports = {
         use: {
           loader: 'babel-loader',
         },
-      },
-      // Convert SASS to CSS, postprocess it, and bundle it
-      {
-        test: /\.s?css$/,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              importLoaders: 1,
-              minimize: { safe: true },
-              url: false,
-            },
-          },
-          {
-            loader: 'postcss-loader',
-            options: {
-              plugins: () => [
-                require('postcss-flexbugs-fixes'),
-                autoprefixer({
-                  browsers: [
-                    '>1%',
-                    'last 4 versions',
-                    'Firefox ESR',
-                    'not ie < 9',
-                  ],
-                  flexbox: 'no-2009',
-                }),
-              ],
-            },
-          },
-          'sass-loader',  // compiles Sass to CSS
-        ],
       },
       // Extract them HTML files
       {
@@ -164,6 +123,11 @@ module.exports = {
     new HtmlWebPackPlugin({
       template: './src/bedgraph-comparison.html',
       filename: './bedgraph-comparison.html',
+    }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('production')
+      }
     }),
     new UnminifiedWebpackPlugin(),
   ],
