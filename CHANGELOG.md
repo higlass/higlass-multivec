@@ -1,4 +1,7 @@
 
+**v0.3.1**
+- Updated dependencies
+
 **v0.2.9**
 - New method for log value-scaling
 
