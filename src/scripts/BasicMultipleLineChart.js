@@ -1,6 +1,7 @@
 import {mix} from 'mixwith';
 import {scaleLinear, scaleOrdinal, schemeCategory10} from 'd3-scale';
 
+
 const BasicMultipleLineChart = (HGC, ...args) => {
   if (!new.target) {
     throw new Error(
@@ -10,16 +11,43 @@ const BasicMultipleLineChart = (HGC, ...args) => {
 
   // Services
   const {tileProxy} = HGC.services;
+  const { colorToHex } = HGC.utils;
 
-  class BasicMultipleLineChart extends mix(HGC.tracks.BarTrack).with(HGC.tracks.OneDimensionalMixin) {
+  class BasicMultipleLineChart extends HGC.tracks.BarTrack {
     constructor(context, options) {
       super(context, options);
 
-      this.maxAndMin = {
-        max: null,
-        min: null
-      };
+      this.localColorToHexScale();
+    }
 
+    /**
+     * Converts all colors in a colorScale to Hex colors.
+     */
+    localColorToHexScale() {
+      const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10).range();
+      console.log('colorScale', this.options.colorScale);
+      const colorHexMap = {};
+      for (let i = 0; i < colorScale.length; i++) {
+        colorHexMap[colorScale[i]] = colorToHex(colorScale[i]);
+      }
+      this.colorHexMap = colorHexMap;
+    }
+
+    calculateVisibleTiles() {
+      if (!this.tilesetInfo) {
+        return;
+      }
+      this.zoomLevel = this.calculateZoomLevel();
+      if (this.tilesetInfo.resolutions) {
+        const sortedResolutions = this.tilesetInfo.resolutions.map((x) => +x).sort((a, b) => b - a);
+        const xTiles2 = tileProxy.calculateTilesFromResolution(sortedResolutions[this.zoomLevel], this._xScale, this.tilesetInfo.min_pos[0], this.tilesetInfo.max_pos[0], this.tilesetInfo.tile_size);
+        const tiles2 = xTiles2.map((x) => [this.zoomLevel, x]);
+        this.setVisibleTiles(tiles2);
+        return;
+      }
+      const xTiles = api.calculateTiles(this.zoomLevel, this.relevantScale(), this.tilesetInfo.min_pos[0], this.tilesetInfo.max_pos[0], this.tilesetInfo.max_zoom, this.tilesetInfo.max_width);
+      const tiles = xTiles.map((x) => [this.zoomLevel, x]);
+      this.setVisibleTiles(tiles);
     }
 
     /**
@@ -31,36 +59,50 @@ const BasicMultipleLineChart = (HGC, ...args) => {
       graphics.clear();
       tile.drawnAtScale = this._xScale.copy();
 
-      // we're setting the start of the tile to the current zoom level
-      const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
-        tile.tileData.tilePos, this.tilesetInfo.tile_size);
+      const [valueScale, pseudocount] = this.makeValueScale(
+        this.minValue(),
+        this.medianVisibleValue,
+        this.maxValue(),
+        0,
+      );
 
-      const matrix = tile.matrix;
+      // we're setting the start of the tile to the current zoom level
+      const {tileX, tileWidth} = this.getTilePosAndDimensions(
+        tile.tileData.zoomLevel,
+        tile.tileData.tilePos,
+        this.tilesetInfo.tile_size
+      );
+
       const trackHeight = this.dimensions[1];
       const matrixDimensions = tile.tileData.shape;
       const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
-      const valueToPixels = scaleLinear()
-        .domain([0, this.maxAndMin.max])
-        .range([0, trackHeight / matrixDimensions[0]]);
+      valueScale.range([0, trackHeight / matrixDimensions[0]]);
 
-      for (let i = 0; i < matrix[0].length; i++) {
+      for (let i = 0; i < matrixDimensions[0]; i++) {
         const intervals = trackHeight / matrixDimensions[0];
         // calculates placement for a line in each interval; we subtract 1 so we can see the last line clearly
-        const linePlacement = (i === matrix[0].length - 1) ?
+        const linePlacement = (i === matrixDimensions[1] - 1) ?
           (intervals * i) + ((intervals * (i + 1) - (intervals * i))) - 1 :
           (intervals * i) + ((intervals * (i + 1) - (intervals * i)));
         graphics.lineStyle(1, this.colorHexMap[colorScale[i]], 1);
 
-        for (let j = 0; j < matrix.length; j++) { // 3070 or something
+        for (let j = 0; j < matrixDimensions[1]; j++) { // 3070 or something
           const x = this._xScale(tileX + (j * tileWidth / this.tilesetInfo.tile_size));
-          const y = linePlacement - valueToPixels(matrix[j][i]);
+          const index = i * matrixDimensions[1] + j;
+          const value = tile.tileData.dense[index]
+          const y = linePlacement - valueScale(value);
           this.addSVGInfo(tile, x, y, colorScale[i]);
+
+          // console.log('i,y', index, y, value);
+
           // move draw position back to the start at beginning of each line
           (j === 0) ? graphics.moveTo(x, y) : graphics.lineTo(x, y);
         }
       }
 
     }
+
+    drawTile() { }
 
     /**
      * Here, rerender all tiles every time track size is changed
@@ -106,6 +148,26 @@ const BasicMultipleLineChart = (HGC, ...args) => {
           lineColor: [color]
         };
       }
+    }
+
+    draw() {
+      if (!this.initialized) return;
+  
+      // we don't want to call HorizontalLine1DPixiTrack's draw function
+      // but rather its parent's
+      super.draw();
+  
+      if (this.options.zeroLineVisible) this.drawZeroLine();
+      else this.zeroLine.clear();
+  
+      Object.values(this.fetchedTiles).forEach((tile) => {
+        const [graphicsXScale, graphicsXPos] = this.getXScaleAndOffset(
+          tile.drawnAtScale,
+        );
+  
+        tile.graphics.scale.x = graphicsXScale;
+        tile.graphics.position.x = graphicsXPos;
+      });
     }
 
     /**

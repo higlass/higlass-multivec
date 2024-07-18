@@ -30,7 +30,7 @@ And some other text
 <script src="hglib.js"></script>
 <script>
   var viewConfig =
-   {
+  {
   "editable": true,
   "trackSourceServers": [
     "/api/v1",
@@ -40,30 +40,95 @@ And some other text
   "views": [
     {
       "initialXDomain": [
-        1434280543.6740997,
-        1845758433.2324426
+        1504509233.6974547,
+        2580802995.761386
       ],
       "initialYDomain": [
-        1726602622.0518713,
-        1726602622.0518713
+        2169832804.3409615,
+        2171727687.7248764
       ],
       "tracks": {
         "top": [
           {
-            "server": "http://higlass.io/api/v1",
-            "tilesetUid": "WtBJUYawQzS9M2WVIIHnlA",
-            "uid": "Iw_4Rx8GTtCOQD_VAFyewQ",
-            "type": "horizontal-stacked-bar",
+            "server": "https://resgen.io/api/v1",
+            "tilesetUid": "SN4wz5t7RyuYuMSgtknucg",
+            "uid": "xyz-XPazHTqIA",
+            "type": "horizontal-1d-tiles",
+            "options": {
+              "name": "UCSC - hg38.phastCons100way.bw"
+            },
+            "width": 568,
+            "height": 67
+          },
+          {
+            "type": "top-axis",
+            "height": 20,
+            "uid": "K61s2BsOQMCOD-tIvZzkhA",
+            "options": {},
+            "width": 568
+          },
+          {
+            "type": "basic-multiple-line-chart",
+            "uid": "abc",
+            "tilesetUid": "SN4wz5t7RyuYuMSgtknucg",
+            "server": "https://resgen.io/api/v1",
             "options": {
               "labelPosition": "topLeft",
+              "labelLeftMargin": 0,
+              "labelRightMargin": 0,
+              "labelTopMargin": 0,
+              "labelBottomMargin": 0,
+              "labelShowResolution": true,
+              "labelShowAssembly": true,
               "labelColor": "black",
               "labelTextOpacity": 0.4,
-              "valueScaling": "exponential",
+              "minHeight": 100,
+              "valueScaling": "linear",
               "trackBorderWidth": 0,
               "trackBorderColor": "black",
-              "backgroundColor": "white",
-              "barBorder": true,
-              "sortLargestOnTop": true,
+              "heatmapValueScaling": "log",
+              "selectRows": null,
+              "selectRowsAggregationMode": "mean",
+              "selectRowsAggregationWithRelativeHeight": true,
+              "colorbarBackgroundColor": "#ffffff",
+              "colorbarPosition": "topRight",
+              "zeroValueColor": null,
+              "name": "HCT116 Repli-seq (17 Stage multivec)",
+              "scaleStartPercent": "-0.00000",
+              "scaleEndPercent": "1.00000"
+            },
+            "width": 568,
+            "height": 100
+          },
+          {
+            "type": "horizontal-stacked-bar",
+            "uid": "VlajgEFjSzSzLGj-piibqA",
+            "tilesetUid": "SN4wz5t7RyuYuMSgtknucg",
+            "server": "https://resgen.io/api/v1",
+            "options": {
+              "labelPosition": "topLeft",
+              "labelLeftMargin": 0,
+              "labelRightMargin": 0,
+              "labelTopMargin": 0,
+              "labelBottomMargin": 0,
+              "labelShowResolution": true,
+              "labelShowAssembly": true,
+              "labelColor": "black",
+              "labelTextOpacity": 0.4,
+              "minHeight": 100,
+              "valueScaling": "linear",
+              "trackBorderWidth": 0,
+              "trackBorderColor": "black",
+              "heatmapValueScaling": "log",
+              "selectRows": null,
+              "selectRowsAggregationMode": "mean",
+              "selectRowsAggregationWithRelativeHeight": true,
+              "colorbarBackgroundColor": "#ffffff",
+              "colorbarPosition": "topRight",
+              "zeroValueColor": null,
+              "name": "HCT116 Repli-seq (17 Stage multivec)",
+              "scaleStartPercent": "-0.00000",
+              "scaleEndPercent": "1.00000",
               "colorScale": [
                 "#FF0000",
                 "#FF4500",
@@ -80,11 +145,10 @@ And some other text
                 "#808080",
                 "#C0C0C0",
                 "#FFFFFF"
-              ],
-              "name": "Epilogos (hg38)"
+              ]
             },
             "width": 568,
-            "height": 86
+            "height": 100
           }
         ],
         "left": [],
@@ -96,7 +160,7 @@ And some other text
       },
       "layout": {
         "w": 12,
-        "h": 4,
+        "h": 6,
         "x": 0,
         "y": 0,
         "moved": false,

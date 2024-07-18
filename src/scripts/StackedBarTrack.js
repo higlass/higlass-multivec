@@ -141,6 +141,23 @@ const StackedBarTrack = (HGC, ...args) => {
 
     }
 
+    calculateVisibleTiles() {
+      if (!this.tilesetInfo) {
+        return;
+      }
+      this.zoomLevel = this.calculateZoomLevel();
+      if (this.tilesetInfo.resolutions) {
+        const sortedResolutions = this.tilesetInfo.resolutions.map((x) => +x).sort((a, b) => b - a);
+        const xTiles2 = tileProxy.calculateTilesFromResolution(sortedResolutions[this.zoomLevel], this._xScale, this.tilesetInfo.min_pos[0], this.tilesetInfo.max_pos[0], this.tilesetInfo.tile_size);
+        const tiles2 = xTiles2.map((x) => [this.zoomLevel, x]);
+        this.setVisibleTiles(tiles2);
+        return;
+      }
+      const xTiles = api.calculateTiles(this.zoomLevel, this.relevantScale(), this.tilesetInfo.min_pos[0], this.tilesetInfo.max_pos[0], this.tilesetInfo.max_zoom, this.tilesetInfo.max_width);
+      const tiles = xTiles.map((x) => [this.zoomLevel, x]);
+      this.setVisibleTiles(tiles);
+    }
+    
     /**
      * Draws exactly one tile.
      *
