@@ -25,7 +25,6 @@ const BasicMultipleLineChart = (HGC, ...args) => {
      */
     localColorToHexScale() {
       const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10).range();
-      console.log('colorScale', this.options.colorScale);
       const colorHexMap = {};
       for (let i = 0; i < colorScale.length; i++) {
         colorHexMap[colorScale[i]] = colorToHex(colorScale[i]);
@@ -93,13 +92,10 @@ const BasicMultipleLineChart = (HGC, ...args) => {
           const y = linePlacement - valueScale(value);
           this.addSVGInfo(tile, x, y, colorScale[i]);
 
-          // console.log('i,y', index, y, value);
-
           // move draw position back to the start at beginning of each line
           (j === 0) ? graphics.moveTo(x, y) : graphics.lineTo(x, y);
         }
       }
-
     }
 
     drawTile() { }
@@ -234,7 +230,6 @@ const BasicMultipleLineChart = (HGC, ...args) => {
     }
 
     getMouseOverHtml(trackX, trackY) {
-      //console.log(this.tilesetInfo, trackX, trackY);
       return '';
     }
 

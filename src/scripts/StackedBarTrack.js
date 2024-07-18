@@ -157,7 +157,7 @@ const StackedBarTrack = (HGC, ...args) => {
       const tiles = xTiles.map((x) => [this.zoomLevel, x]);
       this.setVisibleTiles(tiles);
     }
-    
+
     /**
      * Draws exactly one tile.
      *
@@ -176,6 +176,9 @@ const StackedBarTrack = (HGC, ...args) => {
       const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
         tile.tileData.tilePos, this.tilesetInfo.tile_size);
 
+      console.log('tile', tile);
+      console.log('tileX', tileX);
+
       const matrix = this.unFlatten(tile);
 
       this.oldDimensions = this.dimensions; // for mouseover
@@ -185,6 +188,10 @@ const StackedBarTrack = (HGC, ...args) => {
         this.maxAndMin.max, this.maxAndMin.min, tile);
 
       graphics.addChild(tile.sprite);
+
+
+      console.log('graphics.position', graphics.position)
+      console.log('graphics.scale', graphics.scale)
       this.makeMouseOverData(tile);
     }
 
@@ -436,6 +443,8 @@ const StackedBarTrack = (HGC, ...args) => {
       this.textureGraphics.clear();
       const trackHeight = this.dimensions[1];
 
+        console.log('drawVerticalBars', tileX, tileWidth);
+
       // get amount of trackHeight reserved for positive and for negative
       const unscaledHeight = positiveMax + (Math.abs(negativeMax));
 
@@ -458,7 +467,6 @@ const StackedBarTrack = (HGC, ...args) => {
         this.textureGraphics.lineStyle(1, 0x000000, 1);
       }
 
-
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
         (j === 0) ? start = x : start;
@@ -469,6 +477,11 @@ const StackedBarTrack = (HGC, ...args) => {
           .domain([0, positiveMax])
           .range([0, positiveTrackHeight]);
         let positiveStackedHeight = 0;
+
+        if (j > 1024
+  
+        )
+          continue;
 
         for (let i = 0; i < positive.length; i++) {
           const height = valueToPixelsPositive(positive[i].value);
@@ -509,8 +522,17 @@ const StackedBarTrack = (HGC, ...args) => {
       const sprite = new HGC.libraries.PIXI.Sprite(texture);
       sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
       sprite.x = this._xScale(tileX);
+
+      console.log('sprite.x', sprite.x);
+      console.log('sprite.width', sprite.width);
+
       tile.sprite = sprite;
       tile.lowestY = lowestY;
+    }
+
+
+    draw() {
+      super.draw();
     }
 
     /**
@@ -786,9 +808,6 @@ const StackedBarTrack = (HGC, ...args) => {
 
     }
 
-    draw() {
-      super.draw();
-    }
 
   }
   return new StackedBarTrackClass(...args);
