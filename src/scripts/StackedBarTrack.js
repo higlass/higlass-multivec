@@ -157,7 +157,7 @@ const StackedBarTrack = (HGC, ...args) => {
       const tiles = xTiles.map((x) => [this.zoomLevel, x]);
       this.setVisibleTiles(tiles);
     }
-    
+
     /**
      * Draws exactly one tile.
      *
@@ -185,6 +185,7 @@ const StackedBarTrack = (HGC, ...args) => {
         this.maxAndMin.max, this.maxAndMin.min, tile);
 
       graphics.addChild(tile.sprite);
+
       this.makeMouseOverData(tile);
     }
 
@@ -449,22 +450,55 @@ const StackedBarTrack = (HGC, ...args) => {
       let lowestY = this.dimensions[1];
 
       const width = 10;
+      const spriteGraphics = new HGC.libraries.PIXI.Graphics();
 
       // calls drawBackground in PixiTrack.js
       this.drawBackground(matrix, this.textureGraphics);
+      const totalSpriteWidth = this._xScale(tileX + tileWidth) - this._xScale(tileX);
 
       // borders around each bar
       if (this.options.barBorder) {
         this.textureGraphics.lineStyle(1, 0x000000, 1);
       }
 
+      const spritesHeights = [];
+
+      function addNewSprite(j) {
+        // We're going to use this function to break up the tile graphics into
+        // sprites of size 256. We do this because textures larger than 256 seem
+        // to cause loading problems in Chrome and Firefox
+        const spriteWidth = (256  / matrix.length) * totalSpriteWidth;
+
+        const texture = pixiRenderer.generateTexture(
+          this.textureGraphics, HGC.libraries.PIXI.SCALE_MODES.NEAREST
+        );
+        
+        const sprite = new HGC.libraries.PIXI.Sprite(texture);
+        sprite.width = spriteWidth;
+        sprite.x = ((j-256) / matrix.length) * totalSpriteWidth;
+        spriteGraphics.addChild(sprite);
+
+        spritesHeights.push({
+          "sprite": sprite,
+          "height": texture.height
+        })
+
+        this.textureGraphics.clear()
+        this.drawBackground(matrix, this.textureGraphics);
+      }
 
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
         (j === 0) ? start = x : start;
 
+        if (j > 0 && j % 256 == 0) {
+          // Add a new small sprite
+          addNewSprite.bind(this)(j)
+        }
+
         // draw positive values
         const positive = matrix[j][0];
+
         const valueToPixelsPositive = scaleLinear()
           .domain([0, positiveMax])
           .range([0, positiveTrackHeight]);
@@ -501,16 +535,30 @@ const StackedBarTrack = (HGC, ...args) => {
         }
       }
 
+      addNewSprite.bind(this)(matrix.length);
+
+      // Scale all the "sprites" so that they're aligned along the bottom
+      const maxHeight = spritesHeights.reduceRight((pv, spriteHeight) => Math.max(pv, spriteHeight.height), 0);
+      for (let i = 0; i < spritesHeights.length; i++) {
+        const sprite = spritesHeights[i].sprite;
+        sprite.y = maxHeight - spritesHeights[i].height;
+      }
+
       // vertical bars are drawn onto the graphics object
       // and a texture is generated from that
-      const texture = pixiRenderer.generateTexture(
-        this.textureGraphics, HGC.libraries.PIXI.SCALE_MODES.NEAREST
-      );
-      const sprite = new HGC.libraries.PIXI.Sprite(texture);
-      sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
-      sprite.x = this._xScale(tileX);
-      tile.sprite = sprite;
+      
+      spriteGraphics.width = totalSpriteWidth;
+      spriteGraphics.x = this._xScale(tileX);
+
+      // From here on out, all of the smaller sprites will be treated
+      // as one.
+      tile.sprite = spriteGraphics;
       tile.lowestY = lowestY;
+    }
+
+
+    draw() {
+      super.draw();
     }
 
     /**
@@ -786,9 +834,6 @@ const StackedBarTrack = (HGC, ...args) => {
 
     }
 
-    draw() {
-      super.draw();
-    }
 
   }
   return new StackedBarTrackClass(...args);
