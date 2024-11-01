@@ -1,6 +1,6 @@
 import {scaleLinear, scaleOrdinal} from 'd3-scale';
 
-const BasicMultipleBarChart = (HGC, ...args) => {
+const StackedDeltaBarTrack = (HGC, ...args) => {
   if (!new.target) {
     throw new Error(
       'Uncaught TypeError: Class constructor cannot be invoked without "new"',
@@ -13,30 +13,27 @@ const BasicMultipleBarChart = (HGC, ...args) => {
   // Utils
   const { absToChr, colorToHex } = HGC.utils;
 
-  class BasicMultipleBarChartClass extends HGC.tracks.BarTrack {
+  class StackedDeltaBarTrackClass extends HGC.tracks.BarTrack {
     constructor(context, options) {
       super(context, options);
-      this.initializeBasicMultipleBarChart();
+      this.initializeStackedDeltaBarTrack();
     }
 
     /** Factor out some initialization code for the track. This is
     necessary because we can now load tiles synchronously and so
     we have to check if the track is initialized in initTiles
     and not in the constructor */
-    initializeBasicMultipleBarChart() {
-      if (this.basicMultipleBarChartInitialized) return;
+    initializeStackedDeltaBarTrack() {
+      if (this.stackedDeltaBarTrackInitialized) return;
 
       this.maxAndMin = {
         max: null,
         min: null
       };
 
-      // console.log(`BasicMultipleBarChartClass | ${JSON.stringify(this.options)}`);
-
       this.textureGraphics = new HGC.libraries.PIXI.Graphics();
-      this.basicMultipleBarChartInitialized = true;
-      this.renderedTileIds = Object.create({});
-      this.rescaledTileIds = Object.create({});
+      this.stackedDeltaBarTrackInitialized = true
+
     }
 
     createColorScale() {
@@ -67,15 +64,18 @@ const BasicMultipleBarChart = (HGC, ...args) => {
     }
 
     initTile(tile) {
-      // console.log(`BasicMultipleBarChart -> initTile(${JSON.stringify(tile.tileId)})`);
+      // console.log(`StackedDeltaBarChart -> initTile(${JSON.stringify(tile.tileId)})`);
 
       this.createColorScale();
-      this.initializeBasicMultipleBarChart();
+      this.initializeStackedDeltaBarTrack();
 
       // create the tile
       // should be overwritten by child classes
       this.scale.minRawValue = this.minVisibleValue();
       this.scale.maxRawValue = this.maxVisibleValue();
+
+      // console.log(`StackedDeltaBarChart -> initTile -> this.scale.minRawValue ${this.scale.minRawValue}`);
+      // console.log(`StackedDeltaBarChart -> initTile -> this.scale.maxRawValue ${this.scale.maxRawValue}`);
 
       this.scale.minValue = this.scale.minRawValue;
       this.scale.maxValue = this.scale.maxRawValue;
@@ -83,108 +83,47 @@ const BasicMultipleBarChart = (HGC, ...args) => {
       this.maxAndMin.min = this.minValueInArray(tile.tileData.dense);
       this.maxAndMin.max = this.maxValueInArray(tile.tileData.dense);
 
-      // console.log(`BasicMultipleBarChart -> ${JSON.stringify(this.maxAndMin)}`);
+      // console.log(`StackedDeltaBarChart -> initTile -> this.maxAndMin.min ${this.maxAndMin.min}`);
+      // console.log(`StackedDeltaBarChart -> initTile -> this.maxAndMin.max ${this.maxAndMin.max}`);
+
+      // console.log(`StackedDeltaBarChart -> ${JSON.stringify(this.maxAndMin)}`);
 
       // Number of bars being stacked in each genomic position
-      this.numCategories = this.options.selectRows ? this.options.selectRows.length : tile.tileData.shape[0];
+      //this.numCategories = this.options.selectRows ? this.options.selectRows.length : tile.tileData.shape[0];
+      this.numCategories = tile.tileData.shape[0];
+
+      // console.log(`StackedDeltaBarChart -> initTile -> this.numCategories ${this.numCategories}`);
 
       this.localColorToHexScale();
 
       this.unFlatten(tile);
 
-      this.renderedTileIds[tile.tileId] = false;
       this.renderTile(tile);
-
-      // this.rescaledTileIds[tile.tileId] = false;
-      // this.rescaleTiles();
-
-      const visibleAndFetched = this.visibleAndFetchedTiles();
-      const visibleTileIds = visibleAndFetched.map(a => a.tileId);
-      const renderedTileIds = Object.keys(this.renderedTileIds);
-      if (this.deepEqual(visibleTileIds, renderedTileIds)) {
-        this.syncMaxAndMin();
-        visibleAndFetched.map(a => {
-          if ((this.minValueInArray(a.tileData.dense) !== this.maxAndMin.min) || (this.maxValueInArray(a.tileData.dense) !== this.maxAndMin.max)) {
-            // console.log(`tile ${a.tileId} needs redrawing`);
-            if (a.hasOwnProperty('mouseoverRawData') && a.mouseoverRawData !== null) {
-              // console.log(`clearing mouseover raw data`);
-              for (var k in a.mouseoverRawData) {
-                if (a.mouseoverRawData.hasOwnProperty(k)) {
-                  delete a.mouseoverRawData[k];
-                }
-              }
-              a.mouseoverRawData = null;
-            }
-            this.renderedTileIds[a.tileId] = false;
-            this.renderTile(a);
-          }
-        });
-      }
+      this.rescaleTiles();
     }
 
     destroyTile(tile) {
-      // console.log(`BasicMultipleBarChart -> destroyTile(${tile.tileId})`);
-      /**
-       * 1) delete tile ID key from rendered and rescaled tables
-       * 2) reset the rescaled status of remaining tile IDs, so that 
-       *    rescaling can take place upon initialization of a new tile
-       * 3) clean up sprite data
-       * 4) redraw tiles that require new scale and mouseover data
-       */
-      delete this.renderedTileIds[tile.tileId];
-      for (var remainingTileId in this.renderedTileIds) {
-        this.renderedTileIds[remainingTileId] = false;
-      }
-      delete this.rescaledTileIds[tile.tileId];
-      for (var remainingTileId in this.rescaledTileIds) {
-        this.rescaledTileIds[remainingTileId] = false;
-      }
       tile.sprite.destroy(true);
       tile.graphics.destroy(true);
 
       tile.graphics = null;
       tile.sprite = null;
-
-      const visibleAndFetched = this.visibleAndFetchedTiles();
-      const visibleTileIds = visibleAndFetched.map(a => a.tileId);
-      const renderedTileIds = Object.keys(this.renderedTileIds);
-      if (this.deepEqual(visibleTileIds, renderedTileIds)) {
-        this.syncMaxAndMin();
-        visibleAndFetched.map(a => {
-          if ((this.minValueInArray(a.tileData.dense) !== this.maxAndMin.min) || (this.maxValueInArray(a.tileData.dense) !== this.maxAndMin.max)) {
-            // console.log(`tile ${a.tileId} needs redrawing`);
-            if (a.hasOwnProperty('mouseoverRawData') && a.mouseoverRawData !== null) {
-              // console.log(`clearing mouseover raw data`);
-              for (var k in a.mouseoverRawData) {
-                if (a.mouseoverRawData.hasOwnProperty(k)) {
-                  delete a.mouseoverRawData[k];
-                }
-              }
-              a.mouseoverRawData = null;
-            }
-            this.renderedTileIds[a.tileId] = false;
-            this.renderTile(a);
-          }
-        });
-      }
     }
 
     rerender(newOptions) {
-      // console.log(`BasicMultipleBarChart -> rerender(${JSON.stringify(newOptions)})`);
+      // console.log(`StackedDeltaBarChart -> rerender(${JSON.stringify(newOptions)})`);
 
       super.rerender(newOptions);
 
       this.options = newOptions;
-
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       for (let i = 0; i < visibleAndFetched.length; i++) {
         this.updateTile(visibleAndFetched[i]);
       }
 
-      // this.rescaleTiles();
+      this.rescaleTiles();
       this.draw();
-      
     }
 
     updateTile() {
@@ -192,30 +131,11 @@ const BasicMultipleBarChart = (HGC, ...args) => {
 
       for (let i = 0; i < visibleAndFetched.length; i++) {
         const tile = visibleAndFetched[i];
-        // console.log(`BasicMultipleBarChart -> updateTile(${tile.tileId})`);
+        // console.log(`StackedDeltaBarChart -> updateTile(${tile.tileId})`);
         this.unFlatten(tile);
-        // this.rescaledTileIds[tile.tileId] = false;
-
-        // TBD: Replace redraw with rescale of individual sprites?
-
-        // this.syncMaxAndMin();
-        // if ((this.minValueInArray(tile.tileData.dense) !== this.maxAndMin.min) || (this.maxValueInArray(tile.tileData.dense) !== this.maxAndMin.max)) {
-        //   // console.log(`BasicMultipleBarChart -> updateTile -> tile needs scale redraw`);
-        //   if (tile.hasOwnProperty('mouseoverRawData') && tile.mouseoverRawData !== null) {
-        //     // console.log(`clearing mouseover raw data`);
-        //     for (var k in tile.mouseoverRawData) {
-        //       if (tile.mouseoverRawData.hasOwnProperty(k)) {
-        //         delete tile.mouseoverRawData[k];
-        //       }
-        //     }
-        //     tile.mouseoverRawData = null;
-        //   }
-        //   this.renderedTileIds[tile.tileId] = false;
-        //   this.renderTile(tile);
-        // }
       }
 
-      // this.rescaleTiles();
+      this.rescaleTiles();
     }
 
     /**
@@ -233,25 +153,33 @@ const BasicMultipleBarChart = (HGC, ...args) => {
      * @param tile
      */
     renderTile(tile) {
-      // console.log(`BasicMultipleBarChart -> renderTile(${tile.tileId})`);
-
-      if (this.renderedTileIds[tile.tileId]) return;
+      // console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) start`);
 
       tile.svgData = null;
       tile.mouseOverData = null;
+
+      // console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) A`);
 
       const graphics = tile.graphics;
       graphics.clear();
       graphics.children.map(child => {graphics.removeChild(child)});
       tile.drawnAtScale = this._xScale.copy();
 
+      // console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) B`);
+
       // we're setting the start of the tile to the current zoom level
       const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
         tile.tileData.tilePos, this.tilesetInfo.tile_size);
 
+        // console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) C`);
+
       const matrix = this.unFlatten(tile);
 
+      // console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) D`);
+
       this.oldDimensions = this.dimensions; // for mouseover
+
+      // console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) E`);
 
       // creates a sprite containing all of the rectangles in this tile
       try {
@@ -262,14 +190,21 @@ const BasicMultipleBarChart = (HGC, ...args) => {
           this.maxAndMin.max, 
           this.maxAndMin.min, 
           tile);
-  
+
+        // console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) F`);
+
         graphics.addChild(tile.sprite);
+
+        // console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) G`);
+
         this.makeMouseOverData(tile);
-        this.renderedTileIds[tile.tileId] = true;
+
+        // console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) end`);
       }
       catch(err) {
-        // console.log(`BasicMultipleBarChart -> renderTile(${tile.tileId}) TypeError`);
+        console.log(`StackedDeltaBarChart -> renderTile(${tile.tileId}) TypeError`);
       }
+      
     }
 
     /**
@@ -283,30 +218,13 @@ const BasicMultipleBarChart = (HGC, ...args) => {
       this.maxAndMin.max = 0;
 
       visibleAndFetched.map(tile => {
-        // console.log(`BasicMultipleBarChart -> syncMaxAndMin(${tile.tileId})`);
-        // if (tile.minValue + tile.maxValue > this.maxAndMin.min + this.maxAndMin.max) {
-        //   this.maxAndMin.min = tile.minValue;
-        //   this.maxAndMin.max = tile.maxValue;
-        // }
-        // let localRangeAdjusted = false;
-        if (tile.minValue < this.maxAndMin.min) {
+        // console.log(`StackedDeltaBarChart -> syncMaxAndMin(${tile.tileId})`);
+        if (tile.minValue + tile.maxValue > this.maxAndMin.min + this.maxAndMin.max) {
           this.maxAndMin.min = tile.minValue;
-        }
-        if (tile.maxValue > this.maxAndMin.max) {
           this.maxAndMin.max = tile.maxValue;
         }
+        // console.log(`StackedDeltaBarChart -> maxAndMin ${JSON.stringify(this.maxAndMin)})`);
       });
-    }
-
-    /**
-     * Tests deep equality of two Objects
-     */
-    deepEqual(x, y) {
-      const ok = Object.keys, tx = typeof x, ty = typeof y;
-      return x && y && tx === 'object' && tx === ty ? (
-        ok(x).length === ok(y).length &&
-          ok(x).every(key => this.deepEqual(x[key], y[key]))
-      ) : (x === y);
     }
 
     /**
@@ -315,41 +233,32 @@ const BasicMultipleBarChart = (HGC, ...args) => {
     rescaleTiles() {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
-      const visibleTileIds = visibleAndFetched.map(a => a.tileId);
-      const renderedTileIds = Object.keys(this.renderedTileIds);
-
-      // we do not rescale all tiles until all visible tiles are rendered
-      if (!this.deepEqual(visibleTileIds, renderedTileIds)) return;
-
-      // set global min/max range
       this.syncMaxAndMin();
 
-      // console.log(`rescaleTiles -> maxAndMin ${JSON.stringify(this.maxAndMin)})`);
-
       visibleAndFetched.map(a => {
-        if (!this.rescaledTileIds[a.tileId]) {
-          // console.log(`BasicMultipleBarChart -> rescaleTiles(${a.tileId} | tile max ${JSON.stringify(this.maxValueInArray(a.tileData.dense))})`);
-          const valueToPixels = scaleLinear()
-            .domain([0, this.maxAndMin.max + Math.abs(this.maxAndMin.min)])
-            .range([0, this.dimensions[1]]);
-          const newZero = this.dimensions[1] - valueToPixels(Math.abs(this.maxAndMin.min));
-          const height = valueToPixels(this.maxAndMin.max + Math.abs(this.maxAndMin.min));
-          const sprite = a.sprite;
-          const y = newZero - valueToPixels(this.maxAndMin.max);
-          if (sprite) {
-            sprite.height = height;
-            sprite.y = y;
-            this.rescaledTileIds[a.tileId] = true;
-          }
+        // console.log(`StackedDeltaBarChart -> renderTileiles(${a.tileId})`);
+        const valueToPixels = scaleLinear()
+          .domain([0, this.maxAndMin.max + Math.abs(this.maxAndMin.min)])
+          .range([0, this.dimensions[1]]);
+        const newZero = this.dimensions[1] - valueToPixels(Math.abs(this.maxAndMin.min));
+        const height = valueToPixels(a.minValue + a.maxValue);
+        const sprite = a.sprite;
+        const y = newZero - valueToPixels(a.maxValue);
+
+        if (sprite) {
+          sprite.height = height;
+
+          sprite.y = y;
         }
       });
     }
+
 
     /**
      * Converts all colors in a colorScale to Hex colors.
      */
     localColorToHexScale() {
-      // console.log(`BasicMultipleBarChart -> localColorToHexScale()`);
+      // console.log(`StackedDeltaBarChart -> localColorToHexScale()`);
 
       const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
       const colorHexMap = {};
@@ -362,6 +271,7 @@ const BasicMultipleBarChart = (HGC, ...args) => {
         }
       }
       this.colorHexMap = colorHexMap;
+      // console.log(`colorHexMap ${JSON.stringify(colorHexMap)}`);
     }
 
     /**
@@ -370,7 +280,7 @@ const BasicMultipleBarChart = (HGC, ...args) => {
      * @param matrix 2d array of numbers representing one tile
      */
     findMaxAndMin(matrix) {
-      // console.log(`BasicMultipleBarChart -> findMaxAndMin()`);
+      // console.log(`StackedDeltaBarChart -> findMaxAndMin()`);
 
       // find max height of bars for scaling in the track
       const maxAndMin = {
@@ -382,12 +292,11 @@ const BasicMultipleBarChart = (HGC, ...args) => {
 
       for (let i = 0; i < matrix.length; i++) {
         const temp = matrix[i];
-        // console.log(`temp ${i} ${Math.max(...temp.filter(a => a >= 0))}`);
+        // console.log(`temp ${i} ${temp.reduce((a, b) => a + b, 0)}`);
 
         // find total heights of each positive column and each negative column
         // and compare to highest value so far for the tile
-        //const localPositiveMax = temp.filter(a => a >= 0).reduce((a, b) => a + b, 0);
-        const localPositiveMax = Math.max(...temp.filter(a => a >= 0));
+        const localPositiveMax = temp.filter(a => a >= 0).reduce((a, b) => a + b, 0);
         if (localPositiveMax > maxAndMin.max) {
           maxAndMin.max = localPositiveMax;
         }
@@ -398,18 +307,14 @@ const BasicMultipleBarChart = (HGC, ...args) => {
 
         if (negativeValues.length > 0) {
           negativeValues = negativeValues.map(a => Math.abs(a));
-          //const localNegativeMax = negativeValues.reduce((a, b) => a + b, 0); // check
-          const localNegativeMax = Math.min(...negativeValues);
+          const localNegativeMax = negativeValues.reduce((a, b) => a + b, 0); // check
           if (maxAndMin.min === null || localNegativeMax > maxAndMin.min) {
             maxAndMin.min = localNegativeMax;
           }
         }
-        else {
-          maxAndMin.min = 0;
-        }
       }
 
-      // console.log(`BasicMultipleBarChart -> ${JSON.stringify(maxAndMin)}`);
+      // console.log(`StackedDeltaBarTrack -> ${JSON.stringify(maxAndMin)}`);
 
       return maxAndMin;
     }
@@ -426,13 +331,13 @@ const BasicMultipleBarChart = (HGC, ...args) => {
           return tile.matrix;
         }
 
-        // console.log(`BasicMultipleBarChart -> unflatten(${JSON.stringify(tile.tileId)})`);
+        // console.log(`StackedDeltaBarTrack -> unflatten(${JSON.stringify(tile.tileId)})`);
 
         const flattenedArray = tile.tileData.dense;
 
         // if any data is negative, switch to exponential scale
         if (flattenedArray.filter(a => a < 0).length > 0 && this.options.valueScaling === 'linear') {
-          // console.warn('Negative values present in data. Defaulting to exponential scale.');
+          console.warn('Negative values present in data. Defaulting to exponential scale.');
           this.options.valueScaling = 'exponential';
         }
 
@@ -440,6 +345,7 @@ const BasicMultipleBarChart = (HGC, ...args) => {
 
         const maxAndMin = this.findMaxAndMin(unflattenedData.matrix);
 
+        tile.sortedIdxs = unflattenedData.idxs;
         tile.matrix = unflattenedData.matrix;
         tile.maxValue = maxAndMin.max;
         tile.minValue = maxAndMin.min;
@@ -459,9 +365,9 @@ const BasicMultipleBarChart = (HGC, ...args) => {
         const shapeX = this.numCategories; // number of different categories on each genomic position
         const shapeY = tile.tileData.shape[1]; // number of genomic positions
 
-        // console.log(`BasicMultipleBarChart -> simpleUnFlatten(${JSON.stringify(tile.tileId)})`);
-        // console.log(`BasicMultipleBarChart -> shapeX ${shapeX}`);
-        // console.log(`BasicMultipleBarChart -> shapeY ${shapeY}`);
+        // console.log(`StackedDeltaBarTrack -> simpleUnFlatten(${JSON.stringify(tile.tileId)})`);
+        // console.log(`StackedDeltaBarTrack -> shapeX ${shapeX}`);
+        // console.log(`StackedDeltaBarTrack -> shapeY ${shapeY}`);
 
         // matrix[0] will be [flattenedArray[0], flattenedArray[256], flattenedArray[512], etc.]
         // because of how flattenedArray comes back from the server.
@@ -496,23 +402,24 @@ const BasicMultipleBarChart = (HGC, ...args) => {
 
         let max = -1;
 
+        // remap signals by column
         for (let col = 0; col < shapeY; col++) {
-          // if (col === 195) {
+          // if (col === 80) {
           //   console.log(`pre-matrix[${col}] ${JSON.stringify(matrix[col])}`);
           // }
           for (let row = 0; row < shapeX; row++) {
             if (max < matrix[col][row]) max = matrix[col][row];
           }
-          // idxs[col] = this.remapVectorToSortedIndices(matrix[col]);
-          // matrix[col] = this.remapVectorToStateSortedDeltas(matrix[col]);
-          // if (col === 195) {
+          idxs[col] = this.remapVectorToSortedIndices(matrix[col]);
+          matrix[col] = this.remapVectorToStateSortedDeltas(matrix[col]);
+          // if (col === 80) {
           //   console.log(`idxs[${col}] ${JSON.stringify(idxs[col])}`);
           //   console.log(`post-matrix[${col}] ${JSON.stringify(matrix[col])}`);
           // }
         }
         // console.log(`matrix max ${max}`);
 
-        return { matrix };
+        return { idxs, matrix };
       }
 
     /**
@@ -632,9 +539,6 @@ const BasicMultipleBarChart = (HGC, ...args) => {
             negative.push(columnColors[i]);
           }
         }
-        positive.reverse();
-        negative.reverse();
-        
         // if (this.options.sortLargestOnTop) {
         //   positive.sort((a, b) => a.value - b.value);
         //   negative.sort((a, b) => b.value - a.value);
@@ -661,63 +565,64 @@ const BasicMultipleBarChart = (HGC, ...args) => {
      * @param tile
      */
     drawVerticalBars(matrix, tileX, tileWidth, positiveMax, negativeMax, tile) {
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) start`);
+
+      if (!tile || !matrix) return;
+
       this.textureGraphics.clear();
       const trackHeight = this.dimensions[1];
 
-      this.syncMaxAndMin();
-
-      //positiveMax = 19;
-
-      const trueMax = (this.options.valueScaleMax === -1.0) ? positiveMax : this.options.valueScaleMax;
-      // console.log(`BasicMultipleBarChart | drawVerticalBars | positiveMax ${positiveMax} trueMax ${trueMax}`);
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) A`);
 
       // get amount of trackHeight reserved for positive and for negative
       const unscaledHeight = positiveMax + (Math.abs(negativeMax));
 
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) B`);
+
       // fraction of the track devoted to positive values
       const positiveTrackHeight = (positiveMax * trackHeight) / unscaledHeight;
+
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) C`);
 
       // fraction of the track devoted to negative values
       const negativeTrackHeight = (Math.abs(negativeMax) * trackHeight) / unscaledHeight;
 
-      const positiveRowHeight = positiveTrackHeight / this.numCategories;
-      const negativeRowHeight = negativeTrackHeight / this.numCategories;
-
-      // if (tile.tileId === "20.490855") {
-      //   console.log(`    ---`);
-      //   console.log(`    BasicMultipleBarChart -> drawVerticalBars()`);
-      //   console.log(`    trackHeight ${trackHeight}`);
-      //   console.log(`    positiveTrackHeight ${positiveTrackHeight}`);
-      //   console.log(`    positiveRowHeight ${positiveRowHeight}`);
-      //   console.log(`    unscaledHeight ${unscaledHeight}`);
-      //   console.log(`    positiveMax ${positiveMax}`);
-      //   console.log(`    negativeMax ${negativeMax}`);
-      //   console.log(`    ---`);
-      // }
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) D`);
 
       let start = null;
       let lowestY = this.dimensions[1];
 
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) E`);
+
       const width = 10;
+
+      // console.log(`---`);
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars()`);
+      // console.log(`trackHeight ${trackHeight}`);
+      // console.log(`lowestY ${lowestY}`);
+      // console.log(`positiveTrackHeight ${positiveTrackHeight}`);
+      // console.log(`positiveMax ${positiveMax}`);
+      // console.log(`---`);
 
       // calls drawBackground in PixiTrack.js
       this.drawBackground(matrix, this.textureGraphics);
 
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) F`);
+
       // borders around each bar
-      // if (this.options.barBorder) {
-      //   this.textureGraphics.lineStyle(1, 0x000000, 1);
-      // }
+      if (this.options.barBorder) {
+        this.textureGraphics.lineStyle(1, 0x000000, 1);
+      }
 
-      const backgroundHex = "#000000";
-      const backgroundPixiColor = colorToHex(backgroundHex);
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) G`);
 
-      // const valueToPixelsPositive = scaleLinear()
-      //   .domain([0, positiveMax])
-      //   .range([0, positiveRowHeight]);
+      const fillOpacityMin = !this.options.fillOpacityMin ? 0.1 : this.options.fillOpacityMin;
+      const fillOpacityMax = !this.options.fillOpacityMax ? 1 : this.options.fillOpacityMax;
+      const fillOpacityScaledByStateOrder = scaleLinear()
+        .domain([0, this.numCategories - 1])
+        .range([fillOpacityMax, fillOpacityMin]);
 
-      const valueToPixelsPositive = scaleLinear()
-        .domain([0, trueMax])
-        .range([0, positiveRowHeight]);
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) H`);
 
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
@@ -725,81 +630,71 @@ const BasicMultipleBarChart = (HGC, ...args) => {
 
         // draw positive values
         const positive = matrix[j][0];
-        // if (j === 242 && tile.tileId === "20.490855") {
-        //   console.log(`tile ${tile.tileId}, positive ${j}, ${JSON.stringify(positive)}`);
-        // }
-        // const valueToPixelsPositive = scaleLinear()
-        //   .domain([0, positiveMax])
-        //   .range([0, positiveTrackHeight]);
-        
+        const valueToPixelsPositive = scaleLinear()
+          .domain([0, positiveMax])
+          .range([0, positiveTrackHeight]);
         let positiveStackedHeight = 0;
 
-        // this.textureGraphics.beginFill(colorToHex("#ffffff"));
-        // this.textureGraphics.drawRect(0, positiveTrackHeight, this.dimensions[0], this.dimensions[1]);
+        let sortedIdxs = tile.sortedIdxs[j];
 
+        const totalColumnValues = positive.reduce((acc, v) => acc + parseFloat(v.value), 0.0);
+        
+        const totalColumnHeight = valueToPixelsPositive(totalColumnValues);
+
+        // if (x === 800) {
+        //   console.log(`positive ${JSON.stringify(positive)} sortedIdxs ${JSON.stringify(sortedIdxs)}`);
+        //   console.log(`totalColumnValues ${totalColumnValues}`);
+        //   console.log(`totalColumnHeight ${totalColumnHeight}`);
+        // }
+
+        let currentTotalColumnHeight = totalColumnHeight;
         for (let i = 0; i < positive.length; i++) {
-          
-          let clippedPosVal = positive[i].value;
-          if ((this.options.valueScaleMax !== -1) && (positive[i].value > this.options.valueScaleMax)) {
-            clippedPosVal = this.options.valueScaleMax;
-          } 
-          // const height = valueToPixelsPositive(positive[i].value) < 0.5 ? 1 : valueToPixelsPositive(positive[i].value);
-          const height = valueToPixelsPositive(clippedPosVal) < 0.5 ? 1 : valueToPixelsPositive(clippedPosVal);
-
-          //const y = positiveTrackHeight - (positiveStackedHeight + height);
-          //const y = positiveRowHeight - (positiveStackedHeight + height);
-          const y = positiveTrackHeight - positiveStackedHeight - height;
-          
-          // SVG coordinate system has inverted y-axis?
-          //this.addSVGInfo(tile, x, positiveTrackHeight - (positiveRowHeight * i) + (positiveRowHeight - height), width, height, positive[i].color);
-          //this.addSVGInfo(tile, x, positiveRowHeight * (positive.length - i) - height + positiveRowHeight/2 + 7, width, height, positive[i].color);
-
-          this.addSVGInfo(tile, x, y, width, height, positive[i].color);
-          //this.addSVGInfo(tile, x, positiveRowHeight * (positive.length - i) - 10, width, positiveRowHeight, positive[i].color);
-
-          // const mY0 = y + height - 53; // y + height; // positiveRowHeight * (positive.length - i) - 10
-          // const mYh = positiveRowHeight; //mY0 - height; // height; // positiveRowHeight
-          // this.addMouseoverRawInfo(tile, x, mY0, width, mYh, positive[i].color);
-
-          //this.textureGraphics.beginFill(this.colorHexMap[positive[i].color], !this.options.hideColorByIndex ? 1 : ((positive[i].color === "#ffffff") ? 0 : 1));
-          
-          // this.textureGraphics.beginFill(this.colorHexMap[positive[i].color], (valueToPixelsPositive(positive[i].value) < 1) ? 0.33 : 1);
-
-          this.textureGraphics.beginFill(this.colorHexMap[positive[i].color], (valueToPixelsPositive(clippedPosVal) < 1) ? 0.33 : 1);
-          this.textureGraphics.drawRect(x, y, width, height);
-          this.textureGraphics.endFill();
-
-          // if (j === 242) {
-          //   console.log(`drawRect  > i ${i} y0 ${y + height} y1 ${y}`);
-          // }
-
-          // if (i === (positive.length - 1)) {
-            //     console.log("adding to svg info...")
-            //   if (j === 226) {
-          //   }
-          //   this.addSVGInfo(tile, x, 0, width, 20, "#ff0000");
-          // }
-          
-
-          // this.addSVGInfo(tile, x, i * positiveRowHeight, width, positiveRowHeight - height, "#ffffff");
-
-          // this.textureGraphics.beginFill(colorToHex("#ffffff"));
-          // this.textureGraphics.drawRect(x, i * positiveRowHeight, width, positiveRowHeight - height);
-          // this.textureGraphics.endFill();
-
-          // if (j === 226) {
-          //   console.log(`i: positive[i].value, x, y, width, height, positiveStackedHeight, positive[i].color`);
-          //   console.log(` --> ${i}: ${positive[i].value.toFixed(2)}, ${x.toFixed(2)}, ${y.toFixed(2)}, ${width.toFixed(2)}, ${height.toFixed(2)}, ${positiveStackedHeight.toFixed(2)} ${positive[i].color} ${typeof positive[i].color}`);
-          // }
-
-          //positiveStackedHeight = positiveStackedHeight + height;
-          positiveStackedHeight = positiveStackedHeight + positiveRowHeight;
-
-          if (lowestY > y)
+          const mouseoverIdx = sortedIdxs[i];
+          const mouseoverHeight = valueToPixelsPositive(positive[mouseoverIdx].value);
+          const mouseoverY = positiveTrackHeight - (positiveStackedHeight + mouseoverHeight);
+          this.addSVGInfo(tile, x, mouseoverY, width, mouseoverHeight, positive[mouseoverIdx].color);
+          // if (x === 800) console.log(`${i} | ${mouseoverIdx} -> positiveTrackHeight ${positiveTrackHeight} x ${x} y ${mouseoverY} width ${width} height ${mouseoverHeight} positiveStackedHeight ${positiveStackedHeight} color ${positive[mouseoverIdx].color}`);
+          // draw rect separately from SVG/mousover element
+          const sortedIdx = sortedIdxs[positive.length - 1 - i];
+          const exposedHeight = valueToPixelsPositive(positive[sortedIdx].value);
+          const fullHeight = currentTotalColumnHeight;
+          const y = positiveTrackHeight - fullHeight;
+          // apply more of the fill opacity value, the further along we go
+          const fillOpacity = !this.options.fillOpacityMin ? 1 : parseFloat(fillOpacityScaledByStateOrder(i));
+          this.textureGraphics.beginFill(this.colorHexMap[positive[sortedIdx].color], fillOpacity);
+          this.textureGraphics.drawRect(x, y, width, fullHeight);
+          currentTotalColumnHeight -= exposedHeight;
+          positiveStackedHeight = positiveStackedHeight + mouseoverHeight;
+          if (lowestY > y) {
             lowestY = y;
+          }
         }
 
-        // draw negative values, if there are any
+        // for (let i = 0; i < positive.length; i++) {
+        //   const sortedIdx = sortedIdxs[i];
+        //   //const height = valueToPixelsPositive(positive[i].value);
+        //   const height = valueToPixelsPositive(positive[sortedIdx].value);
+        //   const y = positiveTrackHeight - (positiveStackedHeight + height);
+        //   //if (positive[i].value === 1.1826171875) console.log(`${i} -> ${x} ${y} ${width} ${height} ${positive[i].color}`);
+        //   // if (x === 800) console.log(`${i} | ${sortedIdx} -> positiveTrackHeight ${positiveTrackHeight} x ${x} y ${y} width ${width} height ${height} totalColumnHeight ${totalColumnHeight} color ${positive[i].color}`);
+          
+        //   //this.addSVGInfo(tile, x, y, width, height, positive[i].color);
+        //   this.addSVGInfo(tile, x, y, width, height, positive[sortedIdx].color);
+        //   //this.addSVGInfo(tile, x, y, width, totalColumnHeight, positive[sortedIdx].color);
+
+        //   //this.textureGraphics.beginFill(this.colorHexMap[positive[i].color], !this.options.hideColorByIndex ? 1 : ((positive[i].color === "#ffffff") ? 0 : 1));
+        //   //this.textureGraphics.beginFill(this.colorHexMap[positive[sortedIdx].color], !this.options.hideColorByIndex ? 1 : ((positive[sortedIdx].color === "#ffffff") ? 0 : 1));
+        //   this.textureGraphics.beginFill(this.colorHexMap[positive[sortedIdx].color], !this.options.fillOpacity ? 1 : parseFloat(this.options.fillOpacity));
+        //   this.textureGraphics.drawRect(x, y, width, height);
+        //   //this.textureGraphics.drawRect(x, y, width, height + totalColumnHeight);
+
+        //   totalColumnHeight -= height;
+        //   positiveStackedHeight = positiveStackedHeight + height;
+        //   if (lowestY > y)
+        //     lowestY = y;
+        // }
+
+        // draw negative values, if there are any (not currently supported)
 
         // if(Math.abs(negativeMax)>0){
         //   const negative = matrix[j][1];
@@ -818,44 +713,7 @@ const BasicMultipleBarChart = (HGC, ...args) => {
         // }
       }
 
-      if (tile.tileId === "20.490855") {
-        console.log(`lowestY (background over tile) ${lowestY}`); // lowestYHeightPx ${valueToPixelsPositive(lowestY)}`);
-        // console.log(`positiveMax ${positiveMax}`); // maxHeightPx ${valueToPixelsPositive(positiveMax)}`);
-        console.log(`drawRect (background over tile) > y0 ${0} y1 ${lowestY}`);
-      }
-
-      this.addSVGInfo(tile, 0, 0, matrix.length * width, lowestY, backgroundHex);
-      this.textureGraphics.beginFill(backgroundPixiColor);
-      this.textureGraphics.drawRect(0, 0, matrix.length * width, lowestY);
-      this.textureGraphics.endFill();
-
-      const diff = positiveRowHeight - lowestY;
-      // const diff = positiveRowHeight - valueToPixelsPositive(tile.maxValue); // positiveRowHeight - lowestY;
-
-      // if (tile.tileId === "20.490855") {
-      //   console.log(`diff > ${diff} | tile.maxValue ${tile.maxValue} | tile.maxValueY ${valueToPixelsPositive(tile.maxValue)}`);
-      // }
-
-      for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
-        const x = (j * width);
-        (j === 0) ? start = x : start;
-
-        // draw positive values
-        const positive = matrix[j][0];
-        let positiveStackedHeight = 0;
-
-        for (let i = 0; i < positive.length; i++) {
-          const height = valueToPixelsPositive(positive[i].value);
-          const y = positiveTrackHeight - positiveStackedHeight - height;
-          const mY0 = parseInt(positiveTrackHeight - positiveStackedHeight - diff); // parseInt(y - diff); // y + height; // - diff;
-          const mYh = parseInt(positiveRowHeight);
-          // if (j === 242 && tile.tileId === "20.490855") {
-          //   console.log(`tile ${tile.tileId} | x ${x} | y ${mY0} | width ${width} | height ${mYh} | color ${positive[i].color}`);
-          // }
-          this.addMouseoverRawInfo(tile, x, mY0, width, mYh, positive[i].color);
-          positiveStackedHeight = positiveStackedHeight + positiveRowHeight;
-        }
-      }
+      // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) I`);
 
       try {
         // vertical bars are drawn onto the graphics object
@@ -864,14 +722,31 @@ const BasicMultipleBarChart = (HGC, ...args) => {
           this.textureGraphics, 
           HGC.libraries.PIXI.SCALE_MODES.NEAREST
         );
+
+        // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) J`);  
+
         const sprite = new HGC.libraries.PIXI.Sprite(texture);
+
+        // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) K`);
+
         sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
+
+        // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) L`);
+
         sprite.x = this._xScale(tileX);
+
+        // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) M`);
+
         tile.sprite = sprite;
+
+        // console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) N`);
+
         tile.lowestY = lowestY;
+
+        //console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) end`);
       }
       catch(err) {
-        // console.log(`BasicMultipleBarChart -> drawVerticalBars(${tile.tileId}) TypeError`);
+        console.log(`StackedDeltaBarChart -> drawVerticalBars(${tile.tileId}) TypeError`);
       }
     }
 
@@ -905,35 +780,6 @@ const BasicMultipleBarChart = (HGC, ...args) => {
     }
 
     /**
-     * Adds untransformed information for mouseover behavior
-     *
-     * @param tile
-     * @param x x value of bar
-     * @param y y value of bar
-     * @param width width of bar
-     * @param height height of bar
-     * @param color color of bar (not converted to hex)
-     */
-    addMouseoverRawInfo(tile, x, y, width, height, color) {
-      if (tile.hasOwnProperty('mouseoverRawData') && tile.mouseoverRawData !== null) {
-        tile.mouseoverRawData.barXValues.push(x);
-        tile.mouseoverRawData.barYValues.push(y);
-        tile.mouseoverRawData.barWidths.push(width);
-        tile.mouseoverRawData.barHeights.push(height);
-        tile.mouseoverRawData.barColors.push(color);
-      }
-      else {
-        tile.mouseoverRawData = {
-          barXValues: [x],
-          barYValues: [y],
-          barWidths: [width],
-          barHeights: [height],
-          barColors: [color]
-        };
-      }
-    }
-
-    /**
      * Here, rerender all tiles every time track size is changed
      *
      * @param newDimensions
@@ -943,18 +789,7 @@ const BasicMultipleBarChart = (HGC, ...args) => {
       super.setDimensions(newDimensions);
 
       const visibleAndFetched = this.visibleAndFetchedTiles();
-      visibleAndFetched.map(a => { 
-        if (a.hasOwnProperty('mouseoverRawData') && a.mouseoverRawData !== null) {
-          // console.log(`clearing mouseover raw data`);
-          for (var k in a.mouseoverRawData) {
-            if (a.mouseoverRawData.hasOwnProperty(k)) {
-              delete a.mouseoverRawData[k];
-            }
-          }
-          a.mouseoverRawData = null;
-        }
-        this.initTile(a);
-      });
+      visibleAndFetched.map(a => this.initTile(a));
     }
 
     /**
@@ -971,7 +806,7 @@ const BasicMultipleBarChart = (HGC, ...args) => {
         min = (value < min) ? value : min;
       }
 
-      return min;
+      return min
     }
 
     /**
@@ -988,7 +823,7 @@ const BasicMultipleBarChart = (HGC, ...args) => {
         max = (value > max) ? value : max;
       }
 
-      return max;
+      return max
     }
 
     /**
@@ -999,9 +834,9 @@ const BasicMultipleBarChart = (HGC, ...args) => {
     makeMouseOverData(tile) {
       const shapeX = this.numCategories; // 15 number of different nucleotides in each bar
       const shapeY = tile.tileData.shape[1]; // 3840 number of bars
-      const barYValues = tile.mouseoverRawData.barYValues;
-      const barHeights = tile.mouseoverRawData.barHeights;
-      const barColors = tile.mouseoverRawData.barColors;
+      const barYValues = tile.svgData.barYValues;
+      const barHeights = tile.svgData.barHeights;
+      const barColors = tile.svgData.barColors;
       let mouseOverData = [];
 
       for (let i = 0; i < shapeX; i++) {
@@ -1074,16 +909,12 @@ const BasicMultipleBarChart = (HGC, ...args) => {
         const rotation = 0;
         const g = document.createElement('g');
 
-        // tile.lowestY is needed to shift the plot downwards into full vertical alignment
-        const xOffset = tile.sprite.x;
-        const yOffset = tile.sprite.y + tile.lowestY;
-        const xScale = tile.sprite.scale.x;
-        const yScale = tile.sprite.scale.y;
+
 
         // place each sprite
         g.setAttribute(
           'transform',
-          ` translate(${xOffset},${yOffset}) rotate(${rotation}) scale(${xScale},${yScale}) `,
+          ` translate(${tile.sprite.x},${tile.sprite.y}) rotate(${rotation}) scale(${tile.sprite.scale.x},${tile.sprite.scale.y}) `,
         );
 
         const data = tile.svgData;
@@ -1142,6 +973,8 @@ const BasicMultipleBarChart = (HGC, ...args) => {
         return '';
 
       const matrixRow = fetchedTile.matrix[posInTileX];
+      const matrixIdxs = fetchedTile.sortedIdxs[posInTileX];
+
       let row = fetchedTile.mouseOverData[posInTileX];
 
       const dataY = ((trackY - fetchedTile.sprite.y)
@@ -1166,13 +999,13 @@ const BasicMultipleBarChart = (HGC, ...args) => {
           if (dataY > y && dataY <= (y + height)) {
             const color = row[i].color;
             if (color === "#ffffff") return '';
-            const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
+            let value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
             
             let type;
-            if(this.options.selectRows) {
+            if (this.options.selectRows) {
               // if `selectRows` is used, we need to point to the index specified in it
               const idx = this.options.selectRows[colorScaleMap[color]];
-              if(Array.isArray(idx)) {
+              if (Array.isArray(idx)) {
                 // This means multiple types are aggregated. Hence, show the multiple types in the tooltip.
                 const types = idx.map(d => this.tilesetInfo.row_infos[d].name || this.tilesetInfo.row_infos[d]);
                 type = types.join(', ');
@@ -1182,9 +1015,39 @@ const BasicMultipleBarChart = (HGC, ...args) => {
               }
             }
             else {
-              const rowInfo = this.tilesetInfo.row_infos[colorScaleMap[color]];
+              const state = colorScaleMap[color];
+              const rowInfo = this.tilesetInfo.row_infos[state];
+              const stateDeltas = this.remapVectorToUndiffedStateDeltas(matrixRow);
               type = rowInfo.name || rowInfo;
+              //value = Number.parseFloat(this.accumulateStateDeltasUpToState(stateDeltas, state)).toPrecision(4).toString();
+              let filter = true;
+              const filterIdxs = [];
+              matrixIdxs.forEach((d) => {
+                if (filter) {
+                  filterIdxs.push(d);
+                }
+                if (d === state) {
+                  filter = false;
+                }
+              });
+              const sumOfMap = filterIdxs.map((fd) => stateDeltas.filter((sd) => sd.i === fd)).map((d) => d[0].d).reduce((a, b) => a + b, 0);
+              //matrixIdxs.filter((d, i) => d >= startingIdx).map((d) => matrixIdxs.indexOf(d));
+              //const mapMatrixRowElems = filterIdxs.map((d) => matrixRow[d]);
+              //const sumOfMap = mapMatrixRowElems.reduce((a, b) => a+b, 0);
+              // if (posInTileX === 195) {
+              //   console.log(`state ${JSON.stringify(state)}`);
+              //   console.log(`matrixRow ${JSON.stringify(matrixRow)}`);
+              //   console.log(`stateDeltas ${JSON.stringify(stateDeltas)}`);
+              //   console.log(`matrixIdxs ${JSON.stringify(matrixIdxs)}`);
+              //   console.log(`filterIdxs ${JSON.stringify(filterIdxs)}`);
+              //   console.log(`mapMatrixRowElems ${JSON.stringify(mapMatrixRowElems)}`);
+              //   console.log(`sumOfMap ${JSON.stringify(sumOfMap)}`);
+              // }
+              //.map((d) => matrixRow[d]).reduce((a, b) => a + b, 0);
+              //value = Number.parseFloat(value).toPrecision(4).toString();
+              value = Number.parseFloat(sumOfMap).toPrecision(4).toString();;
             }
+
             // return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
             // style="fill:${color};stroke:black;stroke-width:2;"></svg>`
             //   + ` ${type}` + `<br>` + `${value}`;
@@ -1233,14 +1096,14 @@ const BasicMultipleBarChart = (HGC, ...args) => {
     }
 
   }
-  return new BasicMultipleBarChartClass(...args);
+  return new StackedDeltaBarTrackClass(...args);
 };
 
 const icon = '<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" viewBox="0 0 5640 5420" preserveAspectRatio="xMidYMid meet"> <g id="layer101" fill="#000000" stroke="none"> <path d="M0 2710 l0 -2710 2820 0 2820 0 0 2710 0 2710 -2820 0 -2820 0 0 -2710z"/> </g> <g id="layer102" fill="#750075" stroke="none"> <path d="M200 4480 l0 -740 630 0 630 0 0 740 0 740 -630 0 -630 0 0 -740z"/> <path d="M1660 4420 l0 -800 570 0 570 0 0 800 0 800 -570 0 -570 0 0 -800z"/> <path d="M3000 3450 l0 -1770 570 0 570 0 0 1770 0 1770 -570 0 -570 0 0 -1770z"/> <path d="M4340 2710 l0 -2510 560 0 560 0 0 2510 0 2510 -560 0 -560 0 0 -2510z"/> <path d="M200 1870 l0 -1670 630 0 630 0 0 1670 0 1670 -630 0 -630 0 0 -1670z"/> <path d="M1660 1810 l0 -1610 570 0 570 0 0 1610 0 1610 -570 0 -570 0 0 -1610z"/> <path d="M3000 840 l0 -640 570 0 570 0 0 640 0 640 -570 0 -570 0 0 -640z"/> </g> <g id="layer103" fill="#ffff04" stroke="none"> <path d="M200 4480 l0 -740 630 0 630 0 0 740 0 740 -630 0 -630 0 0 -740z"/> <path d="M1660 4420 l0 -800 570 0 570 0 0 800 0 800 -570 0 -570 0 0 -800z"/> <path d="M3000 3450 l0 -1770 570 0 570 0 0 1770 0 1770 -570 0 -570 0 0 -1770z"/> </g> </svg>';
 
 // default
-BasicMultipleBarChart.config = {
-  type: 'basic-multiple-bar-chart',
+StackedDeltaBarTrack.config = {
+  type: 'horizontal-stacked-delta-bar',
   datatype: ['multivec', 'epilogos'],
   local: false,
   orientation: '1d-horizontal',
@@ -1256,8 +1119,19 @@ BasicMultipleBarChart.config = {
     valueScaling: 'linear',
     trackBorderWidth: 0,
     trackBorderColor: 'black',
+    backgroundColor: 'white',
+    barBorder: true,
+    sortLargestOnTop: true,
+    selectRows: null,
+    fillOpacityMin: 0.1,
+    fillOpacityMax: 1.0,
+  },
+  otherOptions: {
+    'epilogos': {
+      scaledHeight: false,
+    }
   }
 };
 
 
-export default BasicMultipleBarChart;
+export default StackedDeltaBarTrack;

@@ -1,6 +1,5 @@
 import {mix} from 'mixwith';
 import {scaleLinear, scaleOrdinal} from 'd3-scale';
-import {schemeCategory10} from 'd3-scale-chromatic';
 
 const ScaledStackedBarTrack = (HGC, ...args) => {
   if (!new.target) {
