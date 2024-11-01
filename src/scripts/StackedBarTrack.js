@@ -12,7 +12,7 @@ const StackedBarTrack = (HGC, ...args) => {
   const { tileProxy, pixiRenderer } = HGC.services;
 
   // Utils
-  const { colorToHex } = HGC.utils;
+  const { colorToHex, absToChr } = HGC.utils;
 
   class StackedBarTrackClass extends HGC.tracks.BarTrack {
     constructor(context, options) {
