@@ -76,8 +76,23 @@ const StackedBarTrack = (HGC, ...args) => {
       this.scale.minValue = this.scale.minRawValue;
       this.scale.maxValue = this.scale.maxRawValue;
 
-      this.maxAndMin.min = this.minValueInArray(tile.tileData.dense);
-      this.maxAndMin.max = this.maxValueInArray(tile.tileData.dense);
+      if (this.options.globalMinMax) {
+        // console.log(`this.options.globalMinMax ${JSON.stringify(this.options.globalMinMax)}`);
+        this.maxAndMin.min = this.options.globalMinMax.min;
+        this.maxAndMin.max = this.options.globalMinMax.max;
+      }
+      else {
+        this.maxAndMin.min = this.minValueInArray(tile.tileData.dense);
+        this.maxAndMin.max = this.maxValueInArray(tile.tileData.dense);
+
+        if (this.isValueScaleLocked()) {
+          const glge = this.getLockGroupExtrema();
+          if (glge !== null) {
+            this.maxAndMin.min = 1.05 * glge[0];
+            this.maxAndMin.max = 1.05 * glge[1];
+          }
+        }
+      }
 
       // Number of bars being stacked in each genomic position
       this.numCategories = this.options.selectRows ? this.options.selectRows.length : tile.tileData.shape[0];
@@ -128,6 +143,15 @@ const StackedBarTrack = (HGC, ...args) => {
       for (let i = 0; i < visibleAndFetched.length; i++) {
         const tile = visibleAndFetched[i];
         this.unFlatten(tile);
+      }
+
+      if (this.isValueScaleLocked()) {
+        const glge = this.getLockGroupExtrema();
+        if (glge !== null) {
+          this.maxAndMin.min = 1.05 * glge[0];
+          this.maxAndMin.max = 1.05 * glge[1];
+        }
+        this.rescaleTiles();
       }
 
       this.rescaleTiles();
@@ -181,13 +205,23 @@ const StackedBarTrack = (HGC, ...args) => {
 
       this.oldDimensions = this.dimensions; // for mouseover
 
-      // creates a sprite containing all of the rectangles in this tile
-      this.drawVerticalBars(this.mapOriginalColors(matrix), tileX, tileWidth,
-        this.maxAndMin.max, this.maxAndMin.min, tile);
-
-      graphics.addChild(tile.sprite);
-
-      this.makeMouseOverData(tile);
+      try {
+        // creates a sprite containing all of the rectangles in this tile
+        this.drawVerticalBars(
+          this.mapOriginalColors(matrix), 
+          tileX, 
+          tileWidth,
+          this.maxAndMin.max, 
+          this.maxAndMin.min, 
+          tile);
+        // console.log(`tile.tileId ${tile.tileId} | tileX ${tileX} tileWidth ${tileWidth} this.maxAndMin ${JSON.stringify(this.maxAndMin)}`);
+  
+        graphics.addChild(tile.sprite);
+        this.makeMouseOverData(tile);
+      }
+      catch(err) {
+        // do nothing
+      }
     }
 
     /**
@@ -214,7 +248,38 @@ const StackedBarTrack = (HGC, ...args) => {
     rescaleTiles() {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
-      this.syncMaxAndMin();
+      if (this.options.globalMinMax) {
+        this.maxAndMin.min = this.options.globalMinMax.min;
+        this.maxAndMin.max = this.options.globalMinMax.max;
+      }
+      else {
+        if (this.isValueScaleLocked()) {
+          // If valueScales are locked get min and max values of the locked group
+          // for initialization. This prevents a flickering that is caused by
+          // rendering the track multiple times with possibly different valueScales
+          const glge = this.getLockGroupExtrema();
+          // console.log(`[StackedBarTrack] > rescaleTiles: glge ${JSON.stringify(glge)}`);
+          if (glge !== null) {
+            this.maxAndMin.min = 1.05 * glge[0];
+            this.maxAndMin.max = 1.05 * glge[1];
+          }
+        }
+        else {
+          this.syncMaxAndMin();
+        }
+      }
+
+      /**
+       * If the symmetricRange option is specified and is true, then a horizontally-oriented bar 
+       * chart is centered vertically (and a vertically-oriented bar chart is centered horizontally)
+       */
+      if (this.options.symmetricRange === true) {
+        let absMax = Math.max(Math.abs(this.maxAndMin.min), this.maxAndMin.max);
+        let aTouchOfSlop = 0.01 * absMax;
+        absMax += aTouchOfSlop;
+        this.maxAndMin.min = -absMax;
+        this.maxAndMin.max = absMax;
+      }
 
       visibleAndFetched.map(a => {
         const valueToPixels = scaleLinear()
@@ -809,26 +874,49 @@ const StackedBarTrack = (HGC, ...args) => {
             const color = row[i].color;
             const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
             
-            let type;
-            if(this.options.selectRows) {
-              // if `selectRows` is used, we need to point to the index specified in it
-              const idx = this.options.selectRows[colorScaleMap[color]];
-              if(Array.isArray(idx)) {
-                // This means multiple types are aggregated. Hence, show the multiple types in the tooltip.
-                const types = idx.map(d => this.tilesetInfo.row_infos[d].name || this.tilesetInfo.row_infos[d]);
-                type = types.join(', ');
-              } else {
-                const rowInfo = this.tilesetInfo.row_infos[idx];
-                type = rowInfo.name || rowInfo;
-              }
+            const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
+
+            const dataX = this._xScale.invert(trackX);
+            let positionText = null;
+            if (this.options.chromInfo && this.options.binSize) {
+              const atcX = absToChr(dataX, this.options.chromInfo);
+              const chrom = atcX[0];
+              const position = Math.ceil(atcX[1] / this.options.binSize) * this.options.binSize - this.options.binSize;
+              positionText = `${chrom}:${position}`;
             }
-            else {
-              const rowInfo = this.tilesetInfo.row_infos[colorScaleMap[color]];
-              type = rowInfo.name || rowInfo;
+
+            let output = `<div class="track-mouseover-menu-table">`;
+
+            if (positionText) {
+              output += `
+              <div class="track-mouseover-menu-table-item">
+                <label for="position" class="track-mouseover-menu-table-item-label">Position</label>
+                <div name="position" class="track-mouseover-menu-table-item-value">${positionText}</div>
+              </div>
+              `;
             }
-            return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
-            style="fill:${color};stroke:black;stroke-width:2;"></svg>`
-              + ` ${type}` + `<br>` + `${value}`;
+
+            const binScore = value;
+            output += `<div class="track-mouseover-menu-table-item">
+              <label for="binScore" class="track-mouseover-menu-table-item-label">Score</label>
+              <div name="binScore" class="track-mouseover-menu-table-item-value">${binScore}</div>
+            </div>`;
+            
+            const stateColor = color;
+            const stateName = type;
+            const stateRGBMarkup = `<svg width="10" height="10" style="position:relative; top:-2px;"><rect width="10" height="10" rx="2" ry="2" style="fill:${stateColor};stroke:black;stroke-width:2;"></svg> ${stateName}`;
+            output += `
+              <div class="track-mouseover-menu-table-item">
+                <label for="stateName" class="track-mouseover-menu-table-item-label">Chromatin state</label>
+                <div name="stateName" class="track-mouseover-menu-table-item-value">${stateRGBMarkup}</div>
+              </div>`;
+            output += `</div>`;
+
+            // return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
+            // style="fill:${color};stroke:black;stroke-width:2;"></svg>`
+            //   + ` ${type}` + `<br>` + `${value}`;
+
+            return output;
           }
         }
       }
