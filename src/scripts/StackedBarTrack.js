@@ -1,4 +1,5 @@
 import {scaleLinear, scaleOrdinal} from 'd3-scale';
+import {schemeCategory10} from 'd3-scale-chromatic';
 
 const StackedBarTrack = (HGC, ...args) => {
   if (!new.target) {
@@ -75,8 +76,23 @@ const StackedBarTrack = (HGC, ...args) => {
       this.scale.minValue = this.scale.minRawValue;
       this.scale.maxValue = this.scale.maxRawValue;
 
-      this.maxAndMin.min = this.minValueInArray(tile.tileData.dense);
-      this.maxAndMin.max = this.maxValueInArray(tile.tileData.dense);
+      if (this.options.globalMinMax) {
+        // console.log(`this.options.globalMinMax ${JSON.stringify(this.options.globalMinMax)}`);
+        this.maxAndMin.min = this.options.globalMinMax.min;
+        this.maxAndMin.max = this.options.globalMinMax.max;
+      }
+      else {
+        this.maxAndMin.min = this.minValueInArray(tile.tileData.dense);
+        this.maxAndMin.max = this.maxValueInArray(tile.tileData.dense);
+
+        if (this.isValueScaleLocked()) {
+          const glge = this.getLockGroupExtrema();
+          if (glge !== null) {
+            this.maxAndMin.min = 1.05 * glge[0];
+            this.maxAndMin.max = 1.05 * glge[1];
+          }
+        }
+      }
 
       // Number of bars being stacked in each genomic position
       this.numCategories = this.options.selectRows ? this.options.selectRows.length : tile.tileData.shape[0];
@@ -104,10 +120,20 @@ const StackedBarTrack = (HGC, ...args) => {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
       for (let i = 0; i < visibleAndFetched.length; i++) {
-        this.updateTile(visibleAndFetched[i]);
+        const tile = visibleAndFetched[i];
+        tile.matrix = null;
+
+        this.updateTile(tile);
       }
 
+      for (let i = 0; i < visibleAndFetched.length; i++) {
+        const tile = visibleAndFetched[i];
+
+        this.renderTile(tile);
+      }
+      
       this.rescaleTiles();
+
       this.draw();
     }
 
@@ -117,6 +143,15 @@ const StackedBarTrack = (HGC, ...args) => {
       for (let i = 0; i < visibleAndFetched.length; i++) {
         const tile = visibleAndFetched[i];
         this.unFlatten(tile);
+      }
+
+      if (this.isValueScaleLocked()) {
+        const glge = this.getLockGroupExtrema();
+        if (glge !== null) {
+          this.maxAndMin.min = 1.05 * glge[0];
+          this.maxAndMin.max = 1.05 * glge[1];
+        }
+        this.rescaleTiles();
       }
 
       this.rescaleTiles();
@@ -129,6 +164,23 @@ const StackedBarTrack = (HGC, ...args) => {
      */
     drawTile(tile) {
 
+    }
+
+    calculateVisibleTiles() {
+      if (!this.tilesetInfo) {
+        return;
+      }
+      this.zoomLevel = this.calculateZoomLevel();
+      if (this.tilesetInfo.resolutions) {
+        const sortedResolutions = this.tilesetInfo.resolutions.map((x) => +x).sort((a, b) => b - a);
+        const xTiles2 = tileProxy.calculateTilesFromResolution(sortedResolutions[this.zoomLevel], this._xScale, this.tilesetInfo.min_pos[0], this.tilesetInfo.max_pos[0], this.tilesetInfo.tile_size);
+        const tiles2 = xTiles2.map((x) => [this.zoomLevel, x]);
+        this.setVisibleTiles(tiles2);
+        return;
+      }
+      const xTiles = api.calculateTiles(this.zoomLevel, this.relevantScale(), this.tilesetInfo.min_pos[0], this.tilesetInfo.max_pos[0], this.tilesetInfo.max_zoom, this.tilesetInfo.max_width);
+      const tiles = xTiles.map((x) => [this.zoomLevel, x]);
+      this.setVisibleTiles(tiles);
     }
 
     /**
@@ -153,12 +205,23 @@ const StackedBarTrack = (HGC, ...args) => {
 
       this.oldDimensions = this.dimensions; // for mouseover
 
-      // creates a sprite containing all of the rectangles in this tile
-      this.drawVerticalBars(this.mapOriginalColors(matrix), tileX, tileWidth,
-        this.maxAndMin.max, this.maxAndMin.min, tile);
-
-      graphics.addChild(tile.sprite);
-      this.makeMouseOverData(tile);
+      try {
+        // creates a sprite containing all of the rectangles in this tile
+        this.drawVerticalBars(
+          this.mapOriginalColors(matrix), 
+          tileX, 
+          tileWidth,
+          this.maxAndMin.max, 
+          this.maxAndMin.min, 
+          tile);
+        // console.log(`tile.tileId ${tile.tileId} | tileX ${tileX} tileWidth ${tileWidth} this.maxAndMin ${JSON.stringify(this.maxAndMin)}`);
+  
+        graphics.addChild(tile.sprite);
+        this.makeMouseOverData(tile);
+      }
+      catch(err) {
+        // do nothing
+      }
     }
 
     /**
@@ -185,7 +248,38 @@ const StackedBarTrack = (HGC, ...args) => {
     rescaleTiles() {
       const visibleAndFetched = this.visibleAndFetchedTiles();
 
-      this.syncMaxAndMin();
+      if (this.options.globalMinMax) {
+        this.maxAndMin.min = this.options.globalMinMax.min;
+        this.maxAndMin.max = this.options.globalMinMax.max;
+      }
+      else {
+        if (this.isValueScaleLocked()) {
+          // If valueScales are locked get min and max values of the locked group
+          // for initialization. This prevents a flickering that is caused by
+          // rendering the track multiple times with possibly different valueScales
+          const glge = this.getLockGroupExtrema();
+          // console.log(`[StackedBarTrack] > rescaleTiles: glge ${JSON.stringify(glge)}`);
+          if (glge !== null) {
+            this.maxAndMin.min = 1.05 * glge[0];
+            this.maxAndMin.max = 1.05 * glge[1];
+          }
+        }
+        else {
+          this.syncMaxAndMin();
+        }
+      }
+
+      /**
+       * If the symmetricRange option is specified and is true, then a horizontally-oriented bar 
+       * chart is centered vertically (and a vertically-oriented bar chart is centered horizontally)
+       */
+      if (this.options.symmetricRange === true) {
+        let absMax = Math.max(Math.abs(this.maxAndMin.min), this.maxAndMin.max);
+        let aTouchOfSlop = 0.01 * absMax;
+        absMax += aTouchOfSlop;
+        this.maxAndMin.min = -absMax;
+        this.maxAndMin.max = absMax;
+      }
 
       visibleAndFetched.map(a => {
         const valueToPixels = scaleLinear()
@@ -213,11 +307,6 @@ const StackedBarTrack = (HGC, ...args) => {
       const colorHexMap = {};
       for (let i = 0; i < colorScale.length; i++) {
         colorHexMap[colorScale[i]] = colorToHex(colorScale[i]);
-        if (this.options.hideColorByIndex) {
-          if (i === this.options.hideColorByIndex) {
-            colorHexMap[colorScale[i]] = colorToHex("#ffffff");
-          }
-        }
       }
       this.colorHexMap = colorHexMap;
     }
@@ -332,6 +421,22 @@ const StackedBarTrack = (HGC, ...args) => {
             matrix[j] = singleBar;
           }
         }
+
+        if (this.options.valueScaling === 'log') {
+          const pseudocount = this.options.pseudocount == undefined ? 1 : this.options.pseudocount;
+
+          for (let j = 0; j < shapeY; j++) {
+            const matrixMod = matrix[j].map(x => x + pseudocount)
+            const total = matrixMod.reduce((x,y) => x + y, 0)
+
+            const logs = matrixMod.map(x => Math.log(x));
+            const logsTotal = logs.reduce((x,y) => x+y, 0)
+            const totalLog = Math.log(total);
+            const proportions = logs.map(x => (x / logsTotal) * totalLog)
+            matrix[j] = proportions;
+          }
+        }
+
         return matrix;
       }
 
@@ -411,22 +516,55 @@ const StackedBarTrack = (HGC, ...args) => {
       let lowestY = this.dimensions[1];
 
       const width = 10;
+      const spriteGraphics = new HGC.libraries.PIXI.Graphics();
 
       // calls drawBackground in PixiTrack.js
       this.drawBackground(matrix, this.textureGraphics);
+      const totalSpriteWidth = this._xScale(tileX + tileWidth) - this._xScale(tileX);
 
       // borders around each bar
       if (this.options.barBorder) {
         this.textureGraphics.lineStyle(1, 0x000000, 1);
       }
 
+      const spritesHeights = [];
+
+      function addNewSprite(j) {
+        // We're going to use this function to break up the tile graphics into
+        // sprites of size 256. We do this because textures larger than 256 seem
+        // to cause loading problems in Chrome and Firefox
+        const spriteWidth = (256  / matrix.length) * totalSpriteWidth;
+
+        const texture = pixiRenderer.generateTexture(
+          this.textureGraphics, HGC.libraries.PIXI.SCALE_MODES.NEAREST
+        );
+        
+        const sprite = new HGC.libraries.PIXI.Sprite(texture);
+        sprite.width = spriteWidth;
+        sprite.x = ((j-256) / matrix.length) * totalSpriteWidth;
+        spriteGraphics.addChild(sprite);
+
+        spritesHeights.push({
+          "sprite": sprite,
+          "height": texture.height
+        })
+
+        this.textureGraphics.clear()
+        this.drawBackground(matrix, this.textureGraphics);
+      }
 
       for (let j = 0; j < matrix.length; j++) { // jth vertical bar in the graph
         const x = (j * width);
         (j === 0) ? start = x : start;
 
+        if (j > 0 && j % 256 == 0) {
+          // Add a new small sprite
+          addNewSprite.bind(this)(j)
+        }
+
         // draw positive values
         const positive = matrix[j][0];
+
         const valueToPixelsPositive = scaleLinear()
           .domain([0, positiveMax])
           .range([0, positiveTrackHeight]);
@@ -436,7 +574,7 @@ const StackedBarTrack = (HGC, ...args) => {
           const height = valueToPixelsPositive(positive[i].value);
           const y = positiveTrackHeight - (positiveStackedHeight + height);
           this.addSVGInfo(tile, x, y, width, height, positive[i].color);
-          this.textureGraphics.beginFill(this.colorHexMap[positive[i].color], !this.options.hideColorByIndex ? 1 : ((positive[i].color === "#ffffff") ? 0 : 1));
+          this.textureGraphics.beginFill(this.colorHexMap[positive[i].color]);
           this.textureGraphics.drawRect(x, y, width, height);
 
           positiveStackedHeight = positiveStackedHeight + height;
@@ -456,23 +594,37 @@ const StackedBarTrack = (HGC, ...args) => {
             const height = valueToPixelsNegative(negative[i].value);
             const y = positiveTrackHeight + negativeStackedHeight;
             this.addSVGInfo(tile, x, y, width, height, negative[i].color);
-            this.textureGraphics.beginFill(this.colorHexMap[negative[i].color], !this.options.hideColorByIndex ? 1 : ((negative[i].color === "#ffffff") ? 0 : 1));
+            this.textureGraphics.beginFill(this.colorHexMap[negative[i].color]);
             this.textureGraphics.drawRect(x, y, width, height);
             negativeStackedHeight = negativeStackedHeight + height;
           }
         }
       }
 
+      addNewSprite.bind(this)(matrix.length);
+
+      // Scale all the "sprites" so that they're aligned along the bottom
+      const maxHeight = spritesHeights.reduceRight((pv, spriteHeight) => Math.max(pv, spriteHeight.height), 0);
+      for (let i = 0; i < spritesHeights.length; i++) {
+        const sprite = spritesHeights[i].sprite;
+        sprite.y = maxHeight - spritesHeights[i].height;
+      }
+
       // vertical bars are drawn onto the graphics object
       // and a texture is generated from that
-      const texture = pixiRenderer.generateTexture(
-        this.textureGraphics, HGC.libraries.PIXI.SCALE_MODES.NEAREST
-      );
-      const sprite = new HGC.libraries.PIXI.Sprite(texture);
-      sprite.width = this._xScale(tileX + tileWidth) - this._xScale(tileX);
-      sprite.x = this._xScale(tileX);
-      tile.sprite = sprite;
+      
+      spriteGraphics.width = totalSpriteWidth;
+      spriteGraphics.x = this._xScale(tileX);
+
+      // From here on out, all of the smaller sprites will be treated
+      // as one.
+      tile.sprite = spriteGraphics;
       tile.lowestY = lowestY;
+    }
+
+
+    draw() {
+      super.draw();
     }
 
     /**
@@ -703,7 +855,6 @@ const StackedBarTrack = (HGC, ...args) => {
       const dataY = ((trackY - fetchedTile.sprite.y)
         / fetchedTile.sprite.scale.y) + fetchedTile.lowestY;
 
-
       //use color to map back to the array index for correct data
       const colorScaleMap = {};
       for (let i = 0; i < colorScale.length; i++) {
@@ -721,38 +872,57 @@ const StackedBarTrack = (HGC, ...args) => {
           const height = row[i].height;
           if (dataY > y && dataY <= (y + height)) {
             const color = row[i].color;
-            if (color === "#ffffff") return '';
             const value = Number.parseFloat(matrixRow[colorScaleMap[color]]).toPrecision(4).toString();
             
-            let type;
-            if(this.options.selectRows) {
-              // if `selectRows` is used, we need to point to the index specified in it
-              const idx = this.options.selectRows[colorScaleMap[color]];
-              if(Array.isArray(idx)) {
-                // This means multiple types are aggregated. Hence, show the multiple types in the tooltip.
-                const types = idx.map(d => this.tilesetInfo.row_infos[d].name || this.tilesetInfo.row_infos[d]);
-                type = types.join(', ');
-              } else {
-                const rowInfo = this.tilesetInfo.row_infos[idx];
-                type = rowInfo.name || rowInfo;
-              }
+            const type = this.tilesetInfo.row_infos[colorScaleMap[color]];
+
+            const dataX = this._xScale.invert(trackX);
+            let positionText = null;
+            if (this.options.chromInfo && this.options.binSize) {
+              const atcX = absToChr(dataX, this.options.chromInfo);
+              const chrom = atcX[0];
+              const position = Math.ceil(atcX[1] / this.options.binSize) * this.options.binSize - this.options.binSize;
+              positionText = `${chrom}:${position}`;
             }
-            else {
-              const rowInfo = this.tilesetInfo.row_infos[colorScaleMap[color]];
-              type = rowInfo.name || rowInfo;
+
+            let output = `<div class="track-mouseover-menu-table">`;
+
+            if (positionText) {
+              output += `
+              <div class="track-mouseover-menu-table-item">
+                <label for="position" class="track-mouseover-menu-table-item-label">Position</label>
+                <div name="position" class="track-mouseover-menu-table-item-value">${positionText}</div>
+              </div>
+              `;
             }
-            return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
-            style="fill:${color};stroke:black;stroke-width:2;"></svg>`
-              + ` ${type}` + `<br>` + `${value}`;
+
+            const binScore = value;
+            output += `<div class="track-mouseover-menu-table-item">
+              <label for="binScore" class="track-mouseover-menu-table-item-label">Score</label>
+              <div name="binScore" class="track-mouseover-menu-table-item-value">${binScore}</div>
+            </div>`;
+            
+            const stateColor = color;
+            const stateName = type;
+            const stateRGBMarkup = `<svg width="10" height="10" style="position:relative; top:-2px;"><rect width="10" height="10" rx="2" ry="2" style="fill:${stateColor};stroke:black;stroke-width:2;"></svg> ${stateName}`;
+            output += `
+              <div class="track-mouseover-menu-table-item">
+                <label for="stateName" class="track-mouseover-menu-table-item-label">Chromatin state</label>
+                <div name="stateName" class="track-mouseover-menu-table-item-value">${stateRGBMarkup}</div>
+              </div>`;
+            output += `</div>`;
+
+            // return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
+            // style="fill:${color};stroke:black;stroke-width:2;"></svg>`
+            //   + ` ${type}` + `<br>` + `${value}`;
+
+            return output;
           }
         }
       }
 
     }
 
-    draw() {
-      super.draw();
-    }
 
   }
   return new StackedBarTrackClass(...args);
