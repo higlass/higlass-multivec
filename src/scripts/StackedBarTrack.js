@@ -194,34 +194,39 @@ const StackedBarTrack = (HGC, ...args) => {
       tile.mouseOverData = null;
 
       const graphics = tile.graphics;
-      graphics.clear();
-      graphics.children.map(child => {graphics.removeChild(child)});
-      tile.drawnAtScale = this._xScale.copy();
-
-      // we're setting the start of the tile to the current zoom level
-      const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
-        tile.tileData.tilePos, this.tilesetInfo.tile_size);
-
-      const matrix = this.unFlatten(tile);
-
-      this.oldDimensions = this.dimensions; // for mouseover
-
       try {
-        // creates a sprite containing all of the rectangles in this tile
-        this.drawVerticalBars(
-          this.mapOriginalColors(matrix), 
-          tileX, 
-          tileWidth,
-          this.maxAndMin.max, 
-          this.maxAndMin.min, 
-          tile);
-        // console.log(`tile.tileId ${tile.tileId} | tileX ${tileX} tileWidth ${tileWidth} this.maxAndMin ${JSON.stringify(this.maxAndMin)}`);
+        graphics.clear();
+        graphics.children.map(child => {graphics.removeChild(child)});
+        tile.drawnAtScale = this._xScale.copy();
   
-        graphics.addChild(tile.sprite);
-        this.makeMouseOverData(tile);
+        // we're setting the start of the tile to the current zoom level
+        const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
+          tile.tileData.tilePos, this.tilesetInfo.tile_size);
+  
+        const matrix = this.unFlatten(tile);
+  
+        this.oldDimensions = this.dimensions; // for mouseover
+  
+        try {
+          // creates a sprite containing all of the rectangles in this tile
+          this.drawVerticalBars(
+            this.mapOriginalColors(matrix), 
+            tileX, 
+            tileWidth,
+            this.maxAndMin.max, 
+            this.maxAndMin.min, 
+            tile);
+          // console.log(`tile.tileId ${tile.tileId} | tileX ${tileX} tileWidth ${tileWidth} this.maxAndMin ${JSON.stringify(this.maxAndMin)}`);
+    
+          graphics.addChild(tile.sprite);
+          this.makeMouseOverData(tile);
+        }
+        catch(err) {
+          return;
+        }
       }
       catch(err) {
-        // do nothing
+        return;
       }
     }
 
