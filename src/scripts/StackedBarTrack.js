@@ -927,6 +927,7 @@ const StackedBarTrack = (HGC, ...args) => {
      *
      * @param trackX x coordinate of mouse
      * @param trackY y coordinate of mouse
+     * @param isShiftDown whether shift is pressed
      * @returns string with embedded values and svg square for color
      */
     getMouseOverHtml(trackX, trackY) {
@@ -1042,7 +1043,7 @@ StackedBarTrack.config = {
   availableOptions: ['labelPosition', 'labelColor', 'valueScaling',
     'labelTextOpacity', 'labelBackgroundOpacity', 'trackBorderWidth',
     'trackBorderColor', 'trackType', 'scaledHeight', 'backgroundColor',
-    'colorScale', 'barBorder', 'sortLargestOnTop', 'selectRows'],
+    'colorScale', 'barBorder', 'sortLargestOnTop', 'selectRows', 'showTooltip'],
   defaultOptions: {
     labelPosition: 'topLeft',
     labelColor: 'black',
@@ -1053,7 +1054,8 @@ StackedBarTrack.config = {
     backgroundColor: 'white',
     barBorder: true,
     sortLargestOnTop: true,
-    selectRows: null
+    selectRows: null,
+    showTooltip: false,
   },
   otherOptions: {
     'epilogos': {
