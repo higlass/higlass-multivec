@@ -1,6 +1,5 @@
 import {mix} from 'mixwith';
 import {scaleLinear, scaleOrdinal} from 'd3-scale';
-import {schemeCategory10} from 'd3-scale-chromatic';
 
 const ScaledStackedBarTrack = (HGC, ...args) => {
   if (!new.target) {
@@ -342,10 +341,11 @@ const ScaledStackedBarTrack = (HGC, ...args) => {
      *
      * @param trackX x coordinate of mouse
      * @param trackY y coordinate of mouse
+     * @param isShiftDown whether shift is pressed
      * @returns string with embedded values and svg square for color
      */
-    getMouseOverHtml(trackX, trackY) {
-      if (!this.tilesetInfo)
+    getMouseOverHtml(trackX, trackY, isShiftDown) {
+      if (!this.tilesetInfo || (!this.options.showTooltip && !isShiftDown))
         return '';
 
       const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
@@ -410,7 +410,7 @@ ScaledStackedBarTrack.config = {
   availableOptions: ['labelPosition', 'labelColor', 'valueScaling',
     'labelTextOpacity', 'labelBackgroundOpacity', 'trackBorderWidth',
     'trackBorderColor', 'trackType', 'scaledHeight', 'backgroundColor',
-    'colorScale', 'barBorder', 'sortLargestOnTop'],
+    'colorScale', 'barBorder', 'sortLargestOnTop', 'showTooltip'],
   defaultOptions: {
     labelPosition: 'topLeft',
     labelColor: 'black',
@@ -438,6 +438,7 @@ ScaledStackedBarTrack.config = {
       "#C0C0C0",
       "#FFFFFF"
     ],
+    showTooltip: true,
   }
 };
 

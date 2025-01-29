@@ -1,11 +1,17 @@
 import register from 'higlass-register';
 
-import { StackedBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart } from './scripts';
+import { StackedBarTrack, StackedDeltaBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart } from './scripts';
 
 register({
   name: 'StackedBarTrack',
   track: StackedBarTrack,
   config: StackedBarTrack.config,
+});
+
+register({
+  name: 'StackedDeltaBarTrack',
+  track: StackedDeltaBarTrack,
+  config: StackedDeltaBarTrack.config,
 });
 
 register({
@@ -26,4 +32,4 @@ register({
   config: BasicMultipleBarChart.config,
 });
 
-export { StackedBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart };
+export { StackedBarTrack, StackedDeltaBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart };

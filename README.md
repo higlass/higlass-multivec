@@ -24,12 +24,13 @@ The live scripts can be found at:
 
 - https://unpkg.com/higlass-multivec/dist/higlass-multivec.min.js
 
-There are three types of tracks to choose from:
+There are four types of tracks to choose from:
 
 ```
 "basic-multiple-line-chart"
 "horizontal-stacked-bar"
 "basic-multiple-bar-chart"
+"basic-stacked-delta-bar-chart"
 ```
 
 Configure the track in your view config; you should be all set from here!
@@ -53,6 +54,7 @@ Configure the track in your view config; you should be all set from here!
            "scaledHeight": true,
            "backgroundColor": "white",
            "sortLargestOnTop": true,
+           "showTooltip": true,
        },
     },
 ]   
