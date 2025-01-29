@@ -54,6 +54,7 @@ Configure the track in your view config; you should be all set from here!
            "scaledHeight": true,
            "backgroundColor": "white",
            "sortLargestOnTop": true,
+           "showTooltip": true,
        },
     },
 ]   

@@ -1105,9 +1105,6 @@ const BasicMultipleBarChart = (HGC, ...args) => {
               const rowInfo = this.tilesetInfo.row_infos[colorScaleMap[color]];
               type = rowInfo.name || rowInfo;
             }
-            // return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
-            // style="fill:${color};stroke:black;stroke-width:2;"></svg>`
-            //   + ` ${type}` + `<br>` + `${value}`;
 
             const itemRGBMarkup = `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2" style="fill:${color};stroke:black;stroke-width:2;"></svg> ${type}`;
 
@@ -1176,7 +1173,7 @@ BasicMultipleBarChart.config = {
     valueScaling: 'linear',
     trackBorderWidth: 0,
     trackBorderColor: 'black',
-    showTooltip: false,
+    showTooltip: true,
   }
 };
 

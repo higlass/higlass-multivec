@@ -438,7 +438,7 @@ ScaledStackedBarTrack.config = {
       "#C0C0C0",
       "#FFFFFF"
     ],
-    showTooltip: false,
+    showTooltip: true,
   }
 };
 

@@ -907,10 +907,6 @@ const StackedDeltaBarTrack = (HGC, ...args) => {
               value = Number.parseFloat(sumOfMap).toPrecision(4).toString();;
             }
 
-            // return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
-            // style="fill:${color};stroke:black;stroke-width:2;"></svg>`
-            //   + ` ${type}` + `<br>` + `${value}`;
-
             const itemRGBMarkup = `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2" style="fill:${color};stroke:black;stroke-width:2;"></svg> ${type}`;
 
             const dataX = this._xScale.invert(trackX);
@@ -984,7 +980,7 @@ StackedDeltaBarTrack.config = {
     selectRows: null,
     fillOpacityMin: 0.1,
     fillOpacityMax: 1.0,
-    showTooltip: false,
+    showTooltip: true,
   },
   otherOptions: {
     'epilogos': {

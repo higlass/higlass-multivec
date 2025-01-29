@@ -171,8 +171,17 @@ const BasicMultipleLineChart = (HGC, ...args) => {
       return [base, track];
     }
 
-    getMouseOverHtml(trackX, trackY) {
-      //console.log(this.tilesetInfo, trackX, trackY);
+    /**
+     * Shows value and type for each line
+     *
+     * @param trackX x coordinate of mouse
+     * @param trackY y coordinate of mouse
+     * @param isShiftDown whether shift is pressed
+     * @returns string with embedded values and svg square for color
+     */
+    getMouseOverHtml(trackX, trackY, isShiftDown) {
+      if (!this.tilesetInfo || (!this.options.showTooltip && !isShiftDown))
+        return '';
       return '';
     }
 
@@ -190,7 +199,7 @@ BasicMultipleLineChart.config = {
   orientation: '1d-horizontal',
   thumbnail: new DOMParser().parseFromString(icon, 'text/xml').documentElement,
   availableOptions: ['labelPosition', 'labelColor', 'valueScaling', 'labelTextOpacity', 'labelBackgroundOpacity',
-    'trackBorderWidth', 'trackBorderColor', 'trackType'],
+    'trackBorderWidth', 'trackBorderColor', 'trackType', 'showTooltip'],
   defaultOptions: {
     labelPosition: 'topLeft',
     labelColor: 'black',
@@ -198,6 +207,7 @@ BasicMultipleLineChart.config = {
     valueScaling: 'linear',
     trackBorderWidth: 0,
     trackBorderColor: 'black',
+    showTooltip: true,
   },
 };
 

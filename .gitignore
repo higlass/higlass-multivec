@@ -8,3 +8,5 @@ es
 *.DS_cache
 .idea/
 .DS_Store
+dist
+*.zip

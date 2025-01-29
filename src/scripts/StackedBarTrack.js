@@ -930,8 +930,8 @@ const StackedBarTrack = (HGC, ...args) => {
      * @param isShiftDown whether shift is pressed
      * @returns string with embedded values and svg square for color
      */
-    getMouseOverHtml(trackX, trackY) {
-      if (!this.tilesetInfo)
+    getMouseOverHtml(trackX, trackY, isShiftDown) {
+      if (!this.tilesetInfo || (!this.options.showTooltip && !isShiftDown))
         return '';
 
       const colorScale = this.options.colorScale || scaleOrdinal(schemeCategory10);
@@ -1015,10 +1015,6 @@ const StackedBarTrack = (HGC, ...args) => {
               </div>`;
             output += `</div>`;
 
-            // return `<svg width="10" height="10"><rect width="10" height="10" rx="2" ry="2"
-            // style="fill:${color};stroke:black;stroke-width:2;"></svg>`
-            //   + ` ${type}` + `<br>` + `${value}`;
-
             return output;
           }
         }
@@ -1055,7 +1051,7 @@ StackedBarTrack.config = {
     barBorder: true,
     sortLargestOnTop: true,
     selectRows: null,
-    showTooltip: false,
+    showTooltip: true,
   },
   otherOptions: {
     'epilogos': {
