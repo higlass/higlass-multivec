@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HiGlass Sequence Logo Track</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="hglib.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.0.3/pixi.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.32.1/react-bootstrap.min.js"></script>
+</head>
+<body>
+<div style="margin: auto">
+  <h2>Sequence Logo Track Example</h2>
+  <div style="height: 400px; width: 800px; border: 1px solid black;" id="sequence-logo-demo"></div>
+</div>
+
+<script src="hglib.js"></script>
+<script>
+  var viewConfig = {
+  "editable": true,
+  "trackSourceServers": [
+    "/api/v1",
+    "http://higlass.io/api/v1"
+  ],
+  "exportViewUrl": "http://higlass.io/api/v1/viewconfs",
+  "views": [
+    {
+      "initialXDomain": [
+        -10.715940917306698,
+        29.60408756117461
+      ],
+      "initialYDomain": [
+        2389805827.621602,
+        2389805829.112308
+      ],
+      "tracks": {
+        "top": [
+          {
+            "server": "https://resgen.io/api/v1",
+            "tilesetUid": "SN4wz5t7RyuYuMSgtknucg",
+            "uid": "xyz-XPazHTqIA",
+            "type": "horizontal-1d-tiles",
+            "options": {
+              "name": "UCSC - hg38.phastCons100way.bw"
+            },
+            "width": 568,
+            "height": 67
+          },
+          {
+            "type": "top-axis",
+            "height": 20,
+            "uid": "K61s2BsOQMCOD-tIvZzkhA",
+            "options": {},
+            "width": 568
+          },
+          {
+            "type": "sequence-logo",
+            "uid": "abc",
+            "tilesetUid": "DGUAgCGqTDOLrgJGrwEsCg",
+            "server": "https://resgen.io/api/v1",
+            "options": {
+              "labelPosition": "topLeft",
+              "labelLeftMargin": 0,
+              "labelRightMargin": 0,
+              "labelTopMargin": 0,
+              "labelBottomMargin": 0,
+              "labelShowResolution": true,
+              "labelShowAssembly": true,
+              "labelColor": "black",
+              "labelTextOpacity": 0.4,
+              "minHeight": 100,
+              "valueScaling": "linear",
+              "trackBorderWidth": 0,
+              "trackBorderColor": "black",
+              "heatmapValueScaling": "log",
+              "selectRows": null,
+              "selectRowsAggregationMode": "mean",
+              "selectRowsAggregationWithRelativeHeight": true,
+              "colorbarBackgroundColor": "#ffffff",
+              "colorbarPosition": "topRight",
+              "zeroValueColor": null,
+              "name": "HCT116 Repli-seq (17 Stage multivec)",
+              "scaleStartPercent": "-0.00000",
+              "scaleEndPercent": "1.00000",
+              "backgroundColor": "white"
+            },
+            "width": 568,
+            "height": 200
+          }
+        ],
+        "left": [],
+        "center": [],
+        "bottom": [],
+        "right": [],
+        "whole": [],
+        "gallery": []
+      },
+      "layout": {
+        "w": 12,
+        "h": 9,
+        "x": 0,
+        "y": 0,
+        "moved": false,
+        "static": false
+      },
+      "uid": "Lrp0BYSpTtKNQxiL8Zjb2g"
+    }
+  ],
+  "zoomLocks": {
+    "locksByViewUid": {},
+    "locksDict": {}
+  },
+  "locationLocks": {
+    "locksByViewUid": {},
+    "locksDict": {}
+  },
+  "valueScaleLocks": {
+    "locksByViewUid": {},
+    "locksDict": {}
+  }
+};
+
+  window.hglib.viewer(
+    document.getElementById('sequence-logo-demo'),
+    viewConfig,
+    {bounded: false}
+  );
+</script>
+</body>
+</html>
