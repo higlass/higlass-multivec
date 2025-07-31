@@ -29,7 +29,7 @@ const SequenceLogoTrack = (HGC, ...args) => {
 
       this.textureGraphics = new HGC.libraries.PIXI.Graphics();
       
-      // Define nucleotide colors
+      // Define color schemes
       this.nucleotideColors = {
         'A': '#FF0000', // Red
         'T': '#0000FF', // Blue  
@@ -37,12 +37,21 @@ const SequenceLogoTrack = (HGC, ...args) => {
         'C': '#008000', // Green
         'U': '#0000FF'  // Blue (for RNA)
       };
+      
+      this.proteinColors = {
+        'A': '#CCFF00', 'G': '#CCFF00', 'I': '#CCFF00', 'L': '#CCFF00', 'P': '#CCFF00', 'V': '#CCFF00', 'M': '#CCFF00', // Aliphatic - Green
+        'F': '#0000FF', 'W': '#0000FF', 'Y': '#0000FF', // Aromatic - Blue
+        'N': '#FF0000', 'Q': '#FF0000', 'S': '#FF0000', 'T': '#FF0000', // Polar - Red
+        'D': '#FF6600', 'E': '#FF6600', // Acidic - Orange
+        'R': '#0099FF', 'H': '#0099FF', 'K': '#0099FF', // Basic - Light Blue
+        'C': '#FFFF00', // Cysteine - Yellow
+        '*': '#000000' // Stop codon - Black
+      };
 
       this.sequenceLogoTrackInitialized = true;
     }
 
     initTile(tile) {
-      console.log('initing', tile);
       this.initializeSequenceLogoTrack();
 
       this.scale.minRawValue = 0;
@@ -155,17 +164,18 @@ const SequenceLogoTrack = (HGC, ...args) => {
         tile.tileData.tilePos, this.tilesetInfo.tile_size);
 
       const matrixDimensions = tile.tileData.shape;
-      const textures = [];
+      const textures = {};
 
       for (let i = 0; i < matrixDimensions[0]; i++) {
       // for (let i = 0; i < 1; i++) {
         const letter = this.tilesetInfo.row_infos[i];
 
+        const colorScheme = this.options.colorScheme === 'protein' ? this.proteinColors : this.nucleotideColors;
         const text = new HGC.libraries.PIXI.Text(letter, {
               fontFamily: 'Arial',
               fontSize: 48,
               fontWeight: 'bold',
-              fill: 'black',
+              fill: colorScheme[letter] || 'black',
               align: 'center'
             })
         let metrics = PIXI.TextMetrics.measureText(text.text, text.style);
@@ -175,7 +185,7 @@ const SequenceLogoTrack = (HGC, ...args) => {
         const texture = new HGC.libraries.PIXI.Texture(textureOrig.baseTexture, rect);
         // texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
-        textures.push(texture);
+        textures[letter] = texture;
       }
 
       for (let j = 0; j < matrixDimensions[1]; j++) {
@@ -214,8 +224,8 @@ const SequenceLogoTrack = (HGC, ...args) => {
         for (let i = 0; i < rowVals.length; i++) {
         // for (let i = 0; i < 1; i++) {
           const letterHeight = this.dimensions[1] * information * probs[i];
-
-          const sprite = new PIXI.Sprite(textures[i]);
+          
+          const sprite = new PIXI.Sprite(textures[rowVals[i].name]);
           const letterWidth = tileWidth / this.tilesetInfo.tile_size;
   
           const x = this._xScale(tileX + (j * letterWidth));
@@ -225,8 +235,6 @@ const SequenceLogoTrack = (HGC, ...args) => {
           sprite.y = currPos;
           sprite.width = letterScaledWidth;
           sprite.height = letterHeight;
-          // sprite.height = 40;
-          console.log('letterScaledWidth', letterScaledWidth);
 
           tile.graphics.addChild(sprite);
           // tile.graphics.addChild(text1);
@@ -296,13 +304,14 @@ SequenceLogoTrack.config = {
   local: false,
   orientation: '1d-horizontal',
   thumbnail: new DOMParser().parseFromString(icon, 'text/xml').documentElement,
-  availableOptions: ['labelPosition', 'labelColor', 'trackBorderWidth', 'trackBorderColor', 'backgroundColor'],
+  availableOptions: ['labelPosition', 'labelColor', 'trackBorderWidth', 'trackBorderColor', 'backgroundColor', 'colorScheme'],
   defaultOptions: {
     labelPosition: 'topLeft',
     labelColor: 'black',
     trackBorderWidth: 0,
     trackBorderColor: 'black',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    colorScheme: 'nucleotide'
   }
 };
 
