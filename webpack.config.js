@@ -45,9 +45,13 @@ module.exports = {
       // Transpile the ESD6 files to ES5
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        // exclude: /node_modules/,
+        exclude: /node_modules\/(?!higlass)/, // ⬅ Allow transpiling higlass
         use: {
           loader: 'babel-loader',
+          options: {
+            "presets": ["@babel/preset-env", "@babel/preset-react"]
+          },
         },
       },
       // Extract them HTML files

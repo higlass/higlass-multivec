@@ -15,8 +15,8 @@ module.exports = function(config) {
       //'test/**/*.+(js|jsx)',
       'test/SVGExportTests.js',
       'test/StackedBarTests.js',
-      'node_modules/higlass/dist/hglib.css',
-      'node_modules/higlass/dist/hglib.js',
+      // 'node_modules/higlass/dist/hglib.css',
+      // 'node_modules/higlass/dist/hglib.js',
     ],
 
     preprocessors: {
