@@ -1,7 +1,7 @@
 import {scaleLinear, scaleOrdinal} from 'd3-scale';
 import {schemeCategory10} from 'd3-scale-chromatic';
 
-const StackedBarTrack = (HGC, ...args) => {
+const StackedBarTrack = function(HGC, ...args) {
   if (!new.target) {
     throw new Error(
       'Uncaught TypeError: Class constructor cannot be invoked without "new"',

@@ -1,6 +1,6 @@
 import {scaleLinear} from 'd3-scale';
 
-const SequenceLogoTrack = (HGC, ...args) => {
+const SequenceLogoTrack = function(HGC, ...args) {
   if (!new.target) {
     throw new Error(
       'Uncaught TypeError: Class constructor cannot be invoked without "new"',
