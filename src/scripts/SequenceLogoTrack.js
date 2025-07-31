@@ -42,6 +42,7 @@ const SequenceLogoTrack = (HGC, ...args) => {
     }
 
     initTile(tile) {
+      console.log('initing', tile);
       this.initializeSequenceLogoTrack();
 
       this.scale.minRawValue = 0;
@@ -56,7 +57,6 @@ const SequenceLogoTrack = (HGC, ...args) => {
       // Number of nucleotides (A, T, G, C)
       this.numCategories = 4;
 
-      this.unFlatten(tile);
       this.renderTile(tile);
       this.rescaleTiles();
     }
@@ -87,16 +87,36 @@ const SequenceLogoTrack = (HGC, ...args) => {
     }
 
     updateTile() {
-      const visibleAndFetched = this.visibleAndFetchedTiles();
-      for (let i = 0; i < visibleAndFetched.length; i++) {
-        const tile = visibleAndFetched[i];
-        this.unFlatten(tile);
-      }
-      this.rescaleTiles();
+      // const visibleAndFetched = this.visibleAndFetchedTiles();
+      // for (let i = 0; i < visibleAndFetched.length; i++) {
+      //   const tile = visibleAndFetched[i];
+      //   this.unFlatten(tile);
+      // }
+      // this.rescaleTiles();
     }
 
     drawTile(tile) {
       // Prevent BarTrack's draw method
+    }
+
+    draw() {
+      if (!this.initialized) return;
+  
+      // we don't want to call HorizontalLine1DPixiTrack's draw function
+      // but rather its parent's
+      super.draw();
+  
+      if (this.options.zeroLineVisible) this.drawZeroLine();
+      else this.zeroLine.clear();
+  
+      Object.values(this.fetchedTiles).forEach((tile) => {
+        const [graphicsXScale, graphicsXPos] = this.getXScaleAndOffset(
+          tile.drawnAtScale,
+        );
+  
+        tile.graphics.scale.x = graphicsXScale;
+        tile.graphics.position.x = graphicsXPos;
+      });
     }
 
     calculateVisibleTiles() {
@@ -124,44 +144,42 @@ const SequenceLogoTrack = (HGC, ...args) => {
       tile.mouseOverData = null;
 
       const graphics = tile.graphics;
+      let children = graphics.children;
+      children.map(x => x.destroy(true));
+      graphics.removeChildren();
       graphics.clear();
-      graphics.children.map(child => {graphics.removeChild(child)});
+
       tile.drawnAtScale = this._xScale.copy();
 
       const {tileX, tileWidth} = this.getTilePosAndDimensions(tile.tileData.zoomLevel,
         tile.tileData.tilePos, this.tilesetInfo.tile_size);
 
       const matrixDimensions = tile.tileData.shape;
-      const cols = matrixDimensions[1];
-      const rows = matrixDimensions[0];
-
-      console.log('tsinfo', this.tilesetInfo);
-      console.log('tileWidth', tileWidth);
-
       const textures = [];
 
       for (let i = 0; i < matrixDimensions[0]; i++) {
+      // for (let i = 0; i < 1; i++) {
         const letter = this.tilesetInfo.row_infos[i];
 
         const text = new HGC.libraries.PIXI.Text(letter, {
               fontFamily: 'Arial',
-              fontSize: 12,
+              fontSize: 48,
               fontWeight: 'bold',
               fill: 'black',
               align: 'center'
             })
         let metrics = PIXI.TextMetrics.measureText(text.text, text.style);
-        console.log('metrics', metrics);
 
         const textureOrig = HGC.services.pixiRenderer.generateTexture(text);
-        const rect = new HGC.libraries.PIXI.Rectangle(0, 3, metrics.width, metrics.height-6);
+        const rect = new HGC.libraries.PIXI.Rectangle(0, metrics.fontProperties.descent, metrics.width, metrics.height-metrics.fontProperties.descent*2);
         const texture = new HGC.libraries.PIXI.Texture(textureOrig.baseTexture, rect);
+        // texture.baseTexture.scaleMode = PIXI.SCALE_MODES.NEAREST;
 
-        console.log('texture', texture);
         textures.push(texture);
       }
 
       for (let j = 0; j < matrixDimensions[1]; j++) {
+      // for (let j = 0; j < 1; j++) {
         let colSum = 0;
         let rowVals = [];
 
@@ -190,12 +208,11 @@ const SequenceLogoTrack = (HGC, ...args) => {
         const maxEntropy = Math.log2(probs.length);
         const information = maxEntropy - entropy;
 
-        console.log('probs', probs);
-        console.log('information', information);
-
         let currPos = 0;
+
         // add each letter
         for (let i = 0; i < rowVals.length; i++) {
+        // for (let i = 0; i < 1; i++) {
           const letterHeight = this.dimensions[1] * information * probs[i];
 
           const sprite = new PIXI.Sprite(textures[i]);
@@ -203,17 +220,16 @@ const SequenceLogoTrack = (HGC, ...args) => {
   
           const x = this._xScale(tileX + (j * letterWidth));
           const letterScaledWidth = this._xScale(letterWidth) - this._xScale(0)
-  
-          // console.log('x', x)
-          // console.log('y', currPos);
-          // console.log('height', letterHeight);
 
           sprite.x = x;
           sprite.y = currPos;
           sprite.width = letterScaledWidth;
           sprite.height = letterHeight;
-  
+          // sprite.height = 40;
+          console.log('letterScaledWidth', letterScaledWidth);
+
           tile.graphics.addChild(sprite);
+          // tile.graphics.addChild(text1);
 
           currPos += letterHeight;
         }
@@ -221,135 +237,7 @@ const SequenceLogoTrack = (HGC, ...args) => {
     }
 
     rescaleTiles() {
-      const visibleAndFetched = this.visibleAndFetchedTiles();
-      
-      visibleAndFetched.map(a => {
-        const sprite = a.sprite;
-        if (sprite) {
-          sprite.height = this.dimensions[1];
-          sprite.y = 0;
-        }
-      });
-    }
 
-    unFlatten(tile) {
-      if (tile.matrix) return tile.matrix;
-
-      const flattenedArray = tile.tileData.dense;
-      const matrix = this.simpleUnFlatten(tile, flattenedArray);
-      
-      // Calculate information content for each position
-      const logoMatrix = [];
-      for (let j = 0; j < matrix.length; j++) {
-        const frequencies = matrix[j];
-        const total = frequencies.reduce((sum, freq) => sum + freq, 0);
-        
-        if (total === 0) {
-          logoMatrix[j] = frequencies.map(() => 0);
-          continue;
-        }
-
-        // Normalize frequencies
-        const probs = frequencies.map(freq => freq / total);
-        
-        // Calculate entropy
-        const entropy = -probs.reduce((sum, p) => {
-          return p > 0 ? sum + p * Math.log2(p) : sum;
-        }, 0);
-        
-        // Information content = max entropy - entropy
-        const maxEntropy = Math.log2(frequencies.length);
-        const information = maxEntropy - entropy;
-        
-        // Calculate heights (information * probability)
-        logoMatrix[j] = probs.map(p => p * information);
-      }
-
-      tile.matrix = logoMatrix;
-      tile.maxValue = 2;
-      tile.minValue = 0;
-
-      return logoMatrix;
-    }
-
-    simpleUnFlatten(tile, data) {
-      const shapeX = 4; // A, T, G, C
-      const shapeY = tile.tileData.shape[1];
-
-      const matrix = [];
-      for (let j = 0; j < shapeY; j++) {
-        const position = [];
-        for (let i = 0; i < shapeX; i++) {
-          position.push(data[(shapeY * i) + j]);
-        }
-        matrix[j] = position;
-      }
-
-      return matrix;
-    }
-
-    drawSequenceLogos(matrix, tileX, tileWidth, tile) {
-      this.textureGraphics.clear();
-      const trackHeight = this.dimensions[1];
-      const totalSpriteWidth = this._xScale(tileX + tileWidth) - this._xScale(tileX);
-      const width = totalSpriteWidth / matrix.length;
-      
-      
-      const spriteGraphics = new HGC.libraries.PIXI.Graphics();
-      const nucleotides = ['A', 'T', 'G', 'C'];
-      
-      for (let j = 0; j < matrix.length; j++) {
-        const x = j * width;
-        const heights = matrix[j];
-        
-        // Sort by height for stacking
-        const sortedData = heights.map((height, i) => ({
-          nucleotide: nucleotides[i],
-          height: height,
-          color: this.nucleotideColors[nucleotides[i]]
-        })).sort((a, b) => a.height - b.height);
-        
-        let stackedHeight = 0;
-        
-        for (let i = 0; i < sortedData.length; i++) {
-          const data = sortedData[i];
-          if (data.height <= 0) continue;
-          
-          const pixelHeight = (data.height / 2) * trackHeight; // Scale to track height
-          const y = trackHeight - stackedHeight - pixelHeight;
-          
-          // Draw letter background
-          this.textureGraphics.beginFill(colorToHex(data.color));
-          this.textureGraphics.drawRect(x, y, width, pixelHeight);
-          
-          console.log('pixelHeight', pixelHeight)
-          console.log('width', width);
-          
-          // Add text (simplified - in practice you'd want proper font rendering)
-          const text = new HGC.libraries.PIXI.Text(data.nucleotide, {
-            fontFamily: 'Arial',
-            fontSize: Math.min(pixelHeight * 0.8, width * 0.8),
-            fill: 'white',
-            align: 'center'
-          });
-          text.x = x + width / 2;
-          text.y = y + pixelHeight / 2;
-          text.anchor.set(0.5);
-          this.textureGraphics.addChild(text);
-          
-          stackedHeight += pixelHeight;
-        }
-      }
-
-      const texture = pixiRenderer.generateTexture(
-        this.textureGraphics, HGC.libraries.PIXI.SCALE_MODES.NEAREST
-      );
-      
-      const sprite = new HGC.libraries.PIXI.Sprite(texture);
-      sprite.width = totalSpriteWidth;
-      sprite.x = this._xScale(tileX);
-      
-      tile.sprite = sprite;
     }
 
     makeMouseOverData(tile) {
