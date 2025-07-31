@@ -1,6 +1,6 @@
 import register from 'higlass-register';
 
-import { StackedBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart } from './scripts';
+import { StackedBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart, SequenceLogoTrack } from './scripts';
 
 register({
   name: 'StackedBarTrack',
@@ -26,4 +26,10 @@ register({
   config: BasicMultipleBarChart.config,
 });
 
-export { StackedBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart };
+register({
+  name: 'SequenceLogoTrack',
+  track: SequenceLogoTrack,
+  config: SequenceLogoTrack.config,
+});
+
+export { StackedBarTrack, ScaledStackedBarTrack, BasicMultipleLineChart, BasicMultipleBarChart, SequenceLogoTrack };

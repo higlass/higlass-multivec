@@ -36,7 +36,7 @@
     "karma-phantomjs-launcher": "^1.0.4",
     "style-loader": "^0.20.3",
     "enzyme": "^3.11.0",
-    "higlass": "^1.11.11",
+    "higlass": "^2.0.0",
     "enzyme-adapter-react-16": "^1.6.0",
     "terser-webpack-plugin": "^3.0.1",
     "unminified-webpack-plugin": "^2.0.0",
