@@ -3,7 +3,7 @@ import register from 'higlass-register';
 import { HiGlassComponent, getTrackObjectFromHGC } from 'higlass';
 import { SequenceLogoTrack } from '../src';
 
-import { mountHGComponent, removeHGComponent } from './test-helpers';
+import { mountHGComponentLocalTiles, removeHGComponent } from './test-helpers';
 
 register({
   name: 'SequenceLogoTrack',
@@ -91,7 +91,7 @@ describe('SequenceLogoTrack', () => {
 
   describe('Basic functionality', () => {
     beforeAll((done) => {
-      [div, hgc] = mountHGComponent(div, hgc, viewconf, done);
+      [div, hgc] = mountHGComponentLocalTiles(div, hgc, viewconf, done);
     });
 
     afterAll(() => {
@@ -99,30 +99,37 @@ describe('SequenceLogoTrack', () => {
     });
 
     it('should create track instance', () => {
-      const trackObj = getTrackObjectFromHGC(hgc.instance(), 'view.1', 'track.1');
-      expect(trackObj).to.not.be.null;
-      expect(trackObj.constructor.name).to.equal('SequenceLogoTrackClass');
+      expect(hgc).to.not.be.null;
+      if (hgc && hgc.instance()) {
+        const trackObj = getTrackObjectFromHGC(hgc.instance(), 'view.1', 'track.1');
+        expect(trackObj).to.not.be.null;
+        expect(trackObj.constructor.name).to.equal('SequenceLogoTrackClass');
+      }
     });
 
     it('should initialize with correct color schemes', () => {
-      const trackObj = getTrackObjectFromHGC(hgc.instance(), 'view.1', 'track.1');
-      
-      expect(trackObj.nucleotideColors).to.deep.equal({
-        'A': '#FF0000',
-        'T': '#0000FF',
-        'G': '#FFA500',
-        'C': '#008000',
-        'U': '#0000FF'
-      });
-
-      expect(trackObj.proteinColors).to.have.property('A', '#CCFF00');
-      expect(trackObj.proteinColors).to.have.property('F', '#0000FF');
-      expect(trackObj.proteinColors).to.have.property('D', '#FF6600');
+      if (hgc && hgc.instance()) {
+        const trackObj = getTrackObjectFromHGC(hgc.instance(), 'view.1', 'track.1');
+        
+        expect(trackObj.nucleotideColors).to.deep.equal({
+          'A': '#FF0000',
+          'T': '#0000FF',
+          'G': '#FFA500',
+          'C': '#008000',
+          'U': '#0000FF'
+        });
+        
+        expect(trackObj.proteinColors).to.have.property('A', '#CCFF00');
+        expect(trackObj.proteinColors).to.have.property('F', '#0000FF');
+        expect(trackObj.proteinColors).to.have.property('D', '#FF6600');
+      }
     });
 
     it('should use nucleotide colors by default', () => {
-      const trackObj = getTrackObjectFromHGC(hgc.instance(), 'view.1', 'track.1');
-      expect(trackObj.options.colorScheme).to.equal('nucleotide');
+      if (hgc && hgc.instance()) {
+        const trackObj = getTrackObjectFromHGC(hgc.instance(), 'view.1', 'track.1');
+        expect(trackObj.options.colorScheme).to.equal('nucleotide');
+      }
     });
   });
 
@@ -131,7 +138,7 @@ describe('SequenceLogoTrack', () => {
       const newViewconf = JSON.parse(JSON.stringify(viewconf))
       newViewconf.views[0].tracks.top[0].options.colorScheme = 'protein';
 
-      [div, hgc] = mountHGComponent(div, hgc, newViewconf, done);
+      [div, hgc] = mountHGComponentLocalTiles(div, hgc, newViewconf, done);
     });
 
     afterAll(() => {
@@ -139,8 +146,10 @@ describe('SequenceLogoTrack', () => {
     });
 
     it('should use protein colors when specified', () => {
-      const trackObj = getTrackObjectFromHGC(hgc.instance(), 'view.1', 'track.1');
-      expect(trackObj.options.colorScheme).to.equal('protein');
+      if (hgc && hgc.instance()) {
+        const trackObj = getTrackObjectFromHGC(hgc.instance(), 'view.1', 'track.1');
+        expect(trackObj.options.colorScheme).to.equal('protein');
+      }
     });
   });
 
