@@ -16,6 +16,7 @@ const SequenceLogoTrack = function(HGC, ...args) {
   class SequenceLogoTrackClass extends HGC.tracks.BarTrack {
     constructor(context, options) {
       super(context, options);
+      this.options = options || {};
       this.initializeSequenceLogoTrack();
     }
 

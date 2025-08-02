@@ -118,11 +118,20 @@ ReactDOM.render(
 
 ### Testing
 
-To run the test suite:
+This project uses [Vitest](https://vitest.dev/) for testing. To run the tests:
 
+```bash
+# Run tests once
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run tests with coverage
+npm run test:coverage
 ```
-npm run test-watch
-```
+
+Tests are located in the `tests/` directory and use the `.test.js` extension.
 
 
 ### Installation
