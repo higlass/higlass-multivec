@@ -1,5 +1,4 @@
 var webpackConfig = require('./webpack.config.js');
-require('babel-polyfill');
 
 module.exports = function(config) {
   config.set({
@@ -7,16 +6,11 @@ module.exports = function(config) {
     frameworks: ['jasmine'],
 
     files: [
-      'node_modules/babel-polyfill/dist/polyfill.js',
       'node_modules/react/umd/react.development.js',
       'node_modules/react-dom/umd/react-dom.development.js',
       'node_modules/pixi.js/dist/pixi.js',
       'node_modules/react-bootstrap/dist/react-bootstrap.js',
-      //'test/**/*.+(js|jsx)',
-      'test/SVGExportTests.js',
-      'test/StackedBarTests.js',
-      'node_modules/higlass/dist/hglib.css',
-      'node_modules/higlass/dist/hglib.js',
+      'test/SequenceLogoTrack.spec.js',
     ],
 
     preprocessors: {
@@ -39,11 +33,7 @@ module.exports = function(config) {
       'karma-phantomjs-launcher',
     ],
 
-    babelPreprocessor: {
-      options: {
-        presets: ['airbnb'],
-      },
-    },
+
     reporters: ['progress'],
     port: 9876,
     colors: true,

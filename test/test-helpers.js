@@ -98,3 +98,9 @@ export const mountHGComponentLocalTiles = (prevDiv, prevHgc, viewConf, done, opt
  
   return [div, hgc];
 };
+
+export const removeHGComponent = (div) => {
+  if (div && div.parentNode) {
+    div.parentNode.removeChild(div);
+  }
+};
