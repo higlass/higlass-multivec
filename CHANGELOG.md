@@ -1,4 +1,4 @@
-**v0.3.4**
+**v0.4.0**
 
 - Added a sequence logo track
 
