@@ -1,11 +1,17 @@
+**v0.3.4**
+
+- Added a sequence logo track
 
 **v0.3.1**
+
 - Updated dependencies
 
 **v0.2.9**
+
 - New method for log value-scaling
 
 **v0.2.5**
+
 - Add a `selectRows` option to enable filtering and aggregating bars
 
 **v0.2.4**
