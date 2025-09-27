@@ -178,7 +178,7 @@ const SequenceLogoTrack = function(HGC, ...args) {
               fill: colorScheme[letter] || 'black',
               align: 'center'
             })
-        let metrics = PIXI.TextMetrics.measureText(text.text, text.style);
+        let metrics = HGC.libraries.PIXI.TextMetrics.measureText(text.text, text.style);
 
         const textureOrig = HGC.services.pixiRenderer.generateTexture(text);
         const rect = new HGC.libraries.PIXI.Rectangle(0, metrics.fontProperties.descent, metrics.width, metrics.height-metrics.fontProperties.descent*2);
@@ -225,7 +225,7 @@ const SequenceLogoTrack = function(HGC, ...args) {
         // for (let i = 0; i < 1; i++) {
           const letterHeight = this.dimensions[1] * information * probs[i];
           
-          const sprite = new PIXI.Sprite(textures[rowVals[i].name]);
+          const sprite = new HGC.libraries.PIXI.Sprite(textures[rowVals[i].name]);
           const letterWidth = tileWidth / this.tilesetInfo.tile_size;
   
           const x = this._xScale(tileX + (j * letterWidth));

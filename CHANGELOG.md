@@ -1,3 +1,7 @@
+**v0.4.1**
+
+- Fix issue where we weren't loading PIXI from the HGC provided package
+
 **v0.4.0**
 
 - Added a sequence logo track
