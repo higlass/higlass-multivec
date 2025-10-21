@@ -214,6 +214,8 @@ const SequenceLogoTrack = function(HGC, ...args) {
           return p > 0 ? sum + p * Math.log2(p) : sum;
         }, 0);
 
+
+
         // Information content = max entropy - entropy
         const maxEntropy = Math.log2(probs.length);
         const information = maxEntropy - entropy;
@@ -223,8 +225,7 @@ const SequenceLogoTrack = function(HGC, ...args) {
         // add each letter
         for (let i = 0; i < rowVals.length; i++) {
         // for (let i = 0; i < 1; i++) {
-          const letterHeight = this.dimensions[1] * information * probs[i];
-          
+          const letterHeight = this.dimensions[1] * information * probs[i] / maxEntropy;
           const sprite = new HGC.libraries.PIXI.Sprite(textures[rowVals[i].name]);
           const letterWidth = tileWidth / this.tilesetInfo.tile_size;
   

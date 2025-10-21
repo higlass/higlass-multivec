@@ -1,3 +1,7 @@
+**v0.4.2**
+
+- Scale letter heights by maximum entropy so that they fit in the track
+
 **v0.4.1**
 
 - Fix issue where we weren't loading PIXI from the HGC provided package
