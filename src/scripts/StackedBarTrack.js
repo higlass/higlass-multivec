@@ -694,18 +694,14 @@ const StackedBarTrack = function(HGC, ...args) {
     exportSVG() {
 
       const visibleAndFetched = this.visibleAndFetchedTiles();
-      visibleAndFetched.map((tile) => {
+      // Make sure every tile has been drawn so that `maxAndMin` reflects the
+      // shared value scale currently shown on screen.
+      visibleAndFetched.forEach((tile) => {
         this.initTile(tile);
-        this.draw();
       });
+      this.draw();
 
-      let track = null;
-      let base = null;
-
-      base = document.createElement('g');
-      track = base;
-
-      [base, track] = super.superSVG();
+      let [base, track] = super.superSVG();
 
       const output = document.createElement('g');
       track.appendChild(output);
@@ -715,38 +711,86 @@ const StackedBarTrack = function(HGC, ...args) {
         `translate(${this.pMain.position.x},${this.pMain.position.y}) scale(${this.pMain.scale.x},${this.pMain.scale.y})`,
       );
 
-      // this.realignSVG();
+      const trackHeight = this.dimensions[1];
+      const unscaledHeight = this.maxAndMin.max + Math.abs(this.maxAndMin.min);
 
-      for (const tile of this.visibleAndFetchedTiles()) {
-        const rotation = 0;
+      // No data range to draw. Return the (empty) group so we don't emit NaNs.
+      if (!(unscaledHeight > 0)) {
+        return [base, base];
+      }
+
+      // The same value -> pixel mapping used by rescaleTiles() for the render.
+      const valueToPixels = scaleLinear()
+        .domain([0, unscaledHeight])
+        .range([0, trackHeight]);
+      // y coordinate of value 0 (baseline between the positive and negative stacks)
+      const baseline = valueToPixels(this.maxAndMin.max);
+      const hasNegative = Math.abs(this.maxAndMin.min) > 0;
+
+      const addRect = (parent, x, y, width, height, color) => {
+        const rect = document.createElement('rect');
+        rect.setAttribute('fill', color);
+        rect.setAttribute('x', x);
+        rect.setAttribute('y', y);
+        rect.setAttribute('width', width);
+        rect.setAttribute('height', height);
+        if (this.options.barBorder) {
+          rect.setAttribute('stroke', 'black');
+          rect.setAttribute('stroke-width', '0.1');
+        } else {
+          rect.setAttribute('stroke', color);
+        }
+        parent.appendChild(rect);
+      };
+
+      for (const tile of visibleAndFetched) {
+        if (!tile.tileData || !tile.tileData.dense) {
+          continue;
+        }
+
         const g = document.createElement('g');
 
+        const { tileX, tileWidth } = this.getTilePosAndDimensions(
+          tile.tileData.zoomLevel, tile.tileData.tilePos, this.tilesetInfo.tile_size);
 
+        // Same data model the renderer builds in renderTile().
+        const matrix = this.mapOriginalColors(this.unFlatten(tile));
+        const numColumns = matrix.length;
+        if (numColumns === 0) {
+          continue;
+        }
 
-        // place each sprite
-        g.setAttribute(
-          'transform',
-          ` translate(${tile.sprite.x},${tile.sprite.y}) rotate(${rotation}) scale(${tile.sprite.scale.x},${tile.sprite.scale.y}) `,
-        );
+        // Map the tile's columns into the on-screen pixel range. The renderer
+        // achieves this horizontal compression through per-256-column child
+        // sprites; here we compute the column width directly.
+        const tileScreenX = this._xScale(tileX);
+        const totalWidth = this._xScale(tileX + tileWidth) - tileScreenX;
+        const columnWidth = totalWidth / numColumns;
 
-        const data = tile.svgData;
+        for (let j = 0; j < numColumns; j++) {
+          const x = tileScreenX + (j * columnWidth);
 
-        // add each bar
-        for (let i = 0; i < data.barXValues.length; i++) {
-          const rect = document.createElement('rect');
-          rect.setAttribute('fill', data.barColors[i]);
-          rect.setAttribute('stroke', data.barColors[i]);
-
-          rect.setAttribute('x', data.barXValues[i]);
-          rect.setAttribute('y', data.barYValues[i] - tile.lowestY);
-          rect.setAttribute('height', data.barHeights[i]);
-          rect.setAttribute('width', data.barWidths[i]);
-          if (this.options.barBorder) {
-            rect.setAttribute('stroke-width', '0.1');
-            rect.setAttribute('stroke', 'black');
+          // positive values are stacked upwards from the baseline
+          const positive = matrix[j][0];
+          let positiveStackedHeight = 0;
+          for (let i = 0; i < positive.length; i++) {
+            const height = valueToPixels(positive[i].value);
+            const y = baseline - (positiveStackedHeight + height);
+            addRect(g, x, y, columnWidth, height, positive[i].color);
+            positiveStackedHeight += height;
           }
 
-          g.appendChild(rect);
+          // negative values are stacked downwards from the baseline
+          if (hasNegative) {
+            const negative = matrix[j][1];
+            let negativeStackedHeight = 0;
+            for (let i = 0; i < negative.length; i++) {
+              const height = valueToPixels(Math.abs(negative[i].value));
+              const y = baseline + negativeStackedHeight;
+              addRect(g, x, y, columnWidth, height, negative[i].color);
+              negativeStackedHeight += height;
+            }
+          }
         }
 
         output.appendChild(g);

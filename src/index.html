@@ -13,7 +13,24 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.0.3/pixi.min.js"></script>
   <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
-  
+  <script>
+    // higlass >=2.3 is built with React's automatic JSX runtime and its UMD
+    // bundle expects a global `ReactJSXRuntime`. The React 16 UMD build doesn't
+    // ship one, so recreate it from the global `React` (jsx-runtime is just
+    // createElement under the hood).
+    window.ReactJSXRuntime = (function (React) {
+      function jsx(type, config, maybeKey) {
+        var props = {};
+        for (var key in config) {
+          if (key !== 'children') props[key] = config[key];
+        }
+        if (maybeKey !== undefined) props.key = maybeKey;
+        return React.createElement(type, props, config ? config.children : undefined);
+      }
+      return { jsx: jsx, jsxs: jsx, Fragment: React.Fragment };
+    })(window.React);
+  </script>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.32.1/react-bootstrap.min.js"></script>
 </head>
 <body>
@@ -29,77 +46,110 @@ And some other text
 </body>
 <script src="hglib.js"></script>
 <script>
-  var viewConfig =
-  {
+  var viewConfig ={
   "editable": true,
   "trackSourceServers": [
     "/api/v1",
     "http://higlass.io/api/v1"
   ],
-  "exportViewUrl": "http://higlass.io/api/v1/viewconfs",
+  "exportViewUrl": "/api/v1/viewconfs",
   "views": [
     {
       "initialXDomain": [
-        -10.715940917306698,
-        29.60408756117461
+        2824311717.9023447,
+        2824664838.5004053
       ],
       "initialYDomain": [
-        2389805827.621602,
-        2389805829.112308
+        2824256448.3219986,
+        2824566132.6733727
       ],
       "tracks": {
         "top": [
           {
+            "type": "horizontal-chromosome-labels",
+            "uid": "dWalpGmvQUW4YacLw1tYWQ",
+            "tilesetUid": "ADfY_RtsQR6oKOMyrq6qhw",
             "server": "https://resgen.io/api/v1",
-            "tilesetUid": "SN4wz5t7RyuYuMSgtknucg",
-            "uid": "xyz-XPazHTqIA",
-            "type": "horizontal-1d-tiles",
             "options": {
-              "name": "UCSC - hg38.phastCons100way.bw"
+              "showMousePosition": false,
+              "mousePositionColor": "#999999",
+              "color": "#808080",
+              "stroke": "#ffffff",
+              "fontSize": 12,
+              "fontIsLeftAligned": false,
+              "reverseOrientation": false,
+              "name": "Chromosome Info (hg19)"
             },
-            "width": 568,
-            "height": 67
+            "width": 20,
+            "height": 30
           },
           {
-            "type": "top-axis",
-            "height": 20,
-            "uid": "K61s2BsOQMCOD-tIvZzkhA",
-            "options": {},
-            "width": 568
-          },
-          {
-            "type": "sequence-logo",
-            "uid": "abc",
-            "tilesetUid": "DGUAgCGqTDOLrgJGrwEsCg",
+            "type": "horizontal-stacked-bar",
+            "uid": "NFWUa6VzRF2-vsoTNmfmfQ",
+            "tilesetUid": "GIoMpzT4RlOQZ2_7m394Uw",
             "server": "https://resgen.io/api/v1",
             "options": {
               "labelPosition": "topLeft",
+              "labelColor": "black",
+              "labelTextOpacity": 0.4,
+              "valueScaling": "exponential",
+              "trackBorderWidth": 0,
+              "trackBorderColor": "black",
+              "backgroundColor": "white",
+              "barBorder": true,
+              "scaledHeight": true,
+              "sortLargestOnTop": true,
+              "colorScale": [
+                "#FF0000",
+                "#FF4500",
+                "#32CD32",
+                "#008000",
+                "#006400",
+                "#C2E105",
+                "#FFFF00",
+                "#66CDAA",
+                "#8A91D0",
+                "#CD5C5C",
+                "#E9967A",
+                "#BDB76B",
+                "#808080",
+                "#C0C0C0",
+                "#FFFFFF"
+              ],
+              "name": "all.KL.bed.multires.mv5",
+              "selectRows": null
+            },
+            "width": 624,
+            "height": 162
+          },
+          {
+            "type": "horizontal-gene-annotations",
+            "uid": "Cj3Owt-AT7WS5fXaSdpZvQ",
+            "tilesetUid": "NCifnbrKQu6j-ohVWJLoJw",
+            "server": "https://resgen.io/api/v1",
+            "options": {
+              "labelColor": "black",
+              "labelPosition": "hidden",
+              "plusStrandColor": "blue",
+              "minusStrandColor": "red",
+              "trackBorderWidth": 0,
+              "trackBorderColor": "black",
+              "showMousePosition": false,
+              "name": "gene-annotations-hg19.db",
+              "fontSize": 10,
+              "labelBackgroundColor": "#ffffff",
               "labelLeftMargin": 0,
               "labelRightMargin": 0,
               "labelTopMargin": 0,
               "labelBottomMargin": 0,
-              "labelShowResolution": true,
-              "labelShowAssembly": true,
-              "labelColor": "black",
-              "labelTextOpacity": 0.4,
-              "minHeight": 100,
-              "valueScaling": "linear",
-              "trackBorderWidth": 0,
-              "trackBorderColor": "black",
-              "heatmapValueScaling": "log",
-              "selectRows": null,
-              "selectRowsAggregationMode": "mean",
-              "selectRowsAggregationWithRelativeHeight": true,
-              "colorbarBackgroundColor": "#ffffff",
-              "colorbarPosition": "topRight",
-              "zeroValueColor": null,
-              "name": "HCT116 Repli-seq (17 Stage multivec)",
-              "scaleStartPercent": "-0.00000",
-              "scaleEndPercent": "1.00000",
-              "backgroundColor": "white"
+              "minHeight": 24,
+              "mousePositionColor": "#000000",
+              "geneAnnotationHeight": 16,
+              "geneLabelPosition": "outside",
+              "geneStrandSpacing": 4
             },
-            "width": 568,
-            "height": 200
+            "width": 624,
+            "height": 55
           }
         ],
         "left": [],
@@ -111,13 +161,13 @@ And some other text
       },
       "layout": {
         "w": 12,
-        "h": 9,
+        "h": 12,
         "x": 0,
         "y": 0,
         "moved": false,
         "static": false
       },
-      "uid": "Lrp0BYSpTtKNQxiL8Zjb2g"
+      "uid": "MiApsjfbQTeRT02rLYDFYQ"
     }
   ],
   "zoomLocks": {
@@ -133,6 +183,7 @@ And some other text
     "locksDict": {}
   }
 }
+  
   // window.higlassApi;
   window.hglib.viewer(
     document.getElementById('development-demo'),
