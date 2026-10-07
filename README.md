@@ -59,6 +59,143 @@ Configure the track in your view config; you should be all set from here!
 ```
 For an example, see [`src/index.html`](src/index.html).
 
+## Sequence Logo Tracks
+
+The `"sequence-logo"` track renders a position weight matrix (PWM) as a
+sequence logo: at each position the stacked letters are scaled by their
+information content. It consumes the same multivec tile format as the other
+tracks (a `float16` matrix of shape `[alphabet_size, bin_size]`, base64
+encoded), where each row is one letter of the alphabet. DNA matrices have 5
+rows (`-ACGT`) and protein matrices have 21 rows (`-` plus the 20 amino acids).
+
+Available `options`:
+
+| option | description |
+| --- | --- |
+| `labelPosition` | corner for the track label, e.g. `"topLeft"` |
+| `labelColor` | label text color |
+| `trackBorderWidth` | width of the track border, in pixels |
+| `trackBorderColor` | color of the track border |
+| `backgroundColor` | track background color |
+| `colorScheme` | `"nucleotide"` (default) or `"protein"` — picks the per-letter color palette |
+
+### From a server
+
+Point the track at a tileset served by a HiGlass / resgen server, just like
+the other multivec tracks:
+
+```json
+{
+  "type": "sequence-logo",
+  "uid": "a50a197e",
+  "height": 100,
+  "tilesetUid": "aj58pQI2SjaLMNQcl-XYvw",
+  "server": "http://localhost:1807/api/v1",
+  "options": {
+    "labelPosition": "topLeft",
+    "labelColor": "black",
+    "trackBorderWidth": 0,
+    "trackBorderColor": "black",
+    "backgroundColor": "white",
+    "colorScheme": "protein",
+    "name": "human_adh1a_msa.a3m"
+  }
+}
+```
+
+For another example (served from resgen.io), see
+[`src/sequence-logo-example.html`](src/sequence-logo-example.html).
+
+### With local tiles
+
+If you don't want to run a server, you can hand the tiles to the viewer
+directly by replacing `server`/`tilesetUid` with a `data` block of
+`type: "local-tiles"`. The data fetcher expects a `tilesetInfo` map and a
+`tiles` map (keyed by tile id):
+
+```json
+{
+  "type": "sequence-logo",
+  "uid": "a50a197e",
+  "height": 100,
+  "data": {
+    "type": "local-tiles",
+    "tilesetInfo": {
+      "x": {
+        "shape": [21, 512],
+        "row_infos": ["-", "A", "C", "D", "E", "F", "G", "H", "I", "K", "L",
+                      "M", "N", "P", "Q", "R", "S", "T", "V", "W", "Y"],
+        "resolutions": [512, 256, 128, 64, 32, 16, 8, 4, 2, 1]
+      }
+    },
+    "tiles": {
+      "x.0.0": {
+        "dense": "AAAAAAAA...",
+        "dtype": "float16",
+        "shape": [21, 512]
+      }
+    }
+  },
+  "options": {
+    "labelPosition": "topLeft",
+    "colorScheme": "protein",
+    "name": "human_adh1a_msa.a3m"
+  }
+}
+```
+
+#### Generating the tiles
+
+The tiles are produced by [clodius](https://github.com/higlass/clodius). The
+`clodius.tiles.a3m` module turns an a3m multiple sequence alignment (the first
+record is the query; insert/lower-case columns are dropped so every row lines
+up with the query) into sequence-logo tiles. `get_local_tiles` returns exactly
+the `{"tilesetInfo": ..., "tiles": ...}` payload the `local-tiles` fetcher
+expects:
+
+```python
+import json
+from clodius.tiles.a3m import get_local_tiles
+
+# seqtype is inferred from the alphabet when omitted
+# ("dna" -> 5 rows, "protein" -> 21 rows).
+data = get_local_tiles(
+    "human_adh1a_msa.a3m",
+    datatype="sequence_logo",
+    seqtype="protein",
+)
+
+# data == {"tilesetInfo": {"x": {...}}, "tiles": {"x.0.0": {...}, ...}}
+with open("human_adh1a_msa.local-tiles.json", "w") as f:
+    json.dump(data, f)
+```
+
+Drop the `"x"` entry of `tilesetInfo` and the `tiles` map straight into the
+track's `data` block above.
+
+To generate a single tile (for example the `x.0.0` tile shown above, a
+`[21, 512]` protein matrix), use the tile functions directly:
+
+```python
+from clodius.tiles.a3m import seqlogo_tile_functions
+
+tf = seqlogo_tile_functions("human_adh1a_msa.a3m", seqtype="protein")
+
+tsinfo = tf["tileset_info"]()          # shape, row_infos, resolutions, aligned_seqs
+tile_id, tile = tf["tiles"](["x.0.0"])[0]
+
+# tile == {
+#   "dense": "<base64-encoded float16 array>",
+#   "dtype": "float16",
+#   "shape": [21, 512],
+# }
+```
+
+Under the hood each column of the PWM is the per-letter frequency at that
+alignment position; `tile["dense"]` is the row-major `float16` matrix,
+base64 encoded, which the track decodes and converts to information content
+(bits) before drawing the letters.
+
 ### ECMAScript Modules (ESM)
 
 We also build out ES modules for usage by applications who may need to import or use `higlass-multivec` as a component.
